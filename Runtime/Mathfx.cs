@@ -70,12 +70,8 @@ namespace AggroBird.UnityEngineExtend
             return AngleBetweenNormalized(lhs, rhs) * Mathf.Rad2Deg;
         }
 
-        // Modulo that ensures the result is always positive (e.g. ModAbs(-1, 5) = 4)
-        public static float ModAbs(float f, float m)
-        {
-            f %= m;
-            return (f < 0) ? (f + m) : f;
-        }
+        // Modulo that ensures the result is always positive (e.g. ModAbs(-45, 360) = 315)
+        public static float ModAbs(float f, float m) => ((f % m) + m) % m;
 
         // Add a value and clamp the result between +range and -range
         // If value is already outside of range, it will discard the addition
