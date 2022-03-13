@@ -79,16 +79,31 @@ namespace AggroBird.UnityEngineExtend
         // Range must be positive
         public static float AddClamped(float value, float add, float range)
         {
-            if (add < 0 && value > -range)
+            if (add < 0)
             {
-                value += add;
-                if (value < -range) value = -range;
+                if (value > -range)
+                {
+                    value += add;
+
+                    if (value < -range)
+                    {
+                        value = -range;
+                    }
+                }
             }
-            if (add > 0 && value < range)
+            else if (add > 0)
             {
-                value += add;
-                if (value > range) value = range;
+                if (value < range)
+                {
+                    value += add;
+
+                    if (value > range)
+                    {
+                        value = range;
+                    }
+                }
             }
+
             return value;
         }
         public static Vector2 AddClamped(Vector2 value, Vector2 add, Vector2 range)
