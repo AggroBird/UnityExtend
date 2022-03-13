@@ -3,6 +3,9 @@
 	"displayName":"Unity Engine Extension",
 	"version": "1.0.0",
     "unity": "2019.4",
+    "keywords": ["Utility", "Helper", "Functions"],
+    "category": "Utility",
+	"description": "Useful utility functions for Unity3D projects.",
     "dependencies": {
     }
 }
