@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using AggroBird.UnityEngineExtend;
 
-namespace AggroBird.UnityEditorExtend
+namespace AggroBird.UnityEngineExtend.Editor
 {
     [CustomPropertyDrawer(typeof(ClampedAttribute))]
     public sealed class ClampedAttributeDrawer : PropertyDrawer
