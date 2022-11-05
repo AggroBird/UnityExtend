@@ -22,10 +22,10 @@ namespace AggroBird.UnityEngineExtend.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             ClampedAttribute attr = (ClampedAttribute)attribute;
-            minInt = (int)attr.min;
-            maxInt = (int)attr.max;
-            minFloat = (float)attr.min;
-            maxFloat = (float)attr.max;
+            minInt = attr.minInt;
+            maxInt = attr.maxInt;
+            minFloat = attr.minFloat;
+            maxFloat = attr.maxFloat;
 
             bool mixed = EditorGUI.showMixedValue;
             EditorGUI.showMixedValue = property.hasMultipleDifferentValues;

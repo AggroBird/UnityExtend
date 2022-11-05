@@ -7,18 +7,33 @@ namespace AggroBird.UnityEngineExtend
     [AttributeUsage(AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
     public sealed class ClampedAttribute : PropertyAttribute
     {
-        public readonly decimal min;
-        public readonly decimal max;
+        public enum Precision
+        {
+            Integer,
+            Single,
+        }
+
+        public readonly Precision precision;
+        public readonly float minFloat;
+        public readonly float maxFloat;
+        public readonly int minInt;
+        public readonly int maxInt;
 
         public ClampedAttribute(float min = 0, float max = float.MaxValue)
         {
-            this.min = (decimal)min;
-            this.max = (decimal)max;
+            precision = Precision.Single;
+            minFloat = min;
+            maxFloat = max;
+            minInt = (int)min;
+            maxInt = (int)max;
         }
         public ClampedAttribute(int min = 0, int max = int.MaxValue)
         {
-            this.min = min;
-            this.max = max;
+            precision = Precision.Integer;
+            minFloat = min;
+            maxFloat = max;
+            minInt = min;
+            maxInt = max;
         }
     }
 }
