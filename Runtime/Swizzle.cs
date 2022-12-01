@@ -57,6 +57,11 @@ namespace AggroBird.UnityEngineExtend
             return new Vector2(vec.y, vec.z);
         }
 
+        public static Vector3 Horizontal3D(this Vector2 vec)
+        {
+            return new Vector3(vec.x, 0, vec.y);
+        }
+
         public static Rect ToRect(this RectInt rect)
         {
             return new Rect(rect.x, rect.y, rect.width, rect.height);
