@@ -70,6 +70,18 @@ namespace AggroBird.UnityEngineExtend
             return AngleBetweenNormalized(lhs, rhs) * Mathf.Rad2Deg;
         }
 
+        // Project a vector2 along a surface
+        public static Vector3 ProjectAlongSurface(Vector2 dir, Vector3 normal)
+        {
+            float len = dir.magnitude;
+            if (len > 0)
+            {
+                Vector3 perp = Vector3.Cross(dir.Horizontal3D(), Vector3.up);
+                return Vector3.Cross(normal, perp).normalized * dir.magnitude;
+            }
+            return Vector3.zero;
+        }
+
         // Modulo that ensures the result is always positive (e.g. ModAbs(-45, 360) = 315)
         public static float ModAbs(float f, float m) => ((f % m) + m) % m;
 
