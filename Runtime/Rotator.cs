@@ -24,6 +24,15 @@ namespace AggroBird.UnityEngineExtend
             return new Vector3(rotator.pitch, rotator.yaw, 0);
         }
 
+        public static implicit operator Rotator3(Rotator2 rotator)
+        {
+            return new Rotator3(rotator.pitch, rotator.yaw, 0);
+        }
+        public static Rotator3 FromEuler(Vector3 euler)
+        {
+            return new Rotator3(euler.x, euler.y, euler.z);
+        }
+
         public static Rotator2 operator +(Rotator2 lhs, Rotator2 rhs)
         {
             return new Rotator2(lhs.pitch + rhs.pitch, lhs.yaw + rhs.yaw);
@@ -58,6 +67,15 @@ namespace AggroBird.UnityEngineExtend
         public static implicit operator Vector3(Rotator3 rotator)
         {
             return new Vector3(rotator.pitch, rotator.yaw, rotator.roll);
+        }
+
+        public static implicit operator Rotator3(Quaternion quaternion)
+        {
+            return FromEuler(quaternion.eulerAngles);
+        }
+        public static Rotator3 FromEuler(Vector3 euler)
+        {
+            return new Rotator3(euler.x, euler.y, euler.z);
         }
 
         public static Rotator3 operator +(Rotator3 lhs, Rotator3 rhs)
