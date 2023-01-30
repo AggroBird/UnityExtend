@@ -334,5 +334,7 @@ namespace AggroBird.UnityEngineExtend
     public struct BitfieldValue
     {
         [SerializeField] private int value;
+
+        public int Value => value;
     }
 }

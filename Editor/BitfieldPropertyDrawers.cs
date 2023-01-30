@@ -159,10 +159,12 @@ namespace AggroBird.UnityEngineExtend.Editor
             // Display property field
             UniqueLabels.Clear();
             EditorGUI.PropertyField(position, valuesProperty, label);
+            if (valuesProperty.arraySize > BitCount)
+            {
+                valuesProperty.arraySize = BitCount;
+            }
             if (valuesProperty.arraySize > currentCount)
             {
-                if (valuesProperty.arraySize > BitCount) valuesProperty.arraySize = BitCount;
-
                 // Initialize new fields to empty
                 for (int i = currentCount; i < valuesProperty.arraySize; i++)
                 {
