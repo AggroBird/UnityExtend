@@ -21,9 +21,9 @@ namespace AggroBird.UnityEngineExtend.Editor
 
             public bool MoveNext()
             {
-                iter.NextVisible(enterChildren);
+                bool result = iter.NextVisible(enterChildren);
                 enterChildren = false;
-                return !SerializedProperty.EqualContents(iter, end);
+                return result && !SerializedProperty.EqualContents(iter, end);
             }
         }
 
