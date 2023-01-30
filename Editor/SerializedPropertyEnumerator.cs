@@ -10,10 +10,10 @@ namespace AggroBird.UnityEngineExtend.Editor
             private readonly SerializedProperty end;
             private bool enterChildren;
 
-            public Enumerator(SerializedProperty serializedProperty)
+            public Enumerator(SerializedProperty iter, SerializedProperty end)
             {
-                iter = serializedProperty;
-                end = serializedProperty.GetEndProperty();
+                this.iter = iter;
+                this.end = end;
                 enterChildren = true;
             }
 
@@ -23,24 +23,24 @@ namespace AggroBird.UnityEngineExtend.Editor
             {
                 bool result = iter.NextVisible(enterChildren);
                 enterChildren = false;
-                return result && !SerializedProperty.EqualContents(iter, end);
+                return result && (end == null || !SerializedProperty.EqualContents(iter, end));
             }
         }
 
-        private readonly SerializedProperty iter;
+        private readonly Enumerator enumerator;
 
         public SerializedPropertyEnumerator(SerializedProperty serializedProperty)
         {
-            iter = serializedProperty;
+            enumerator = new Enumerator(serializedProperty, serializedProperty.GetEndProperty());
         }
         public SerializedPropertyEnumerator(SerializedObject serializedObject)
         {
-            iter = serializedObject.GetIterator();
+            enumerator = new Enumerator(serializedObject.GetIterator(), null);
         }
 
         public Enumerator GetEnumerator()
         {
-            return new Enumerator(iter);
+            return enumerator;
         }
     }
 }
