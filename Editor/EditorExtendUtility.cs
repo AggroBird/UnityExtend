@@ -7,6 +7,9 @@ namespace AggroBird.UnityEngineExtend.Editor
 {
     public static class EditorExtendUtility
     {
+        public static float SinglePropertyHeight => EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+
         public static bool TryGetFieldInfo(this SerializedProperty property, out FieldInfo fieldInfo)
         {
             fieldInfo = null;
