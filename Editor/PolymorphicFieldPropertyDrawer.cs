@@ -72,7 +72,26 @@ namespace AggroBird.UnityEngineExtend.Editor
         }
 
         private static PolymorphicTypeCache typeCache = new PolymorphicTypeCache();
+
         private const BindingFlags SerializedFieldBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+        private static bool IsSerializedField(FieldInfo fieldInfo)
+        {
+            return fieldInfo.IsPublic || fieldInfo.GetCustomAttribute<SerializeField>() != null;
+        }
+        private static bool TryGetSerializedField(Type type, string name, out FieldInfo fieldInfo)
+        {
+            fieldInfo = type.GetField(name, SerializedFieldBindingFlags);
+            if (fieldInfo == null)
+            {
+                return false;
+            }
+            if (!IsSerializedField(fieldInfo))
+            {
+                fieldInfo = null;
+                return false;
+            }
+            return true;
+        }
 
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -115,13 +134,12 @@ namespace AggroBird.UnityEngineExtend.Editor
                         {
                             // Fetch current top-level fields
                             Type type = obj.GetType();
-                            List<(string name, object value)> fields = new();
+                            List<(string name, Type type, object value)> fields = new();
                             foreach (var iter in new SerializedPropertyEnumerator(property.Copy()))
                             {
-                                FieldInfo fieldInfo = type.GetField(iter.name, SerializedFieldBindingFlags);
-                                if (fieldInfo != null)
+                                if (TryGetSerializedField(type, iter.name, out FieldInfo fieldInfo))
                                 {
-                                    fields.Add((iter.name, fieldInfo.GetValue(obj)));
+                                    fields.Add((iter.name, fieldInfo.FieldType, fieldInfo.GetValue(obj)));
                                 }
                             }
 
@@ -132,8 +150,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                             type = obj.GetType();
                             foreach (var field in fields)
                             {
-                                FieldInfo fieldInfo = type.GetField(field.name, SerializedFieldBindingFlags);
-                                if (fieldInfo != null)
+                                if (TryGetSerializedField(type, field.name, out FieldInfo fieldInfo) && fieldInfo.FieldType.IsAssignableFrom(field.type))
                                 {
                                     fieldInfo.SetValue(obj, field.value);
                                 }

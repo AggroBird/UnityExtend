@@ -27,16 +27,20 @@ namespace AggroBird.UnityEngineExtend.Editor
             }
         }
 
-        private readonly SerializedProperty serializedProperty;
+        private readonly SerializedProperty iter;
 
         public SerializedPropertyEnumerator(SerializedProperty serializedProperty)
         {
-            this.serializedProperty = serializedProperty;
+            iter = serializedProperty;
+        }
+        public SerializedPropertyEnumerator(SerializedObject serializedObject)
+        {
+            iter = serializedObject.GetIterator();
         }
 
         public Enumerator GetEnumerator()
         {
-            return new Enumerator(serializedProperty);
+            return new Enumerator(iter);
         }
     }
 }
