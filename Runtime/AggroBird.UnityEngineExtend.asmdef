@@ -1,5 +1,6 @@
 {
     "name": "AggroBird.UnityEngineExtend",
+    "rootNamespace": "AggroBird.UnityEngineExtend",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

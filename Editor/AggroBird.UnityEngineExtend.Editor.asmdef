@@ -1,5 +1,6 @@
 {
     "name": "AggroBird.UnityEngineExtend.Editor",
+    "rootNamespace": "AggroBird.UnityEngineExtend.Editor",
     "references": [
         "AggroBird.UnityEngineExtend"
     ],

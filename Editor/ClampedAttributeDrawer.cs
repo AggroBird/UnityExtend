@@ -4,7 +4,7 @@ using UnityEditor;
 namespace AggroBird.UnityEngineExtend.Editor
 {
     [CustomPropertyDrawer(typeof(ClampedAttribute))]
-    public sealed class ClampedAttributeDrawer : PropertyDrawer
+    internal sealed class ClampedAttributeDrawer : PropertyDrawer
     {
         private int minInt;
         private int maxInt;
