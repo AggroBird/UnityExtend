@@ -4,6 +4,17 @@ using UnityEngine;
 
 namespace AggroBird.UnityEngineExtend
 {
+    internal static class BitfieldUtility
+    {
+        public const int Precision = 32;
+
+        internal static void GetIdxFlag(int index, out int idx, out int flag)
+        {
+            idx = index / Precision;
+            flag = 1 << (index % Precision);
+        }
+    }
+
     public sealed class BitfieldLabelNameProviderAttribute : Attribute
     {
         public BitfieldLabelNameProviderAttribute(Type providerType)
@@ -16,7 +27,7 @@ namespace AggroBird.UnityEngineExtend
 
     public interface IBitfieldLabelNameProvider
     {
-        public IBitfieldLabelList GetBitfieldLabelList();
+        IBitfieldLabelList GetBitfieldLabelList();
     }
 
 
@@ -29,9 +40,9 @@ namespace AggroBird.UnityEngineExtend
 
     public interface IBitfieldLabelList
     {
-        public int BitCount { get; }
-        public IReadOnlyList<BitfieldLabel> Labels { get; }
-        public int GetMask(int index);
+        int BitCount { get; }
+        IReadOnlyList<BitfieldLabel> Labels { get; }
+        int GetMask(int index);
     }
 
     [Serializable]
@@ -129,95 +140,199 @@ namespace AggroBird.UnityEngineExtend
     }
 
 
-    public interface IBitfieldLabelMask
+    public interface IBitfieldMask
     {
-        public int BitCount { get; }
-        public int GetValue(int index);
+        int BitCount { get; }
+        int GetMask(int index);
+        void SetMask(int index, int value);
+        public bool this[int index] { get; set; }
     }
 
     [Serializable]
-    public struct BitfieldLabelMask32 : IBitfieldLabelMask
+    public struct BitfieldMask32 : IBitfieldMask
     {
-        [SerializeField] private int value0;
+        [SerializeField] private int mask0;
 
         public int BitCount => 32;
-        public int GetValue(int index)
+        public int GetMask(int index)
         {
             switch (index)
             {
-                case 0: return value0;
+                case 0: return mask0;
             }
             throw new IndexOutOfRangeException();
+        }
+        public void SetMask(int index, int value)
+        {
+            switch (index)
+            {
+                case 0: mask0 = value; return;
+            }
+            throw new IndexOutOfRangeException();
+        }
+        public bool this[int index]
+        {
+            get
+            {
+                BitfieldUtility.GetIdxFlag(index, out int idx, out int flag);
+                return (GetMask(idx) & flag) != 0;
+            }
+            set
+            {
+                BitfieldUtility.GetIdxFlag(index, out int idx, out int flag);
+                SetMask(idx, value ? GetMask(idx) | flag : GetMask(idx) & ~flag);
+            }
         }
     }
 
     [Serializable]
-    public struct BitfieldLabelMask64 : IBitfieldLabelMask
+    public struct BitfieldMask64 : IBitfieldMask
     {
-        [SerializeField] private int value0;
-        [SerializeField] private int value1;
+        [SerializeField] private int mask0;
+        [SerializeField] private int mask1;
 
         public int BitCount => 64;
-        public int GetValue(int index)
+        public int GetMask(int index)
         {
             switch (index)
             {
-                case 0: return value0;
-                case 1: return value1;
+                case 0: return mask0;
+                case 1: return mask1;
             }
             throw new IndexOutOfRangeException();
+        }
+        public void SetMask(int index, int value)
+        {
+            switch (index)
+            {
+                case 0: mask0 = value; return;
+                case 1: mask1 = value; return;
+            }
+            throw new IndexOutOfRangeException();
+        }
+        public bool this[int index]
+        {
+            get
+            {
+                BitfieldUtility.GetIdxFlag(index, out int idx, out int flag);
+                return (GetMask(idx) & flag) != 0;
+            }
+            set
+            {
+                BitfieldUtility.GetIdxFlag(index, out int idx, out int flag);
+                SetMask(idx, value ? GetMask(idx) | flag : GetMask(idx) & ~flag);
+            }
         }
     }
 
     [Serializable]
-    public struct BitfieldLabelMask128 : IBitfieldLabelMask
+    public struct BitfieldMask128 : IBitfieldMask
     {
-        [SerializeField] private int value0;
-        [SerializeField] private int value1;
-        [SerializeField] private int value2;
-        [SerializeField] private int value3;
+        [SerializeField] private int mask0;
+        [SerializeField] private int mask1;
+        [SerializeField] private int mask2;
+        [SerializeField] private int mask3;
 
         public int BitCount => 128;
-        public int GetValue(int index)
+        public int GetMask(int index)
         {
             switch (index)
             {
-                case 0: return value0;
-                case 1: return value1;
-                case 2: return value2;
-                case 3: return value3;
+                case 0: return mask0;
+                case 1: return mask1;
+                case 2: return mask2;
+                case 3: return mask3;
             }
             throw new IndexOutOfRangeException();
+        }
+        public void SetMask(int index, int value)
+        {
+            switch (index)
+            {
+                case 0: mask0 = value; return;
+                case 1: mask1 = value; return;
+                case 2: mask2 = value; return;
+                case 3: mask3 = value; return;
+            }
+            throw new IndexOutOfRangeException();
+        }
+        public bool this[int index]
+        {
+            get
+            {
+                BitfieldUtility.GetIdxFlag(index, out int idx, out int flag);
+                return (GetMask(idx) & flag) != 0;
+            }
+            set
+            {
+                BitfieldUtility.GetIdxFlag(index, out int idx, out int flag);
+                SetMask(idx, value ? GetMask(idx) | flag : GetMask(idx) & ~flag);
+            }
         }
     }
 
     [Serializable]
-    public struct BitfieldLabelMask256 : IBitfieldLabelMask
+    public struct BitfieldMask256 : IBitfieldMask
     {
-        [SerializeField] private int value0;
-        [SerializeField] private int value1;
-        [SerializeField] private int value2;
-        [SerializeField] private int value3;
-        [SerializeField] private int value4;
-        [SerializeField] private int value5;
-        [SerializeField] private int value6;
-        [SerializeField] private int value7;
+        [SerializeField] private int mask0;
+        [SerializeField] private int mask1;
+        [SerializeField] private int mask2;
+        [SerializeField] private int mask3;
+        [SerializeField] private int mask4;
+        [SerializeField] private int mask5;
+        [SerializeField] private int mask6;
+        [SerializeField] private int mask7;
 
         public int BitCount => 256;
-        public int GetValue(int index)
+        public int GetMask(int index)
         {
             switch (index)
             {
-                case 0: return value0;
-                case 1: return value1;
-                case 2: return value2;
-                case 3: return value3;
-                case 4: return value4;
-                case 5: return value5;
-                case 6: return value6;
-                case 7: return value7;
+                case 0: return mask0;
+                case 1: return mask1;
+                case 2: return mask2;
+                case 3: return mask3;
+                case 4: return mask4;
+                case 5: return mask5;
+                case 6: return mask6;
+                case 7: return mask7;
             }
             throw new IndexOutOfRangeException();
         }
+        public void SetMask(int index, int value)
+        {
+            switch (index)
+            {
+                case 0: mask0 = value; return;
+                case 1: mask1 = value; return;
+                case 2: mask2 = value; return;
+                case 3: mask3 = value; return;
+                case 4: mask4 = value; return;
+                case 5: mask5 = value; return;
+                case 6: mask6 = value; return;
+                case 7: mask7 = value; return;
+            }
+            throw new IndexOutOfRangeException();
+        }
+        public bool this[int index]
+        {
+            get
+            {
+                BitfieldUtility.GetIdxFlag(index, out int idx, out int flag);
+                return (GetMask(idx) & flag) != 0;
+            }
+            set
+            {
+                BitfieldUtility.GetIdxFlag(index, out int idx, out int flag);
+                SetMask(idx, value ? GetMask(idx) | flag : GetMask(idx) & ~flag);
+            }
+        }
+    }
+
+
+    [Serializable]
+    public struct BitfieldValue
+    {
+        [SerializeField] private int value;
     }
 }
