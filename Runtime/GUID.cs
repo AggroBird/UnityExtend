@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using UnityEngine;
 
 namespace AggroBird.UnityEngineExtend
@@ -10,13 +11,15 @@ namespace AggroBird.UnityEngineExtend
 
         public GUID(string value)
         {
-            if (value == null || value.Length != 32)
+            if (value == null || value.Length != 32 ||
+                !long.TryParse(value.Substring(0, 16), NumberStyles.HexNumber, null, out long result0) ||
+                !long.TryParse(value.Substring(16, 16), NumberStyles.HexNumber, null, out long result1))
             {
                 throw new ArgumentException("Invalid GUID");
             }
 
-            value0 = Convert.ToInt64(value.Substring(0, 16), 16);
-            value1 = Convert.ToInt64(value.Substring(16, 16), 16);
+            value0 = result0;
+            value1 = result1;
         }
 
         [SerializeField] private long value0;
