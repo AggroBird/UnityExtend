@@ -51,11 +51,14 @@ namespace AggroBird.UnityEngineExtend.Editor
                         {
                             typeListBuilder.Add(fieldType);
                         }
-                        foreach (var subType in fieldType.Assembly.GetTypes())
+                        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
                         {
-                            if (!subType.IsAbstract && subType.IsSubclassOf(fieldType))
+                            foreach (var subType in assembly.GetTypes())
                             {
-                                typeListBuilder.Add(subType);
+                                if (!subType.IsAbstract && subType.IsSubclassOf(fieldType))
+                                {
+                                    typeListBuilder.Add(subType);
+                                }
                             }
                         }
                         typeListBuilder.Sort((a, b) => a.Name.CompareTo(b.Name));
@@ -172,6 +175,11 @@ namespace AggroBird.UnityEngineExtend.Editor
                         EditorGUI.indentLevel--;
                     }
                 }
+            }
+            else
+            {
+                position = EditorGUI.PrefixLabel(position, label);
+                GUI.Label(position, "Failed to find compatible classes");
             }
         }
 
