@@ -53,15 +53,26 @@ namespace AggroBird.UnityEngineExtend.Editor
             return provider is UnityObject unityObject && unityObject;
         }
 
-        public static void GetLabelNameIndex(SerializedProperty value, out string name, out int index)
+        public static void GetBitfieldLabel(this SerializedProperty value, out string name, out int index)
         {
             name = value.FindPropertyRelative("name").stringValue;
             index = value.FindPropertyRelative("index").intValue;
         }
-        public static void SetLabelNameIndex(SerializedProperty value, string name, int index)
+        public static void SetBitfieldLabel(this SerializedProperty value, string name, int index)
         {
             value.FindPropertyRelative("name").stringValue = name;
             value.FindPropertyRelative("index").intValue = index;
+        }
+
+        public static void SetBitfieldLabelArray(this SerializedProperty property, IReadOnlyCollection<BitfieldLabel> values)
+        {
+            property.arraySize = values.Count;
+            int idx = 0;
+            foreach (var value in values)
+            {
+                property.GetArrayElementAtIndex(idx).SetBitfieldLabel(value.Name, value.Index);
+                idx++;
+            }
         }
     }
 
@@ -221,11 +232,18 @@ namespace AggroBird.UnityEngineExtend.Editor
     internal abstract class BitfieldMask : PropertyDrawer
     {
         private static StringBuilder labelBuilder = new();
+        private static GUIStyle buttonStyle = null;
 
         public abstract int BitCount { get; }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            if (buttonStyle == null)
+            {
+                buttonStyle = new GUIStyle(GUI.skin.button);
+                buttonStyle.alignment = TextAnchor.MiddleLeft;
+            }
+
             EditorGUI.BeginProperty(position, label, property);
 
             position = EditorGUI.PrefixLabel(position, label);
@@ -247,7 +265,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                 }
 
                 // Open edit window
-                if (GUI.Button(position, labelBuilder.Length == 0 ? "<none>" : labelBuilder.ToString()))
+                if (GUI.Button(position, labelBuilder.Length == 0 ? "<none>" : labelBuilder.ToString(), buttonStyle))
                 {
                     if (BitfieldMaskSelectWindow.CurrentWindow)
                     {
@@ -299,10 +317,13 @@ namespace AggroBird.UnityEngineExtend.Editor
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            SerializedProperty nameProperty = property.FindPropertyRelative("name");
+            SerializedProperty indexProperty = property.FindPropertyRelative("index");
+            string name = nameProperty.stringValue;
+
+            label = new GUIContent($"Label {indexProperty.intValue}");
             EditorGUI.BeginProperty(position, label, property);
 
-            SerializedProperty nameProperty = property.FindPropertyRelative("name");
-            BitfieldEditorUtility.GetLabelNameIndex(property, out string name, out _);
             GUI.color = (string.IsNullOrEmpty(name) || !BitfieldLabelListPropertyDrawer.UniqueLabels.ContainsKey(name)) ? Color.white : Color.red;
             {
                 position.height -= EditorGUIUtility.standardVerticalSpacing;
@@ -311,7 +332,7 @@ namespace AggroBird.UnityEngineExtend.Editor
 
                 // Validate after modification
                 EditorExtendUtility.FormatTag(nameProperty);
-                BitfieldEditorUtility.GetLabelNameIndex(property, out name, out int index);
+                property.GetBitfieldLabel(out name, out int index);
 
                 if (!string.IsNullOrEmpty(name) && !BitfieldLabelListPropertyDrawer.UniqueLabels.ContainsKey(name))
                 {
@@ -361,14 +382,27 @@ namespace AggroBird.UnityEngineExtend.Editor
         }
 
         public static readonly Dictionary<string, int> UniqueLabels = new();
-        private static readonly List<(string name, int index)> writeValues = new();
+        private static readonly Dictionary<string, int> editorHistory = new();
+        private static readonly Dictionary<int, BitfieldLabel> rebuildEditorHistory = new();
+        private static readonly List<BitfieldLabel> writeValues = new();
 
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            SerializedProperty editorValuesProperty = property.FindPropertyRelative("editorValues");
+            SerializedProperty editorData = property.FindPropertyRelative("editorData");
+            SerializedProperty editorHistoryProperty = editorData.FindPropertyRelative("history");
+            SerializedProperty editorValuesProperty = editorData.FindPropertyRelative("values");
+            SerializedProperty valuesProperty = property.FindPropertyRelative("values");
+
+            // Get editor history
+            editorHistory.Clear();
+            for (int i = 0; i < editorHistoryProperty.arraySize; i++)
+            {
+                editorHistoryProperty.GetArrayElementAtIndex(i).GetBitfieldLabel(out string name, out int index);
+                editorHistory[name] = index;
+            }
 
             // Create mask array
             valueCount = BitCount / BitfieldUtility.Precision;
@@ -381,7 +415,7 @@ namespace AggroBird.UnityEngineExtend.Editor
             int currentCount = editorValuesProperty.arraySize;
             for (int i = 0; i < currentCount; i++)
             {
-                BitfieldEditorUtility.GetLabelNameIndex(editorValuesProperty.GetArrayElementAtIndex(i), out _, out int index);
+                editorValuesProperty.GetArrayElementAtIndex(i).GetBitfieldLabel(out _, out int index);
                 if (IsMaskFlagSet(index))
                 {
                     index = FindNextAvailableIndex();
@@ -402,7 +436,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                 for (int i = currentCount; i < editorValuesProperty.arraySize; i++)
                 {
                     int index = FindNextAvailableIndex();
-                    BitfieldEditorUtility.SetLabelNameIndex(editorValuesProperty.GetArrayElementAtIndex(i), string.Empty, index);
+                    editorValuesProperty.GetArrayElementAtIndex(i).SetBitfieldLabel(string.Empty, index);
                     SetMaskFlag(index, true);
                 }
             }
@@ -414,22 +448,39 @@ namespace AggroBird.UnityEngineExtend.Editor
             writeValues.Clear();
             for (int i = 0; i < currentCount; i++)
             {
-                BitfieldEditorUtility.GetLabelNameIndex(editorValuesProperty.GetArrayElementAtIndex(i), out string name, out int index);
+                SerializedProperty value = editorValuesProperty.GetArrayElementAtIndex(i);
+                value.GetBitfieldLabel(out string name, out int index);
                 if (!string.IsNullOrEmpty(name) && !UniqueLabels.ContainsKey(name))
                 {
-                    SetMaskFlag(index, true);
-                    UniqueLabels.Add(name, index);
-                    writeValues.Add((name, index));
+                    // Check against history
+                    if (editorHistory.TryGetValue(name, out int historyIndex) && index != historyIndex)
+                    {
+                        Debug.LogWarning($"Label {index} name '{name}' collides with previously declared label {historyIndex}");
+                        value.SetBitfieldLabel(string.Empty, index);
+                    }
+                    else
+                    {
+                        SetMaskFlag(index, true);
+                        UniqueLabels.Add(name, index);
+                        writeValues.Add(new BitfieldLabel(name, index));
+                    }
                 }
             }
 
-            // Write values
-            SerializedProperty valuesProperty = property.FindPropertyRelative("values");
-            valuesProperty.arraySize = writeValues.Count;
-            for (int i = 0; i < writeValues.Count; i++)
+            // Rebuild history
+            rebuildEditorHistory.Clear();
+            foreach (var history in editorHistory)
             {
-                BitfieldEditorUtility.SetLabelNameIndex(valuesProperty.GetArrayElementAtIndex(i), writeValues[i].name, writeValues[i].index);
+                rebuildEditorHistory.Add(history.Value, new BitfieldLabel(history.Key, history.Value));
             }
+            foreach (var value in writeValues)
+            {
+                rebuildEditorHistory[value.Index] = value;
+            }
+            editorHistoryProperty.SetBitfieldLabelArray(rebuildEditorHistory.Values);
+
+            // Write values
+            valuesProperty.SetBitfieldLabelArray(writeValues);
 
             // Write mask
             SerializedProperty maskProperty = property.FindPropertyRelative("mask");
@@ -444,7 +495,9 @@ namespace AggroBird.UnityEngineExtend.Editor
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            return EditorGUI.GetPropertyHeight(property.FindPropertyRelative("editorValues"));
+            SerializedProperty editorData = property.FindPropertyRelative("editorData");
+            SerializedProperty editorValuesProperty = editorData.FindPropertyRelative("values");
+            return EditorGUI.GetPropertyHeight(editorValuesProperty);
         }
     }
 
