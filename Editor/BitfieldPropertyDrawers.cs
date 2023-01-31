@@ -341,7 +341,7 @@ namespace AggroBird.UnityEngineExtend.Editor
             SerializedProperty indexProperty = property.FindPropertyRelative("index");
             string name = nameProperty.stringValue;
 
-            label = new GUIContent($"Label {indexProperty.intValue}");
+            label = new GUIContent($"Flag {indexProperty.intValue}");
             EditorGUI.BeginProperty(position, label, property);
 
             GUI.color = (string.IsNullOrEmpty(name) || !BitfieldLabelListPropertyDrawer.UniqueLabels.ContainsKey(name)) ? Color.white : new Color(1, 0.5f, 0.5f, 1);
@@ -475,9 +475,9 @@ namespace AggroBird.UnityEngineExtend.Editor
                     // Check against history
                     if (editorHistory.TryGetValue(name, out int historyIndex) && index != historyIndex)
                     {
-                        Debug.LogError($"Label {index} name '{name}' collides label {historyIndex} which previously held that name.\n" +
-                            $"Reordering labels through name change will cause problems with bitfield masks in other assets which have these labels set.\n" +
-                            $"To safely reorder labels please use the drag handle next to the label field, which preserves the internal flag value.\n");
+                        Debug.LogError($"Flag {index} name '{name}' collides flag {historyIndex} which previously held that name.\n" +
+                            $"Reordering flags through name change will cause problems with bitfield masks in other assets which have these flags set.\n" +
+                            $"To safely reorder flags please use the drag handle next to the flag field, which preserves the internal flag index.\n");
                         value.SetBitfieldLabel(string.Empty, index);
                     }
                     else
