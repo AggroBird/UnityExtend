@@ -108,8 +108,6 @@ namespace AggroBird.UnityEngineExtend.Editor
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            position = EditorGUI.PrefixLabel(position, label);
-
             if (BitfieldEditorUtility.TryGetLabelNameProvider(property, out IBitfieldLabelList labelList))
             {
                 SerializedProperty value = property.FindPropertyRelative("value");
@@ -140,7 +138,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                 {
                     names.Insert(0, "<missing>");
                     currentSelection = 0;
-                    int newSelection = EditorGUI.Popup(position, currentSelection, names.ToArray());
+                    int newSelection = EditorGUI.Popup(position, label.text, currentSelection, names.ToArray());
                     if (newSelection != currentSelection && newSelection != 0)
                     {
                         value.intValue = values[newSelection - 1];
@@ -148,7 +146,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                 }
                 else
                 {
-                    int newSelection = EditorGUI.Popup(position, currentSelection, names.ToArray());
+                    int newSelection = EditorGUI.Popup(position, label.text, currentSelection, names.ToArray());
                     if (newSelection != currentSelection)
                     {
                         value.intValue = values[newSelection];
@@ -252,18 +250,11 @@ namespace AggroBird.UnityEngineExtend.Editor
     internal abstract class BitfieldMask : PropertyDrawer
     {
         private static StringBuilder labelBuilder = new();
-        private static GUIStyle buttonStyle = null;
 
         public abstract int BitCount { get; }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (buttonStyle == null)
-            {
-                buttonStyle = new GUIStyle(GUI.skin.button);
-                buttonStyle.alignment = TextAnchor.MiddleLeft;
-            }
-
             EditorGUI.BeginProperty(position, label, property);
 
             position = EditorGUI.PrefixLabel(position, label);
@@ -285,7 +276,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                 }
 
                 // Open edit window
-                if (GUI.Button(position, labelBuilder.Length == 0 ? "<none>" : labelBuilder.ToString(), buttonStyle))
+                if (GUI.Button(position, labelBuilder.Length == 0 ? "<none>" : labelBuilder.ToString(), EditorStyles.popup))
                 {
                     if (BitfieldMaskSelectWindow.CurrentWindow)
                     {
