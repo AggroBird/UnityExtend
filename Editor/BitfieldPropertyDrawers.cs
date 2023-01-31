@@ -324,7 +324,7 @@ namespace AggroBird.UnityEngineExtend.Editor
             label = new GUIContent($"Label {indexProperty.intValue}");
             EditorGUI.BeginProperty(position, label, property);
 
-            GUI.color = (string.IsNullOrEmpty(name) || !BitfieldLabelListPropertyDrawer.UniqueLabels.ContainsKey(name)) ? Color.white : Color.red;
+            GUI.color = (string.IsNullOrEmpty(name) || !BitfieldLabelListPropertyDrawer.UniqueLabels.ContainsKey(name)) ? Color.white : new Color(1, 0.5f, 0.5f, 1);
             {
                 position.height -= EditorGUIUtility.standardVerticalSpacing;
                 EditorGUI.BeginChangeCheck();
@@ -455,7 +455,9 @@ namespace AggroBird.UnityEngineExtend.Editor
                     // Check against history
                     if (editorHistory.TryGetValue(name, out int historyIndex) && index != historyIndex)
                     {
-                        Debug.LogWarning($"Label {index} name '{name}' collides with previously declared label {historyIndex}");
+                        Debug.LogError($"Label {index} name '{name}' collides label {historyIndex} which previously held that name.\n" +
+                            $"Reordering labels through name change will cause problems with bitfield masks in other assets which have these labels set.\n" +
+                            $"To safely reorder labels please use the drag handle next to the label field, which preserves the internal flag value.\n");
                         value.SetBitfieldLabel(string.Empty, index);
                     }
                     else
