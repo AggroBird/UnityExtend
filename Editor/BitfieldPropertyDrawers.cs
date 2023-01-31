@@ -475,8 +475,8 @@ namespace AggroBird.UnityEngineExtend.Editor
                     // Check against history
                     if (editorHistory.TryGetValue(name, out int historyIndex) && index != historyIndex)
                     {
-                        Debug.LogError($"Flag {index} name '{name}' collides flag {historyIndex} which previously held that name.\n" +
-                            $"Reordering flags through name change will cause problems with bitfield masks in other assets which have these flags set.\n" +
+                        Debug.LogError($"Flag {index} name '{name}' collides with flag {historyIndex} which previously held that name.\n" +
+                            $"Reordering flags through name change will cause problems with bitfield masks in other assets that have these flags set.\n" +
                             $"To safely reorder flags please use the drag handle next to the flag field, which preserves the internal flag index.\n");
                         value.SetBitfieldLabel(string.Empty, index);
                     }
