@@ -96,6 +96,15 @@ namespace AggroBird.UnityEngineExtend.Editor
         }
 
 
+        private static bool HasChildren(SerializedProperty property)
+        {
+            foreach (var _ in new SerializedPropertyEnumerator(property.Copy()))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (property.propertyType != SerializedPropertyType.ManagedReference)
@@ -112,12 +121,16 @@ namespace AggroBird.UnityEngineExtend.Editor
                 }
 
                 position.height = EditorGUIUtility.singleLineHeight;
-                if (EditorGUI.PropertyField(position, property, label, false))
+                bool hasChildren = HasChildren(property);
+                if (!hasChildren || EditorGUI.PropertyField(position, property, label, false))
                 {
                     if (obj != null)
                     {
-                        EditorGUI.indentLevel++;
-                        position.y += EditorExtendUtility.SinglePropertyHeight;
+                        if (hasChildren)
+                        {
+                            EditorGUI.indentLevel++;
+                            position.y += EditorExtendUtility.SinglePropertyHeight;
+                        }
 
                         // Get current type
                         int currentType = -1;
@@ -130,7 +143,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                             }
                         }
 
-                        int selectedType = EditorGUI.Popup(position, "Type", currentType, cacheData.dropdownOptions);
+                        int selectedType = EditorGUI.Popup(position, hasChildren ? "Type" : label.text, currentType, cacheData.dropdownOptions);
                         if (selectedType != currentType)
                         {
                             // Fetch current top-level fields
@@ -163,14 +176,17 @@ namespace AggroBird.UnityEngineExtend.Editor
                         position.y += EditorExtendUtility.SinglePropertyHeight;
 
                         // Draw object
-                        Rect subPos = position;
-                        foreach (var iter in new SerializedPropertyEnumerator(property))
+                        if (hasChildren)
                         {
-                            subPos.height = EditorGUI.GetPropertyHeight(iter);
-                            EditorGUI.PropertyField(subPos, iter, label, true);
-                            subPos.y += EditorExtendUtility.SinglePropertyHeight;
+                            Rect subPos = position;
+                            foreach (var iter in new SerializedPropertyEnumerator(property))
+                            {
+                                subPos.height = EditorGUI.GetPropertyHeight(iter);
+                                EditorGUI.PropertyField(subPos, iter, label, true);
+                                subPos.y += EditorExtendUtility.SinglePropertyHeight;
+                            }
+                            EditorGUI.indentLevel--;
                         }
-                        EditorGUI.indentLevel--;
                     }
                 }
             }
@@ -185,7 +201,7 @@ namespace AggroBird.UnityEngineExtend.Editor
             if (property.propertyType == SerializedPropertyType.ManagedReference)
             {
                 float height = EditorGUI.GetPropertyHeight(property);
-                if (property.isExpanded)
+                if (property.isExpanded && HasChildren(property))
                 {
                     // Make space for the type field
                     height += EditorExtendUtility.SinglePropertyHeight;
