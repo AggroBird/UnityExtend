@@ -96,17 +96,10 @@ namespace AggroBird.UnityEngineExtend.Editor
         }
 
 
-        private static bool HasChildren(SerializedProperty property)
-        {
-            foreach (var _ in new SerializedPropertyEnumerator(property.Copy()))
-            {
-                return true;
-            }
-            return false;
-        }
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            position.height = EditorGUIUtility.singleLineHeight;
+
             if (property.propertyType != SerializedPropertyType.ManagedReference)
             {
                 GUI.Label(position, "Field type must be a managed reference");
@@ -115,80 +108,81 @@ namespace AggroBird.UnityEngineExtend.Editor
             {
                 // Ensure there is at least one object
                 object obj = property.managedReferenceValue;
-                if (obj == null && cacheData.types.Length > 0)
+                if (obj == null)
                 {
                     property.managedReferenceValue = obj = Activator.CreateInstance(cacheData.types[0]);
                 }
 
-                position.height = EditorGUIUtility.singleLineHeight;
-                bool hasChildren = HasChildren(property);
-                if (!hasChildren || EditorGUI.PropertyField(position, property, label, false))
+                EditorGUI.BeginProperty(position, label, property);
+
+                float labelWidth = EditorGUIUtility.labelWidth + 2f;
+                Rect propertyFieldPos = position;
+                propertyFieldPos.width = labelWidth;
+                bool expand = EditorGUI.PropertyField(propertyFieldPos, property, label, false);
+
+                Type objType = obj.GetType();
+
+                // Get current type
+                int currentType = -1;
+                for (int i = 0; i < cacheData.types.Length; i++)
                 {
-                    if (obj != null)
+                    if (objType.Equals(cacheData.types[i]))
                     {
-                        if (hasChildren)
+                        currentType = i;
+                        break;
+                    }
+                }
+
+                Rect typeFieldPos = position;
+
+                typeFieldPos.x += labelWidth;
+                typeFieldPos.width -= labelWidth;
+                int selectedType = EditorGUI.Popup(typeFieldPos, currentType, cacheData.dropdownOptions);
+                if (selectedType != currentType)
+                {
+                    // Fetch current top-level fields
+                    List<(string name, Type type, object value)> fields = new();
+                    foreach (var iter in new SerializedPropertyEnumerator(property.Copy()))
+                    {
+                        if (TryGetSerializedField(objType, iter.name, out FieldInfo fieldInfo))
                         {
-                            EditorGUI.indentLevel++;
-                            position.y += EditorExtendUtility.SinglePropertyHeight;
+                            fields.Add((iter.name, fieldInfo.FieldType, fieldInfo.GetValue(obj)));
                         }
+                    }
 
-                        // Get current type
-                        int currentType = -1;
-                        for (int i = 0; i < cacheData.types.Length; i++)
+                    // Create new object
+                    obj = Activator.CreateInstance(cacheData.types[selectedType]);
+
+                    // Migrate shared fields
+                    objType = obj.GetType();
+                    foreach (var field in fields)
+                    {
+                        if (TryGetSerializedField(objType, field.name, out FieldInfo fieldInfo) && fieldInfo.FieldType.IsAssignableFrom(field.type))
                         {
-                            if (property.managedReferenceValue.GetType().Equals(cacheData.types[i]))
-                            {
-                                currentType = i;
-                                break;
-                            }
+                            fieldInfo.SetValue(obj, field.value);
                         }
+                    }
 
-                        int selectedType = EditorGUI.Popup(position, hasChildren ? "Type" : label.text, currentType, cacheData.dropdownOptions);
-                        if (selectedType != currentType)
+                    // Assign new object
+                    property.managedReferenceValue = obj;
+                }
+
+                if (expand)
+                {
+                    position.y += EditorExtendUtility.SinglePropertyHeight;
+
+                    using (new EditorGUI.IndentLevelScope(1))
+                    {
+                        foreach (var iter in new SerializedPropertyEnumerator(property))
                         {
-                            // Fetch current top-level fields
-                            Type type = obj.GetType();
-                            List<(string name, Type type, object value)> fields = new();
-                            foreach (var iter in new SerializedPropertyEnumerator(property.Copy()))
-                            {
-                                if (TryGetSerializedField(type, iter.name, out FieldInfo fieldInfo))
-                                {
-                                    fields.Add((iter.name, fieldInfo.FieldType, fieldInfo.GetValue(obj)));
-                                }
-                            }
-
-                            // Create new object
-                            obj = Activator.CreateInstance(cacheData.types[selectedType]);
-
-                            // Migrate shared fields
-                            type = obj.GetType();
-                            foreach (var field in fields)
-                            {
-                                if (TryGetSerializedField(type, field.name, out FieldInfo fieldInfo) && fieldInfo.FieldType.IsAssignableFrom(field.type))
-                                {
-                                    fieldInfo.SetValue(obj, field.value);
-                                }
-                            }
-
-                            // Assign new object
-                            property.managedReferenceValue = obj;
-                        }
-                        position.y += EditorExtendUtility.SinglePropertyHeight;
-
-                        // Draw object
-                        if (hasChildren)
-                        {
-                            Rect subPos = position;
-                            foreach (var iter in new SerializedPropertyEnumerator(property))
-                            {
-                                subPos.height = EditorGUI.GetPropertyHeight(iter);
-                                EditorGUI.PropertyField(subPos, iter, label, true);
-                                subPos.y += EditorExtendUtility.SinglePropertyHeight;
-                            }
-                            EditorGUI.indentLevel--;
+                            position.height = EditorGUI.GetPropertyHeight(iter);
+                            EditorGUI.PropertyField(position, iter, new GUIContent(iter.displayName), true);
+                            position.y += position.height + EditorGUIUtility.standardVerticalSpacing;
                         }
                     }
                 }
+
+                EditorGUI.EndProperty();
             }
             else
             {
@@ -200,13 +194,7 @@ namespace AggroBird.UnityEngineExtend.Editor
         {
             if (property.propertyType == SerializedPropertyType.ManagedReference)
             {
-                float height = EditorGUI.GetPropertyHeight(property);
-                if (property.isExpanded && HasChildren(property))
-                {
-                    // Make space for the type field
-                    height += EditorExtendUtility.SinglePropertyHeight;
-                }
-                return height;
+                return EditorGUI.GetPropertyHeight(property);
             }
             else
             {
