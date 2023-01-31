@@ -41,9 +41,8 @@ namespace AggroBird.UnityEngineExtend.Editor
 
             public bool TryGetCacheData(SerializedProperty property, out PolymorphicTypeCacheData result)
             {
-                if (property.TryGetFieldInfo(out FieldInfo fieldInfo))
+                if (property.TryGetFieldType(out Type fieldType))
                 {
-                    Type fieldType = fieldInfo.FieldType;
                     if (!cacheDataLookup.TryGetValue(fieldType, out result))
                     {
                         typeListBuilder.Clear();
@@ -101,7 +100,6 @@ namespace AggroBird.UnityEngineExtend.Editor
         {
             if (property.propertyType != SerializedPropertyType.ManagedReference)
             {
-                position = EditorGUI.PrefixLabel(position, label);
                 GUI.Label(position, "Field type must be a managed reference");
             }
             else if (typeCache.TryGetCacheData(property, out PolymorphicTypeCacheData cacheData))
@@ -178,7 +176,6 @@ namespace AggroBird.UnityEngineExtend.Editor
             }
             else
             {
-                position = EditorGUI.PrefixLabel(position, label);
                 GUI.Label(position, "Failed to find compatible classes");
             }
         }

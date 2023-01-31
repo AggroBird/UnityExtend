@@ -1,8 +1,9 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using UnityEditor;
-using UnityObject = UnityEngine.Object;
 
 namespace AggroBird.UnityEngineExtend.Editor
 {
@@ -11,22 +12,107 @@ namespace AggroBird.UnityEngineExtend.Editor
         public static float SinglePropertyHeight => EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
 
-        public static bool TryGetFieldInfo(this SerializedProperty property, out FieldInfo fieldInfo)
+        private const string ArrayDataStr = "Array.data[";
+        private const BindingFlags FieldBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        private static Type GetElementType(Type fieldType)
         {
-            fieldInfo = null;
-            UnityObject obj = property.serializedObject.targetObject;
-            if (obj)
+            if (fieldType.IsArray)
             {
-                Type parentType = obj.GetType();
-                foreach (string fieldName in property.propertyPath.Split('.'))
-                {
-                    fieldInfo = parentType.GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                    if (fieldInfo == null) break;
-                    parentType = fieldInfo.FieldType;
-                }
-                return fieldInfo != null;
+                return fieldType.GetElementType();
             }
-            return false;
+            else if (fieldType.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                return fieldType.GetGenericArguments()[0];
+            }
+            else
+            {
+                throw new InvalidCastException($"Failed to extract element type from collection type '{fieldType}'");
+            }
+        }
+
+
+        private static void TryGetField(SerializedProperty property, out Type fieldType, out FieldInfo fieldInfo, bool useInheritedTypes)
+        {
+            object obj = property.serializedObject.targetObject;
+            fieldType = obj.GetType();
+            fieldInfo = null;
+            string path = property.propertyPath;
+            bool endReached = false;
+            while (!endReached)
+            {
+                if (path.StartsWith(ArrayDataStr))
+                {
+                    if (!typeof(IList).IsAssignableFrom(fieldType)) goto OnFailure;
+                    int findNext = path.IndexOf(']', ArrayDataStr.Length);
+                    if (findNext == -1) goto OnFailure;
+
+                    string indexStr = path.Substring(ArrayDataStr.Length, findNext - ArrayDataStr.Length);
+
+                    findNext = path.IndexOf('.', findNext + 1);
+                    if (findNext == -1)
+                        endReached = true;
+                    else
+                        path = path.Substring(findNext + 1);
+
+                    if (obj == null || !useInheritedTypes || endReached)
+                    {
+                        fieldType = GetElementType(fieldType);
+                    }
+                    else
+                    {
+                        obj = (obj as IList)[int.Parse(indexStr)];
+                        fieldType = obj == null ? GetElementType(fieldType) : obj.GetType();
+                    }
+                }
+                else
+                {
+                    int findNext = path.IndexOf('.');
+
+                    string fieldName;
+                    if (findNext == -1)
+                    {
+                        fieldName = path;
+                        endReached = true;
+                    }
+                    else
+                    {
+                        fieldName = path.Substring(0, findNext);
+                        path = path.Substring(findNext + 1);
+                    }
+
+                    if (obj == null || !useInheritedTypes || endReached)
+                    {
+                        fieldInfo = fieldType.GetField(fieldName, FieldBindingFlags);
+                        if (fieldInfo == null) goto OnFailure;
+                        fieldType = fieldInfo.FieldType;
+                    }
+                    else
+                    {
+                        fieldInfo = obj.GetType().GetField(fieldName, FieldBindingFlags);
+                        if (fieldInfo == null) goto OnFailure;
+                        obj = fieldInfo.GetValue(obj);
+                        fieldType = obj == null ? fieldInfo.FieldType : obj.GetType();
+                    }
+                }
+            }
+            return;
+
+        OnFailure:
+            fieldType = null;
+            fieldInfo = null;
+            return;
+        }
+
+        public static bool TryGetFieldType(this SerializedProperty property, out Type fieldType, bool useInheritedTypes = true)
+        {
+            TryGetField(property, out fieldType, out _, useInheritedTypes);
+            return fieldType != null;
+        }
+
+        public static bool TryGetFieldInfo(this SerializedProperty property, out FieldInfo fieldInfo, bool useInheritedTypes = true)
+        {
+            TryGetField(property, out _, out fieldInfo, useInheritedTypes);
+            return fieldInfo != null;
         }
 
         private static readonly StringBuilder tagBuilder = new StringBuilder();
