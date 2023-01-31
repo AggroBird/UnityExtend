@@ -41,7 +41,7 @@ namespace AggroBird.UnityEngineExtend
 
     // Individual bitfield flag
     [Serializable]
-    public struct BitfieldFlag
+    public struct BitfieldFlag : IEquatable<BitfieldFlag>
     {
         public BitfieldFlag(int flag)
         {
@@ -53,6 +53,28 @@ namespace AggroBird.UnityEngineExtend
 
         public static implicit operator BitfieldFlag(int flag) => new BitfieldFlag(flag);
         public static implicit operator int(BitfieldFlag flag) => flag.value;
+
+        public override int GetHashCode()
+        {
+            return value.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            return obj is BitfieldFlag other && Equals(other);
+        }
+
+        public bool Equals(BitfieldFlag other)
+        {
+            return value == other.value;
+        }
+
+        public static bool operator ==(BitfieldFlag lhs, BitfieldFlag rhs) => lhs.Equals(rhs);
+        public static bool operator !=(BitfieldFlag lhs, BitfieldFlag rhs) => !lhs.Equals(rhs);
+
+        public override string ToString()
+        {
+            return value.ToString();
+        }
     }
 
 
@@ -125,7 +147,7 @@ namespace AggroBird.UnityEngineExtend
         {
             BitfieldMask32 result = rhs;
             result.mask0 = ~result.mask0;
-            return rhs;
+            return result;
         }
 
         public bool Equals(BitfieldMask32 other)
@@ -145,6 +167,11 @@ namespace AggroBird.UnityEngineExtend
 
         public static bool operator ==(BitfieldMask32 lhs, BitfieldMask32 rhs) => lhs.Equals(rhs);
         public static bool operator !=(BitfieldMask32 lhs, BitfieldMask32 rhs) => !lhs.Equals(rhs);
+
+        public override string ToString()
+        {
+            return $"{mask0:X8}";
+        }
     }
 
     [Serializable]
@@ -213,7 +240,7 @@ namespace AggroBird.UnityEngineExtend
             BitfieldMask64 result = rhs;
             result.mask0 = ~result.mask0;
             result.mask1 = ~result.mask1;
-            return rhs;
+            return result;
         }
 
         public bool Equals(BitfieldMask64 other)
@@ -235,6 +262,11 @@ namespace AggroBird.UnityEngineExtend
 
         public static bool operator ==(BitfieldMask64 lhs, BitfieldMask64 rhs) => lhs.Equals(rhs);
         public static bool operator !=(BitfieldMask64 lhs, BitfieldMask64 rhs) => !lhs.Equals(rhs);
+
+        public override string ToString()
+        {
+            return $"{mask1:X8}{mask0:X8}";
+        }
     }
 
     [Serializable]
@@ -317,7 +349,7 @@ namespace AggroBird.UnityEngineExtend
             result.mask1 = ~result.mask1;
             result.mask2 = ~result.mask2;
             result.mask3 = ~result.mask3;
-            return rhs;
+            return result;
         }
 
         public bool Equals(BitfieldMask128 other)
@@ -343,6 +375,11 @@ namespace AggroBird.UnityEngineExtend
 
         public static bool operator ==(BitfieldMask128 lhs, BitfieldMask128 rhs) => lhs.Equals(rhs);
         public static bool operator !=(BitfieldMask128 lhs, BitfieldMask128 rhs) => !lhs.Equals(rhs);
+
+        public override string ToString()
+        {
+            return $"{mask3:X8}{mask2:X8}{mask1:X8}{mask0:X8}";
+        }
     }
 
     [Serializable]
@@ -453,7 +490,7 @@ namespace AggroBird.UnityEngineExtend
             result.mask5 = ~result.mask5;
             result.mask6 = ~result.mask6;
             result.mask7 = ~result.mask7;
-            return rhs;
+            return result;
         }
 
         public bool Equals(BitfieldMask256 other)
@@ -487,6 +524,11 @@ namespace AggroBird.UnityEngineExtend
 
         public static bool operator ==(BitfieldMask256 lhs, BitfieldMask256 rhs) => lhs.Equals(rhs);
         public static bool operator !=(BitfieldMask256 lhs, BitfieldMask256 rhs) => !lhs.Equals(rhs);
+
+        public override string ToString()
+        {
+            return $"{mask7:X8}{mask6:X8}{mask5:X8}{mask4:X8}{mask3:X8}{mask2:X8}{mask1:X8}{mask0:X8}";
+        }
     }
 
 
@@ -504,6 +546,11 @@ namespace AggroBird.UnityEngineExtend
 
         public int Index => index;
         public string Name => name;
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     // Bitfield label list
