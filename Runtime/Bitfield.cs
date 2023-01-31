@@ -144,7 +144,7 @@ namespace AggroBird.UnityEngineExtend
         }
 
         public static bool operator ==(BitfieldMask32 lhs, BitfieldMask32 rhs) => lhs.Equals(rhs);
-        public static bool operator !=(BitfieldMask32 lhs, BitfieldMask32 rhs) => lhs.Equals(rhs);
+        public static bool operator !=(BitfieldMask32 lhs, BitfieldMask32 rhs) => !lhs.Equals(rhs);
     }
 
     [Serializable]
@@ -234,7 +234,7 @@ namespace AggroBird.UnityEngineExtend
         }
 
         public static bool operator ==(BitfieldMask64 lhs, BitfieldMask64 rhs) => lhs.Equals(rhs);
-        public static bool operator !=(BitfieldMask64 lhs, BitfieldMask64 rhs) => lhs.Equals(rhs);
+        public static bool operator !=(BitfieldMask64 lhs, BitfieldMask64 rhs) => !lhs.Equals(rhs);
     }
 
     [Serializable]
@@ -342,7 +342,7 @@ namespace AggroBird.UnityEngineExtend
         }
 
         public static bool operator ==(BitfieldMask128 lhs, BitfieldMask128 rhs) => lhs.Equals(rhs);
-        public static bool operator !=(BitfieldMask128 lhs, BitfieldMask128 rhs) => lhs.Equals(rhs);
+        public static bool operator !=(BitfieldMask128 lhs, BitfieldMask128 rhs) => !lhs.Equals(rhs);
     }
 
     [Serializable]
@@ -486,7 +486,7 @@ namespace AggroBird.UnityEngineExtend
         }
 
         public static bool operator ==(BitfieldMask256 lhs, BitfieldMask256 rhs) => lhs.Equals(rhs);
-        public static bool operator !=(BitfieldMask256 lhs, BitfieldMask256 rhs) => lhs.Equals(rhs);
+        public static bool operator !=(BitfieldMask256 lhs, BitfieldMask256 rhs) => !lhs.Equals(rhs);
     }
 
 
