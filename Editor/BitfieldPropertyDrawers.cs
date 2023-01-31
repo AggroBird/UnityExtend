@@ -14,38 +14,58 @@ namespace AggroBird.UnityEngineExtend.Editor
 
         public static bool TryGetLabelNameProvider(SerializedProperty property, out IBitfieldLabelList labelList)
         {
+            IBitfieldLabelNameProvider provider = null;
+
             if (EditorExtendUtility.TryGetFieldInfo(property, out FieldInfo fieldInfo))
             {
                 BitfieldLabelNameProviderAttribute providerAttribute = fieldInfo.GetCustomAttribute<BitfieldLabelNameProviderAttribute>();
-                if (providerAttribute != null && providerAttribute.ProviderType != null)
+                if (providerAttribute != null)
                 {
-                    if (!providerCache.TryGetValue(providerAttribute.ProviderType, out IBitfieldLabelNameProvider provider) || !IsValid(provider))
+                    // Load from asset
+                    if (providerAttribute.ProviderType != null)
                     {
-                        provider = null;
-                        UnityObject[] resources = Resources.LoadAll(string.Empty, providerAttribute.ProviderType);
-                        if (resources != null && resources.Length > 0)
+                        if (!providerCache.TryGetValue(providerAttribute.ProviderType, out provider) || !IsValid(provider))
                         {
-                            for (int i = 0; i < resources.Length; i++)
+                            provider = null;
+
+                            string[] guids = AssetDatabase.FindAssets($"t:{providerAttribute.ProviderType.Name}");
+                            if (guids != null && guids.Length > 0)
                             {
-                                if (resources[i] is IBitfieldLabelNameProvider resource)
+                                for (int i = 0; i < guids.Length; i++)
                                 {
-                                    provider = resource;
-                                    providerCache.Add(providerAttribute.ProviderType, provider);
-                                    break;
+                                    UnityObject obj = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[i]), providerAttribute.ProviderType);
+                                    if (obj && obj is IBitfieldLabelNameProvider validProvider)
+                                    {
+                                        provider = validProvider;
+                                        providerCache.Add(providerAttribute.ProviderType, provider);
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
-                    if (provider != null)
+                }
+                else
+                {
+                    // Load from scriptable object
+                    UnityObject obj = property.serializedObject.targetObject;
+                    if (obj && obj is IBitfieldLabelNameProvider validProvider)
                     {
-                        labelList = provider.GetBitfieldLabelList();
-                        return labelList != null;
+                        provider = validProvider;
                     }
                 }
             }
 
-            labelList = null;
-            return false;
+            if (provider != null)
+            {
+                labelList = provider.GetBitfieldLabelList();
+                return labelList != null;
+            }
+            else
+            {
+                labelList = null;
+                return false;
+            }
         }
 
         private static bool IsValid(IBitfieldLabelNameProvider provider)

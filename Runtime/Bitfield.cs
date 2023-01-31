@@ -17,8 +17,8 @@ namespace AggroBird.UnityEngineExtend
     }
 
 
-    // Implement this interface to allow editor to load label names from resource.
-    // Resource must be loadable by Resources.LoadAll.
+    // Implement this interface to allow editor to load label names from asset.
+    // Asset must be loadable by AssetDatabase.
     public interface IBitfieldLabelNameProvider
     {
         IBitfieldLabelList GetBitfieldLabelList();
