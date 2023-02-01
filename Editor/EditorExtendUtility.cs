@@ -9,6 +9,9 @@ namespace AggroBird.UnityEngineExtend.Editor
 {
     public static class EditorExtendUtility
     {
+        public static float IndentWidth => 15f;
+        public static float SingleLineHeight = EditorGUIUtility.singleLineHeight;
+        public static float StandardVerticalSpacing = EditorGUIUtility.standardVerticalSpacing;
         public static float SinglePropertyHeight => EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
         public const string MixedValueContent = "—";
 
