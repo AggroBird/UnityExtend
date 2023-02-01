@@ -546,7 +546,8 @@ namespace AggroBird.UnityEngineExtend.Editor
             }
             else
             {
-                EditorGUI.LabelField(position, "Multiple instance editing is not supported for bitfield flag lists");
+                position = EditorGUI.PrefixLabel(position, label);
+                EditorGUI.LabelField(position, "Multi-object editing not supported.");
             }
 
             EditorGUI.EndProperty();
