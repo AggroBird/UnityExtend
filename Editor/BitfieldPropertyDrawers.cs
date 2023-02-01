@@ -441,105 +441,112 @@ namespace AggroBird.UnityEngineExtend.Editor
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            SerializedProperty editorData = property.FindPropertyRelative("editorData");
-            SerializedProperty editorHistoryProperty = editorData.FindPropertyRelative("history");
-            SerializedProperty editorValuesProperty = editorData.FindPropertyRelative("values");
-            SerializedProperty valuesProperty = property.FindPropertyRelative("values");
-
-            // Get editor history
-            editorHistory.Clear();
-            for (int i = 0; i < editorHistoryProperty.arraySize; i++)
+            if (!property.serializedObject.isEditingMultipleObjects)
             {
-                editorHistoryProperty.GetArrayElementAtIndex(i).GetBitfieldLabel(out string name, out int index);
-                editorHistory[name] = index;
-            }
+                SerializedProperty editorData = property.FindPropertyRelative("editorData");
+                SerializedProperty editorHistoryProperty = editorData.FindPropertyRelative("history");
+                SerializedProperty editorValuesProperty = editorData.FindPropertyRelative("values");
+                SerializedProperty valuesProperty = property.FindPropertyRelative("values");
 
-            // Create mask array
-            valueCount = BitCount / BitfieldUtility.Precision;
-            if (maskValue == null || maskValue.Length < valueCount)
-                maskValue = new int[valueCount];
-            else
-                Array.Clear(maskValue, 0, valueCount);
-
-            // Check if current indices are still unique
-            int currentCount = editorValuesProperty.arraySize;
-            for (int i = 0; i < currentCount; i++)
-            {
-                editorValuesProperty.GetArrayElementAtIndex(i).GetBitfieldLabel(out _, out int index);
-                if (IsMaskFlagSet(index))
+                // Get editor history
+                editorHistory.Clear();
+                for (int i = 0; i < editorHistoryProperty.arraySize; i++)
                 {
-                    index = FindNextAvailableIndex();
+                    editorHistoryProperty.GetArrayElementAtIndex(i).GetBitfieldLabel(out string name, out int index);
+                    editorHistory[name] = index;
                 }
-                SetMaskFlag(index, true);
-            }
 
-            // Display property field
-            UniqueLabels.Clear();
-            EditorGUI.PropertyField(position, editorValuesProperty, label);
-            if (editorValuesProperty.arraySize > BitCount)
-            {
-                editorValuesProperty.arraySize = BitCount;
-            }
-            if (editorValuesProperty.arraySize > currentCount)
-            {
-                // Initialize new fields to empty
-                for (int i = currentCount; i < editorValuesProperty.arraySize; i++)
+                // Create mask array
+                valueCount = BitCount / BitfieldUtility.Precision;
+                if (maskValue == null || maskValue.Length < valueCount)
+                    maskValue = new int[valueCount];
+                else
+                    Array.Clear(maskValue, 0, valueCount);
+
+                // Check if current indices are still unique
+                int currentCount = editorValuesProperty.arraySize;
+                for (int i = 0; i < currentCount; i++)
                 {
-                    int index = FindNextAvailableIndex();
-                    editorValuesProperty.GetArrayElementAtIndex(i).SetBitfieldLabel(string.Empty, index);
+                    editorValuesProperty.GetArrayElementAtIndex(i).GetBitfieldLabel(out _, out int index);
+                    if (IsMaskFlagSet(index))
+                    {
+                        index = FindNextAvailableIndex();
+                    }
                     SetMaskFlag(index, true);
                 }
-            }
-            currentCount = editorValuesProperty.arraySize;
 
-            // Rebuild mask
-            UniqueLabels.Clear();
-            Array.Clear(maskValue, 0, valueCount);
-            writeValues.Clear();
-            for (int i = 0; i < currentCount; i++)
-            {
-                SerializedProperty value = editorValuesProperty.GetArrayElementAtIndex(i);
-                value.GetBitfieldLabel(out string name, out int index);
-                if (!string.IsNullOrEmpty(name) && !UniqueLabels.ContainsKey(name))
+                // Display property field
+                UniqueLabels.Clear();
+                EditorGUI.PropertyField(position, editorValuesProperty, label);
+                if (editorValuesProperty.arraySize > BitCount)
                 {
-                    // Check against history
-                    if (editorHistory.TryGetValue(name, out int historyIndex) && index != historyIndex)
+                    editorValuesProperty.arraySize = BitCount;
+                }
+                if (editorValuesProperty.arraySize > currentCount)
+                {
+                    // Initialize new fields to empty
+                    for (int i = currentCount; i < editorValuesProperty.arraySize; i++)
                     {
-                        Debug.LogError($"Flag {index} name '{name}' collides with flag {historyIndex} which previously held that name.\n" +
-                            $"Reordering flags through name change will cause problems with bitfield masks in other assets that have these flags set.\n" +
-                            $"To safely reorder flags please use the drag handle next to the flag field, which preserves the internal flag index.\n");
-                        value.SetBitfieldLabel(string.Empty, index);
-                    }
-                    else
-                    {
+                        int index = FindNextAvailableIndex();
+                        editorValuesProperty.GetArrayElementAtIndex(i).SetBitfieldLabel(string.Empty, index);
                         SetMaskFlag(index, true);
-                        UniqueLabels.Add(name, index);
-                        writeValues.Add(new BitfieldLabel(name, index));
                     }
                 }
-            }
+                currentCount = editorValuesProperty.arraySize;
 
-            // Rebuild history
-            rebuildEditorHistory.Clear();
-            foreach (var history in editorHistory)
-            {
-                rebuildEditorHistory.Add(history.Value, new BitfieldLabel(history.Key, history.Value));
-            }
-            foreach (var value in writeValues)
-            {
-                rebuildEditorHistory[value.Index] = value;
-            }
-            editorHistoryProperty.SetBitfieldLabelArray(rebuildEditorHistory.Values);
+                // Rebuild mask
+                UniqueLabels.Clear();
+                Array.Clear(maskValue, 0, valueCount);
+                writeValues.Clear();
+                for (int i = 0; i < currentCount; i++)
+                {
+                    SerializedProperty value = editorValuesProperty.GetArrayElementAtIndex(i);
+                    value.GetBitfieldLabel(out string name, out int index);
+                    if (!string.IsNullOrEmpty(name) && !UniqueLabels.ContainsKey(name))
+                    {
+                        // Check against history
+                        if (editorHistory.TryGetValue(name, out int historyIndex) && index != historyIndex)
+                        {
+                            Debug.LogError($"Flag {index} name '{name}' collides with flag {historyIndex} which previously held that name.\n" +
+                                $"Reordering flags through name change will cause problems with bitfield masks in other assets that have these flags set.\n" +
+                                $"To safely reorder flags please use the drag handle next to the flag field, which preserves the internal flag index.\n");
+                            value.SetBitfieldLabel(string.Empty, index);
+                        }
+                        else
+                        {
+                            SetMaskFlag(index, true);
+                            UniqueLabels.Add(name, index);
+                            writeValues.Add(new BitfieldLabel(name, index));
+                        }
+                    }
+                }
 
-            // Write values
-            valuesProperty.SetBitfieldLabelArray(writeValues);
+                // Rebuild history
+                rebuildEditorHistory.Clear();
+                foreach (var history in editorHistory)
+                {
+                    rebuildEditorHistory.Add(history.Value, new BitfieldLabel(history.Key, history.Value));
+                }
+                foreach (var value in writeValues)
+                {
+                    rebuildEditorHistory[value.Index] = value;
+                }
+                editorHistoryProperty.SetBitfieldLabelArray(rebuildEditorHistory.Values);
 
-            // Write mask
-            SerializedProperty maskProperty = property.FindPropertyRelative("mask");
-            for (int i = 0; i < valueCount; i++)
+                // Write values
+                valuesProperty.SetBitfieldLabelArray(writeValues);
+
+                // Write mask
+                SerializedProperty maskProperty = property.FindPropertyRelative("mask");
+                for (int i = 0; i < valueCount; i++)
+                {
+                    SerializedProperty maskValueProperty = maskProperty.FindPropertyRelative($"mask{i}");
+                    maskValueProperty.intValue = maskValue[i];
+                }
+            }
+            else
             {
-                SerializedProperty maskValueProperty = maskProperty.FindPropertyRelative($"mask{i}");
-                maskValueProperty.intValue = maskValue[i];
+                EditorGUI.LabelField(position, "Multiple instance editing is not supported for bitfield flag lists");
             }
 
             EditorGUI.EndProperty();
@@ -547,6 +554,11 @@ namespace AggroBird.UnityEngineExtend.Editor
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
+            if (property.serializedObject.isEditingMultipleObjects)
+            {
+                return EditorExtendUtility.SinglePropertyHeight;
+            }
+
             SerializedProperty editorData = property.FindPropertyRelative("editorData");
             SerializedProperty editorValuesProperty = editorData.FindPropertyRelative("values");
             return EditorGUI.GetPropertyHeight(editorValuesProperty);
