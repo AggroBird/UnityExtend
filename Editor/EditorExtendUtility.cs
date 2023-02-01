@@ -12,6 +12,23 @@ namespace AggroBird.UnityEngineExtend.Editor
         public static float SinglePropertyHeight => EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
 
+        public class MixedValueScope : IDisposable
+        {
+            public MixedValueScope(bool showMixedValue)
+            {
+                currentValue = EditorGUI.showMixedValue;
+                EditorGUI.showMixedValue = showMixedValue;
+            }
+
+            private bool currentValue;
+
+            public void Dispose()
+            {
+                EditorGUI.showMixedValue = currentValue;
+            }
+        }
+
+
         private const string ArrayDataStr = "Array.data[";
         private const BindingFlags FieldBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private static Type GetElementType(Type fieldType)
