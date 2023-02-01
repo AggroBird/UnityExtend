@@ -10,6 +10,7 @@ namespace AggroBird.UnityEngineExtend.Editor
     public static class EditorExtendUtility
     {
         public static float SinglePropertyHeight => EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+        public const string MixedValueContent = "—";
 
 
         public class MixedValueScope : IDisposable

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using UnityObject = UnityEngine.Object;
 
 namespace AggroBird.UnityEngineExtend.Editor
 {
@@ -96,103 +97,207 @@ namespace AggroBird.UnityEngineExtend.Editor
         }
 
 
+        private static bool IsEditingMultipleDifferentTypes(SerializedProperty property)
+        {
+            UnityObject[] objects = property.serializedObject.targetObjects;
+            if (objects.Length > 1)
+            {
+                string propertyPath = property.propertyPath;
+                object firstObject = new SerializedObject(objects[0]).FindProperty(propertyPath).managedReferenceValue;
+                bool result = false;
+                for (int i = 1; i < objects.Length; i++)
+                {
+                    object nextObject = new SerializedObject(objects[i]).FindProperty(propertyPath).managedReferenceValue;
+                    if (nextObject != null && firstObject != null)
+                    {
+                        if (!firstObject.GetType().Equals(nextObject.GetType()))
+                        {
+                            return true;
+                        }
+                    }
+                    else if (nextObject != firstObject)
+                    {
+                        return true;
+                    }
+                }
+                return result;
+            }
+            return false;
+        }
+        private static bool IsEditingMultipleDifferentTypes(SerializedProperty property, out SerializedProperty[] serializedProperties)
+        {
+            UnityObject[] objects = property.serializedObject.targetObjects;
+            if (objects.Length > 1)
+            {
+                string propertyPath = property.propertyPath;
+                serializedProperties = new SerializedProperty[objects.Length];
+                serializedProperties[0] = new SerializedObject(objects[0]).FindProperty(propertyPath);
+                object firstObject = serializedProperties[0].managedReferenceValue;
+                bool result = false;
+                for (int i = 1; i < objects.Length; i++)
+                {
+                    serializedProperties[i] = new SerializedObject(objects[i]).FindProperty(propertyPath);
+                    object nextObject = serializedProperties[i].managedReferenceValue;
+                    if (nextObject != null && firstObject != null)
+                    {
+                        if (!firstObject.GetType().Equals(nextObject.GetType()))
+                        {
+                            result = true;
+                        }
+                    }
+                    else if (nextObject != firstObject)
+                    {
+                        result = true;
+                    }
+                }
+                return result;
+            }
+            serializedProperties = new SerializedProperty[1] { property };
+            return false;
+        }
+
+        private static void ChangeManagedReferenceType(SerializedProperty property, Type newType)
+        {
+            object obj = property.managedReferenceValue;
+            if (obj == null)
+            {
+                property.managedReferenceValue = Activator.CreateInstance(newType);
+                return;
+            }
+
+            Type currentType = obj.GetType();
+
+            // Fetch current top-level fields
+            List<(string name, Type type, object value)> fields = new();
+            foreach (var iter in new SerializedPropertyEnumerator(property.Copy()))
+            {
+                if (TryGetSerializedField(currentType, iter.name, out FieldInfo fieldInfo))
+                {
+                    fields.Add((iter.name, fieldInfo.FieldType, fieldInfo.GetValue(obj)));
+                }
+            }
+
+            // Create new object
+            obj = Activator.CreateInstance(newType);
+
+            // Migrate shared fields
+            currentType = obj.GetType();
+            foreach (var field in fields)
+            {
+                if (TryGetSerializedField(currentType, field.name, out FieldInfo fieldInfo) && fieldInfo.FieldType.IsAssignableFrom(field.type))
+                {
+                    fieldInfo.SetValue(obj, field.value);
+                }
+            }
+
+            // Assign new object
+            property.managedReferenceValue = obj;
+        }
+        private static void ChangeManagedReferenceType(SerializedProperty[] properties, Type newType)
+        {
+            for (int i = 0; i < properties.Length; i++)
+            {
+                properties[i].serializedObject.Update();
+                object obj = properties[i].managedReferenceValue;
+                if (obj == null || !obj.GetType().Equals(newType))
+                {
+                    ChangeManagedReferenceType(properties[i], newType);
+                }
+                properties[i].serializedObject.ApplyModifiedProperties();
+            }
+        }
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            EditorGUI.BeginProperty(position, label, property);
+
             position.height = EditorGUIUtility.singleLineHeight;
 
             if (property.propertyType != SerializedPropertyType.ManagedReference)
             {
-                GUI.Label(position, "Field type must be a managed reference");
+                position = EditorGUI.PrefixLabel(position, label);
+                EditorGUI.LabelField(position, "<Field type must be a managed reference>");
             }
-            else if (typeCache.TryGetCacheData(property, out PolymorphicTypeCacheData cacheData))
+            else if (!typeCache.TryGetCacheData(property, out PolymorphicTypeCacheData cacheData))
             {
-                // Ensure there is at least one object
-                object obj = property.managedReferenceValue;
-                if (obj == null)
-                {
-                    property.managedReferenceValue = obj = Activator.CreateInstance(cacheData.types[0]);
-                }
-
-                EditorGUI.BeginProperty(position, label, property);
-
-                float labelWidth = EditorGUIUtility.labelWidth + 2f;
-                Rect propertyFieldPos = position;
-                propertyFieldPos.width = labelWidth;
-                bool expand = EditorGUI.PropertyField(propertyFieldPos, property, label, false);
-
-                Type objType = obj.GetType();
-
-                // Get current type
-                int currentType = -1;
-                for (int i = 0; i < cacheData.types.Length; i++)
-                {
-                    if (objType.Equals(cacheData.types[i]))
-                    {
-                        currentType = i;
-                        break;
-                    }
-                }
-
-                Rect typeFieldPos = position;
-
-                typeFieldPos.x += labelWidth;
-                typeFieldPos.width -= labelWidth;
-                int selectedType = EditorGUI.Popup(typeFieldPos, currentType, cacheData.dropdownOptions);
-                if (selectedType != currentType)
-                {
-                    // Fetch current top-level fields
-                    List<(string name, Type type, object value)> fields = new();
-                    foreach (var iter in new SerializedPropertyEnumerator(property.Copy()))
-                    {
-                        if (TryGetSerializedField(objType, iter.name, out FieldInfo fieldInfo))
-                        {
-                            fields.Add((iter.name, fieldInfo.FieldType, fieldInfo.GetValue(obj)));
-                        }
-                    }
-
-                    // Create new object
-                    obj = Activator.CreateInstance(cacheData.types[selectedType]);
-
-                    // Migrate shared fields
-                    objType = obj.GetType();
-                    foreach (var field in fields)
-                    {
-                        if (TryGetSerializedField(objType, field.name, out FieldInfo fieldInfo) && fieldInfo.FieldType.IsAssignableFrom(field.type))
-                        {
-                            fieldInfo.SetValue(obj, field.value);
-                        }
-                    }
-
-                    // Assign new object
-                    property.managedReferenceValue = obj;
-                }
-
-                if (expand)
-                {
-                    position.y += EditorExtendUtility.SinglePropertyHeight;
-
-                    using (new EditorGUI.IndentLevelScope(1))
-                    {
-                        foreach (var iter in new SerializedPropertyEnumerator(property))
-                        {
-                            position.height = EditorGUI.GetPropertyHeight(iter);
-                            EditorGUI.PropertyField(position, iter, new GUIContent(iter.displayName), true);
-                            position.y += position.height + EditorGUIUtility.standardVerticalSpacing;
-                        }
-                    }
-                }
-
-                EditorGUI.EndProperty();
+                position = EditorGUI.PrefixLabel(position, label);
+                EditorGUI.LabelField(position, "<Failed to find compatible classes>");
             }
             else
             {
-                GUI.Label(position, "Failed to find compatible classes");
+                if (IsEditingMultipleDifferentTypes(property, out SerializedProperty[] serializedProperties))
+                {
+                    GUI.contentColor = new Color(1, 1, 1, 0.5f);
+                    position = EditorGUI.PrefixLabel(position, label);
+                    using (new EditorExtendUtility.MixedValueScope(true))
+                    {
+                        EditorGUI.BeginChangeCheck();
+                        int selectedType = EditorGUI.Popup(position, -1, cacheData.dropdownOptions);
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            ChangeManagedReferenceType(serializedProperties, cacheData.types[selectedType]);
+                        }
+                    }
+                    GUI.contentColor = Color.white;
+                }
+                else
+                {
+                    // Ensure there is at least one object
+                    object obj = property.managedReferenceValue;
+
+                    float labelWidth = EditorGUIUtility.labelWidth + 2f;
+                    Rect propertyFieldPos = position;
+                    propertyFieldPos.width = labelWidth;
+                    bool expand = EditorGUI.PropertyField(propertyFieldPos, property, label, false);
+
+                    // Get current type
+                    int currentType = -1;
+                    if (obj != null)
+                    {
+                        Type objType = obj.GetType();
+                        for (int i = 0; i < cacheData.types.Length; i++)
+                        {
+                            if (objType.Equals(cacheData.types[i]))
+                            {
+                                currentType = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    Rect typeFieldPos = position;
+                    typeFieldPos.x += labelWidth;
+                    typeFieldPos.width -= labelWidth;
+                    EditorGUI.BeginChangeCheck();
+                    int selectedType = EditorGUI.Popup(typeFieldPos, currentType, cacheData.dropdownOptions);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        ChangeManagedReferenceType(serializedProperties, cacheData.types[selectedType]);
+                    }
+
+                    if (expand)
+                    {
+                        position.y += EditorExtendUtility.SinglePropertyHeight;
+
+                        using (new EditorGUI.IndentLevelScope(1))
+                        {
+                            foreach (var iter in new SerializedPropertyEnumerator(property))
+                            {
+                                position.height = EditorGUI.GetPropertyHeight(iter);
+                                EditorGUI.PropertyField(position, iter, new GUIContent(iter.displayName), true);
+                                position.y += position.height + EditorGUIUtility.standardVerticalSpacing;
+                            }
+                        }
+                    }
+                }
             }
+
+            EditorGUI.EndProperty();
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            if (property.propertyType == SerializedPropertyType.ManagedReference)
+            if (property.propertyType == SerializedPropertyType.ManagedReference && !IsEditingMultipleDifferentTypes(property))
             {
                 return EditorGUI.GetPropertyHeight(property);
             }

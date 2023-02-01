@@ -314,7 +314,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                 using (new EditorExtendUtility.MixedValueScope(showMixedValue))
                 {
                     GUI.contentColor = showMixedValue ? new Color(1, 1, 1, 0.5f) : Color.white;
-                    if (GUI.Button(position, showMixedValue ? "—" : labelBuilder.Length == 0 ? "<none>" : labelBuilder.ToString(), EditorStyles.popup))
+                    if (GUI.Button(position, showMixedValue ? EditorExtendUtility.MixedValueContent : labelBuilder.Length == 0 ? "<none>" : labelBuilder.ToString(), EditorStyles.popup))
                     {
                         if (BitfieldMaskSelectWindow.CurrentWindow)
                         {
