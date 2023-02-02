@@ -564,20 +564,11 @@ namespace AggroBird.UnityEngineExtend
         public bool this[BitfieldFlag index] { get; }
     }
 
-#if UNITY_EDITOR
-    [Serializable]
-    internal struct EditorData
-    {
-        [SerializeField] private BitfieldLabel[] values;
-        [SerializeField] private BitfieldLabel[] history;
-    }
-#endif
-
     [Serializable]
     public struct BitfieldLabelList32 : IBitfieldLabelList
     {
 #if UNITY_EDITOR
-        [SerializeField] private EditorData editorData;
+        [SerializeField] private BitfieldLabel[] editorValues;
 #endif
 
         [SerializeField] private BitfieldLabel[] values;
@@ -597,7 +588,7 @@ namespace AggroBird.UnityEngineExtend
     public struct BitfieldLabelList64 : IBitfieldLabelList
     {
 #if UNITY_EDITOR
-        [SerializeField] private EditorData editorData;
+        [SerializeField] private BitfieldLabel[] editorValues;
 #endif
 
         [SerializeField] private BitfieldLabel[] values;
@@ -617,7 +608,7 @@ namespace AggroBird.UnityEngineExtend
     public struct BitfieldLabelList128 : IBitfieldLabelList
     {
 #if UNITY_EDITOR
-        [SerializeField] private EditorData editorData;
+        [SerializeField] private BitfieldLabel[] editorValues;
 #endif
 
         [SerializeField] private BitfieldLabel[] values;
@@ -637,7 +628,7 @@ namespace AggroBird.UnityEngineExtend
     public struct BitfieldLabelList256 : IBitfieldLabelList
     {
 #if UNITY_EDITOR
-        [SerializeField] private EditorData editorData;
+        [SerializeField] private BitfieldLabel[] editorValues;
 #endif
 
         [SerializeField] private BitfieldLabel[] values;

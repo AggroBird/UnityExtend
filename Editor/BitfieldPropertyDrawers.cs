@@ -432,8 +432,6 @@ namespace AggroBird.UnityEngineExtend.Editor
         }
 
         public static readonly Dictionary<string, int> UniqueLabels = new();
-        private static readonly Dictionary<string, int> editorHistory = new();
-        private static readonly Dictionary<int, BitfieldLabel> rebuildEditorHistory = new();
         private static readonly List<BitfieldLabel> writeValues = new();
 
 
@@ -443,18 +441,8 @@ namespace AggroBird.UnityEngineExtend.Editor
 
             if (!property.serializedObject.isEditingMultipleObjects)
             {
-                SerializedProperty editorData = property.FindPropertyRelative("editorData");
-                SerializedProperty editorHistoryProperty = editorData.FindPropertyRelative("history");
-                SerializedProperty editorValuesProperty = editorData.FindPropertyRelative("values");
+                SerializedProperty editorValuesProperty = property.FindPropertyRelative("editorValues");
                 SerializedProperty valuesProperty = property.FindPropertyRelative("values");
-
-                // Get editor history
-                editorHistory.Clear();
-                for (int i = 0; i < editorHistoryProperty.arraySize; i++)
-                {
-                    editorHistoryProperty.GetArrayElementAtIndex(i).GetBitfieldLabel(out string name, out int index);
-                    editorHistory[name] = index;
-                }
 
                 // Create mask array
                 valueCount = BitCount / BitfieldUtility.Precision;
@@ -504,34 +492,11 @@ namespace AggroBird.UnityEngineExtend.Editor
                     value.GetBitfieldLabel(out string name, out int index);
                     if (!string.IsNullOrEmpty(name) && !UniqueLabels.ContainsKey(name))
                     {
-                        // Check against history
-                        if (editorHistory.TryGetValue(name, out int historyIndex) && index != historyIndex)
-                        {
-                            Debug.LogError($"Flag {index} name '{name}' collides with flag {historyIndex} which previously held that name.\n" +
-                                $"Reordering flags through name change will cause problems with bitfield masks in other assets that have these flags set.\n" +
-                                $"To safely reorder flags please use the drag handle next to the flag field, which preserves the internal flag index.\n");
-                            value.SetBitfieldLabel(string.Empty, index);
-                        }
-                        else
-                        {
-                            SetMaskFlag(index, true);
-                            UniqueLabels.Add(name, index);
-                            writeValues.Add(new BitfieldLabel(name, index));
-                        }
+                        SetMaskFlag(index, true);
+                        UniqueLabels.Add(name, index);
+                        writeValues.Add(new BitfieldLabel(name, index));
                     }
                 }
-
-                // Rebuild history
-                rebuildEditorHistory.Clear();
-                foreach (var history in editorHistory)
-                {
-                    rebuildEditorHistory.Add(history.Value, new BitfieldLabel(history.Key, history.Value));
-                }
-                foreach (var value in writeValues)
-                {
-                    rebuildEditorHistory[value.Index] = value;
-                }
-                editorHistoryProperty.SetBitfieldLabelArray(rebuildEditorHistory.Values);
 
                 // Write values
                 valuesProperty.SetBitfieldLabelArray(writeValues);
@@ -560,8 +525,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                 return EditorExtendUtility.SinglePropertyHeight;
             }
 
-            SerializedProperty editorData = property.FindPropertyRelative("editorData");
-            SerializedProperty editorValuesProperty = editorData.FindPropertyRelative("values");
+            SerializedProperty editorValuesProperty = property.FindPropertyRelative("editorValues");
             return EditorGUI.GetPropertyHeight(editorValuesProperty);
         }
     }
