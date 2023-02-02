@@ -11,11 +11,12 @@ namespace AggroBird.UnityEngineExtend
 
         public GUID(string value)
         {
-            if (value == null || value.Length != 32 ||
+            if (value == null) throw new NullReferenceException(nameof(value));
+            if (value.Length != 32 ||
                 !long.TryParse(value.Substring(0, 16), NumberStyles.HexNumber, null, out long result0) ||
                 !long.TryParse(value.Substring(16, 16), NumberStyles.HexNumber, null, out long result1))
             {
-                throw new ArgumentException("Invalid GUID");
+                throw new ArgumentException("Invalid GUID string");
             }
 
             value0 = result0;
