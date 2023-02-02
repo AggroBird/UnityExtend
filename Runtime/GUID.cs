@@ -21,13 +21,33 @@ namespace AggroBird.UnityEngineExtend
             value0 = result0;
             value1 = result1;
         }
+        public GUID(params long[] value)
+        {
+            if (value == null) throw new NullReferenceException(nameof(value));
+            if (value.Length != 2) throw new ArgumentException("Invalid GUID length");
+            value0 = value[0];
+            value1 = value[1];
+        }
 
         [SerializeField] private long value0;
         [SerializeField] private long value1;
 
+        public long this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0: return value0;
+                    case 1: return value1;
+                }
+                throw new IndexOutOfRangeException();
+            }
+        }
+
         public override int GetHashCode()
         {
-            return (value0 ^ value1).GetHashCode();
+            return (value0 ^ (value1 << 2)).GetHashCode();
         }
         public override bool Equals(object obj)
         {
