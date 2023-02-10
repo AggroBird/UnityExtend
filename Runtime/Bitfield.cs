@@ -91,6 +91,8 @@ namespace AggroBird.UnityEngineExtend
     [Serializable]
     public struct BitfieldMask32 : IEquatable<BitfieldMask32>, IBitfieldMask
     {
+        public static readonly BitfieldMask32 none = new BitfieldMask32();
+        
         [SerializeField] private int mask0;
 
         internal int GetMask(int index)
@@ -177,6 +179,8 @@ namespace AggroBird.UnityEngineExtend
     [Serializable]
     public struct BitfieldMask64 : IEquatable<BitfieldMask64>, IBitfieldMask
     {
+        public static readonly BitfieldMask64 none = new BitfieldMask64();
+        
         [SerializeField] private int mask0;
         [SerializeField] private int mask1;
 
@@ -272,6 +276,8 @@ namespace AggroBird.UnityEngineExtend
     [Serializable]
     public struct BitfieldMask128 : IEquatable<BitfieldMask128>, IBitfieldMask
     {
+        public static readonly BitfieldMask128 none = new BitfieldMask128();
+        
         [SerializeField] private int mask0;
         [SerializeField] private int mask1;
         [SerializeField] private int mask2;
@@ -385,6 +391,8 @@ namespace AggroBird.UnityEngineExtend
     [Serializable]
     public struct BitfieldMask256 : IEquatable<BitfieldMask256>, IBitfieldMask
     {
+        public static readonly BitfieldMask256 none = new BitfieldMask256();
+        
         [SerializeField] private int mask0;
         [SerializeField] private int mask1;
         [SerializeField] private int mask2;
