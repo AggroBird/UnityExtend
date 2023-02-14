@@ -92,10 +92,10 @@ namespace AggroBird.UnityEngineExtend
     public struct BitfieldMask32 : IEquatable<BitfieldMask32>, IBitfieldMask
     {
         public static readonly BitfieldMask32 none = new BitfieldMask32();
-        
+
         [SerializeField] private int mask0;
 
-        internal int GetMask(int index)
+        public int GetMask(int index)
         {
             switch (index)
             {
@@ -103,7 +103,7 @@ namespace AggroBird.UnityEngineExtend
             }
             throw new IndexOutOfRangeException();
         }
-        internal void SetMask(int index, int value)
+        public void SetMask(int index, int value)
         {
             switch (index)
             {
@@ -180,11 +180,11 @@ namespace AggroBird.UnityEngineExtend
     public struct BitfieldMask64 : IEquatable<BitfieldMask64>, IBitfieldMask
     {
         public static readonly BitfieldMask64 none = new BitfieldMask64();
-        
+
         [SerializeField] private int mask0;
         [SerializeField] private int mask1;
 
-        internal int GetMask(int index)
+        public int GetMask(int index)
         {
             switch (index)
             {
@@ -193,7 +193,7 @@ namespace AggroBird.UnityEngineExtend
             }
             throw new IndexOutOfRangeException();
         }
-        internal void SetMask(int index, int value)
+        public void SetMask(int index, int value)
         {
             switch (index)
             {
@@ -277,13 +277,13 @@ namespace AggroBird.UnityEngineExtend
     public struct BitfieldMask128 : IEquatable<BitfieldMask128>, IBitfieldMask
     {
         public static readonly BitfieldMask128 none = new BitfieldMask128();
-        
+
         [SerializeField] private int mask0;
         [SerializeField] private int mask1;
         [SerializeField] private int mask2;
         [SerializeField] private int mask3;
 
-        internal int GetMask(int index)
+        public int GetMask(int index)
         {
             switch (index)
             {
@@ -294,7 +294,7 @@ namespace AggroBird.UnityEngineExtend
             }
             throw new IndexOutOfRangeException();
         }
-        internal void SetMask(int index, int value)
+        public void SetMask(int index, int value)
         {
             switch (index)
             {
@@ -392,7 +392,7 @@ namespace AggroBird.UnityEngineExtend
     public struct BitfieldMask256 : IEquatable<BitfieldMask256>, IBitfieldMask
     {
         public static readonly BitfieldMask256 none = new BitfieldMask256();
-        
+
         [SerializeField] private int mask0;
         [SerializeField] private int mask1;
         [SerializeField] private int mask2;
@@ -402,7 +402,7 @@ namespace AggroBird.UnityEngineExtend
         [SerializeField] private int mask6;
         [SerializeField] private int mask7;
 
-        internal int GetMask(int index)
+        public int GetMask(int index)
         {
             switch (index)
             {
@@ -417,7 +417,7 @@ namespace AggroBird.UnityEngineExtend
             }
             throw new IndexOutOfRangeException();
         }
-        internal void SetMask(int index, int value)
+        public void SetMask(int index, int value)
         {
             switch (index)
             {
