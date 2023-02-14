@@ -83,9 +83,10 @@ namespace AggroBird.UnityEngineExtend
     // Can do bitwise-and with bitfield label list to ensure validity of flags.
     public interface IBitfieldMask
     {
+        // Precision
         int BitCount { get; }
         // Check if flag is set, or set value
-        public bool this[BitfieldFlag index] { get; set; }
+        bool this[BitfieldFlag index] { get; set; }
     }
 
     [Serializable]
@@ -95,7 +96,7 @@ namespace AggroBird.UnityEngineExtend
 
         [SerializeField] private int mask0;
 
-        public int GetMask(int index)
+        private int GetMask(int index)
         {
             switch (index)
             {
@@ -103,7 +104,7 @@ namespace AggroBird.UnityEngineExtend
             }
             throw new IndexOutOfRangeException();
         }
-        public void SetMask(int index, int value)
+        private void SetMask(int index, int value)
         {
             switch (index)
             {
@@ -184,7 +185,7 @@ namespace AggroBird.UnityEngineExtend
         [SerializeField] private int mask0;
         [SerializeField] private int mask1;
 
-        public int GetMask(int index)
+        private int GetMask(int index)
         {
             switch (index)
             {
@@ -193,7 +194,7 @@ namespace AggroBird.UnityEngineExtend
             }
             throw new IndexOutOfRangeException();
         }
-        public void SetMask(int index, int value)
+        private void SetMask(int index, int value)
         {
             switch (index)
             {
@@ -283,7 +284,7 @@ namespace AggroBird.UnityEngineExtend
         [SerializeField] private int mask2;
         [SerializeField] private int mask3;
 
-        public int GetMask(int index)
+        private int GetMask(int index)
         {
             switch (index)
             {
@@ -294,7 +295,7 @@ namespace AggroBird.UnityEngineExtend
             }
             throw new IndexOutOfRangeException();
         }
-        public void SetMask(int index, int value)
+        private void SetMask(int index, int value)
         {
             switch (index)
             {
@@ -402,7 +403,7 @@ namespace AggroBird.UnityEngineExtend
         [SerializeField] private int mask6;
         [SerializeField] private int mask7;
 
-        public int GetMask(int index)
+        private int GetMask(int index)
         {
             switch (index)
             {
@@ -417,7 +418,7 @@ namespace AggroBird.UnityEngineExtend
             }
             throw new IndexOutOfRangeException();
         }
-        public void SetMask(int index, int value)
+        private void SetMask(int index, int value)
         {
             switch (index)
             {
@@ -565,11 +566,12 @@ namespace AggroBird.UnityEngineExtend
     // Contains labels defined by user.
     public interface IBitfieldLabelList
     {
+        // Precision
         int BitCount { get; }
         // Get user defined labels (ordered by user definition, not index)
         IReadOnlyList<BitfieldLabel> Labels { get; }
         // Check if flag is defined in label list
-        public bool this[BitfieldFlag index] { get; }
+        bool this[BitfieldFlag index] { get; }
     }
 
     [Serializable]

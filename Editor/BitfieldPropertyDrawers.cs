@@ -73,15 +73,15 @@ namespace AggroBird.UnityEngineExtend.Editor
             return provider is UnityObject unityObject && unityObject;
         }
 
-        public static void GetBitfieldLabel(this SerializedProperty value, out string name, out int index)
+        public static void GetBitfieldLabel(this SerializedProperty property, out string name, out int index)
         {
-            name = value.FindPropertyRelative("name").stringValue;
-            index = value.FindPropertyRelative("index").intValue;
+            name = property.FindPropertyRelative("name").stringValue;
+            index = property.FindPropertyRelative("index").intValue;
         }
-        public static void SetBitfieldLabel(this SerializedProperty value, string name, int index)
+        public static void SetBitfieldLabel(this SerializedProperty property, string name, int index)
         {
-            value.FindPropertyRelative("name").stringValue = name;
-            value.FindPropertyRelative("index").intValue = index;
+            property.FindPropertyRelative("name").stringValue = name;
+            property.FindPropertyRelative("index").intValue = index;
         }
 
         public static void SetBitfieldLabelArray(this SerializedProperty property, IReadOnlyCollection<BitfieldLabel> values)
@@ -96,6 +96,65 @@ namespace AggroBird.UnityEngineExtend.Editor
         }
     }
 
+    public static class BitfieldPropertyUtility
+    {
+        private const BindingFlags MaskBindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+
+        private static T GetBitfieldMask<T>(SerializedProperty property) where T : IBitfieldMask, new()
+        {
+            object value = new T();
+            int count = (value as IBitfieldMask).BitCount / BitfieldUtility.Precision;
+            for (int i = 0; i < count; i++)
+            {
+                string fieldName = $"mask{i}";
+                typeof(T).GetField(fieldName, MaskBindingFlags).SetValue(value, property.FindPropertyRelative(fieldName).intValue);
+            }
+            return (T)value;
+        }
+        private static void SetBitfieldMask<T>(SerializedProperty property, T mask) where T : IBitfieldMask, new()
+        {
+            object value = mask;
+            int count = (value as IBitfieldMask).BitCount / BitfieldUtility.Precision;
+            for (int i = 0; i < count; i++)
+            {
+                string fieldName = $"mask{i}";
+                property.FindPropertyRelative(fieldName).intValue = (int)typeof(T).GetField(fieldName, MaskBindingFlags).GetValue(value);
+            }
+        }
+
+        public static BitfieldMask32 GetBitfieldMask32Value(this SerializedProperty property)
+        {
+            return GetBitfieldMask<BitfieldMask32>(property);
+        }
+        public static void SetBitfieldMask32Value(this SerializedProperty property, BitfieldMask32 mask)
+        {
+            SetBitfieldMask(property, mask);
+        }
+        public static BitfieldMask64 GetBitfieldMask64Value(this SerializedProperty property)
+        {
+            return GetBitfieldMask<BitfieldMask64>(property);
+        }
+        public static void SetBitfieldMask64Value(this SerializedProperty property, BitfieldMask64 mask)
+        {
+            SetBitfieldMask(property, mask);
+        }
+        public static BitfieldMask128 GetBitfieldMask128Value(this SerializedProperty property)
+        {
+            return GetBitfieldMask<BitfieldMask128>(property);
+        }
+        public static void SetBitfieldMask128Value(this SerializedProperty property, BitfieldMask128 mask)
+        {
+            SetBitfieldMask(property, mask);
+        }
+        public static BitfieldMask256 GetBitfieldMask256Value(this SerializedProperty property)
+        {
+            return GetBitfieldMask<BitfieldMask256>(property);
+        }
+        public static void SetBitfieldMask256Value(this SerializedProperty property, BitfieldMask256 mask)
+        {
+            SetBitfieldMask(property, mask);
+        }
+    }
 
     [CustomPropertyDrawer(typeof(BitfieldFlag))]
     internal sealed class BitfieldFlagPropertyDrawer : PropertyDrawer
@@ -505,8 +564,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                 SerializedProperty maskProperty = property.FindPropertyRelative("mask");
                 for (int i = 0; i < valueCount; i++)
                 {
-                    SerializedProperty maskValueProperty = maskProperty.FindPropertyRelative($"mask{i}");
-                    maskValueProperty.intValue = maskValue[i];
+                    maskProperty.FindPropertyRelative($"mask{i}").intValue = maskValue[i];
                 }
             }
             else
