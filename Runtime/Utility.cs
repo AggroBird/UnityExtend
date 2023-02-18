@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AggroBird.UnityEngineExtend
@@ -44,7 +45,7 @@ namespace AggroBird.UnityEngineExtend
         public static bool TryGetComponentInParent<T>(this Component component, out T result) where T : class
         {
             result = component.GetComponentInParent<T>();
-            return result != null;
+            return !EqualityComparer<T>.Default.Equals(result, default(T));
         }
         public static bool TryGetComponentInParent(this Component component, Type type, out Component result)
         {
@@ -54,7 +55,7 @@ namespace AggroBird.UnityEngineExtend
         public static bool TryGetComponentInParent<T>(this GameObject gameObject, out T result) where T : class
         {
             result = gameObject.GetComponentInParent<T>();
-            return result != null;
+            return !EqualityComparer<T>.Default.Equals(result, default(T));
         }
         public static bool TryGetComponentInParent(this GameObject gameObject, Type type, out Component result)
         {
@@ -66,7 +67,7 @@ namespace AggroBird.UnityEngineExtend
         public static bool TryGetComponentInChildren<T>(this Component component, out T result, bool includeInactive = false) where T : class
         {
             result = component.GetComponentInChildren<T>(includeInactive);
-            return result != null;
+            return !EqualityComparer<T>.Default.Equals(result, default(T));
         }
         public static bool TryGetComponentInChildren(this Component component, Type type, out Component result, bool includeInactive = false)
         {
@@ -76,7 +77,7 @@ namespace AggroBird.UnityEngineExtend
         public static bool TryGetComponentInChildren<T>(this GameObject gameObject, out T result, bool includeInactive = false) where T : class
         {
             result = gameObject.GetComponentInChildren<T>(includeInactive);
-            return result != null;
+            return !EqualityComparer<T>.Default.Equals(result, default(T));
         }
         public static bool TryGetComponentInChildren(this GameObject gameObject, Type type, out Component result, bool includeInactive = false)
         {
