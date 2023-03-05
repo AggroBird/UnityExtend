@@ -26,10 +26,12 @@ namespace AggroBird.UnityEngineExtend
 
     // Add this attribute to any field that is a BitfieldFlag or a BitfieldMask.
     // Allows the editor to load the string values defined in a bitfield label list.
-    // providerType must implement IBitfieldLabelNameProvider interface.
-    public sealed class BitfieldLabelNameProviderAttribute : Attribute
+    // ProviderType must implement IBitfieldLabelNameProvider interface and must be
+    // loadable by the AssetDatabase.
+    [AttributeUsage(AttributeTargets.Field)]
+    public sealed class BitfieldLabelGlobalNameProviderAttribute : Attribute
     {
-        public BitfieldLabelNameProviderAttribute(Type providerType)
+        public BitfieldLabelGlobalNameProviderAttribute(Type providerType)
         {
             this.ProviderType = providerType;
         }
@@ -37,7 +39,27 @@ namespace AggroBird.UnityEngineExtend
         public Type ProviderType { get; private set; }
     }
 
+    public enum NestedNameProviderSource
+    {
+        DeclaringType,
+        SerializedObject,
+    }
 
+    // Add this attribute to any field that is a BitfieldFlag or a BitfieldMask.
+    // Allows the editor to load the string values defined in a bitfield label list.
+    // If Source is DeclaringType, the declaring type of the current field will be used.
+    // If Source is SerializedObject, the serialized object value of the property will be used.
+    // Source must implement IBitfieldLabelNameProvider interface.
+    [AttributeUsage(AttributeTargets.Field)]
+    public sealed class BitfieldLabelNestedNameProviderAttribute : Attribute
+    {
+        public BitfieldLabelNestedNameProviderAttribute(NestedNameProviderSource source)
+        {
+            Source = source;
+        }
+
+        public NestedNameProviderSource Source { get; private set; }
+    }
 
     // Individual bitfield flag
     [Serializable]

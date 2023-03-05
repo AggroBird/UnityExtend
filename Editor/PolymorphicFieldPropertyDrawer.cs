@@ -242,7 +242,6 @@ namespace AggroBird.UnityEngineExtend.Editor
                 }
                 else
                 {
-                    // Ensure there is at least one object
                     object obj = property.managedReferenceValue;
 
                     float labelWidth = EditorGUIUtility.labelWidth + 2f;

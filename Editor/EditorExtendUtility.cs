@@ -52,9 +52,15 @@ namespace AggroBird.UnityEngineExtend.Editor
         }
 
 
-        private static void TryGetField(SerializedProperty property, out Type fieldType, out FieldInfo fieldInfo, bool useInheritedTypes)
+        private static void TryGetField(SerializedProperty property, out Type fieldType, out FieldInfo fieldInfo, List<object> values, bool useInheritedTypes)
         {
             object obj = property.serializedObject.targetObject;
+            if (values != null)
+            {
+                values.Clear();
+                values.Add(obj);
+            }
+
             fieldType = obj.GetType();
             fieldInfo = null;
             string path = property.propertyPath;
@@ -83,6 +89,11 @@ namespace AggroBird.UnityEngineExtend.Editor
                     {
                         obj = (obj as IList)[int.Parse(indexStr)];
                         fieldType = obj == null ? GetElementType(fieldType) : obj.GetType();
+
+                        if (values != null)
+                        {
+                            values.Add(obj);
+                        }
                     }
                 }
                 else
@@ -113,6 +124,11 @@ namespace AggroBird.UnityEngineExtend.Editor
                         if (fieldInfo == null) goto OnFailure;
                         obj = fieldInfo.GetValue(obj);
                         fieldType = obj == null ? fieldInfo.FieldType : obj.GetType();
+
+                        if (values != null)
+                        {
+                            values.Add(obj);
+                        }
                     }
                 }
             }
@@ -124,15 +140,15 @@ namespace AggroBird.UnityEngineExtend.Editor
             return;
         }
 
-        public static bool TryGetFieldType(this SerializedProperty property, out Type fieldType, bool useInheritedTypes = true)
+        public static bool TryGetFieldType(this SerializedProperty property, out Type fieldType, List<object> values = null, bool useInheritedTypes = true)
         {
-            TryGetField(property, out fieldType, out _, useInheritedTypes);
+            TryGetField(property, out fieldType, out _, values, useInheritedTypes);
             return fieldType != null;
         }
 
-        public static bool TryGetFieldInfo(this SerializedProperty property, out FieldInfo fieldInfo, bool useInheritedTypes = true)
+        public static bool TryGetFieldInfo(this SerializedProperty property, out FieldInfo fieldInfo, List<object> values = null, bool useInheritedTypes = true)
         {
-            TryGetField(property, out _, out fieldInfo, useInheritedTypes);
+            TryGetField(property, out _, out fieldInfo, values, useInheritedTypes);
             return fieldInfo != null;
         }
 
