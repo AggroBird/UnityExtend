@@ -38,7 +38,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                                     if (obj && obj is IBitfieldLabelNameProvider validProvider)
                                     {
                                         provider = validProvider;
-                                        providerCache.Add(globalProviderAttribute.ProviderType, provider);
+                                        providerCache[globalProviderAttribute.ProviderType] = provider;
                                         break;
                                     }
                                 }
