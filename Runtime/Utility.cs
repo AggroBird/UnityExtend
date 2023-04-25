@@ -19,6 +19,17 @@ namespace AggroBird.UnityEngineExtend
             return idx >= 0 && idx < arr.Length;
         }
 
+        // Remove element and insert the last element at the location, when list order is not important
+        public static void RemoveAndSwap<T>(this List<T> list, int idx)
+        {
+            int last = list.Count - 1;
+            if (idx != last)
+            {
+                list[idx] = list[last];
+            }
+            list.RemoveAt(last);
+        }
+
         // Set transform to identity
         public static void SetIdentity(this Transform transform)
         {
