@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace AggroBird.UnityEngineExtend
 {
@@ -22,7 +23,7 @@ namespace AggroBird.UnityEngineExtend
             return Rotate(vec, angleDeg * Mathf.Deg2Rad);
         }
 
-        // Create a vector from a rotation (inverse of AngleFromVector)
+        // Create a vector from an angle (inverse of AngleFromVector)
         public static Vector2 VectorFromAngle(float angleRad)
         {
             return new Vector2(Mathf.Sin(angleRad), Mathf.Cos(angleRad));
@@ -32,42 +33,39 @@ namespace AggroBird.UnityEngineExtend
             return VectorFromAngle(angleDeg * Mathf.Deg2Rad);
         }
 
-        // Returns the signed angle of a vector from -180 to 180 (inverse of VectorFromAngle)
+        // Create an unsigned (0 to 360) angle from a vector (inverse of VectorFromAngle)
         public static float AngleFromVector(Vector2 vec)
         {
-            return AngleFromNormalizedVector(vec.normalized);
+            float sqrt = (float)Math.Sqrt(vec.sqrMagnitude);
+            if (sqrt < 1E-15f) return 0f;
+            float angle = (float)Math.Acos(Mathf.Clamp(vec.y / sqrt, -1f, 1f));
+            return vec.x < 0 ? Mathf.PI - angle + Mathf.PI : angle;
         }
         public static float AngleFromVectorDeg(Vector2 vec)
         {
-            return AngleFromNormalizedVectorDeg(vec.normalized);
-        }
-        // Same as VectorAngle, but assumes vec is already normalized. Results may be skewed if not.
-        public static float AngleFromNormalizedVector(Vector2 vec)
-        {
-            return Mathf.Acos(Mathf.Clamp(vec.y, -1, 1)) * (vec.x >= 0.0f ? 1 : -1);
-        }
-        public static float AngleFromNormalizedVectorDeg(Vector2 vec)
-        {
-            return Mathf.Acos(Mathf.Clamp(vec.y, -1, 1)) * (vec.x >= 0.0f ? Mathf.Rad2Deg : -Mathf.Rad2Deg);
+            return AngleFromVector(vec) * Mathf.Rad2Deg;
         }
 
-        // Get the signed angle in radians between two vectors, taking 0,0 as center
-        public static float AngleBetween(Vector2 lhs, Vector2 rhs)
+        // Get the unsigned angle between from and to
+        public static float UnsignedAngleBetween(Vector2 from, Vector2 to)
         {
-            return AngleBetweenNormalized(lhs.normalized, rhs.normalized);
+            float sqrt = (float)Math.Sqrt(from.sqrMagnitude * to.sqrMagnitude);
+            if (sqrt < 1E-15f) return 0f;
+            return (float)Math.Acos(Mathf.Clamp(Vector2.Dot(from, to) / sqrt, -1f, 1f));
         }
-        public static float AngleBetweenDeg(Vector2 lhs, Vector2 rhs)
+        public static float UnsignedAngleBetweenDeg(Vector2 from, Vector2 to)
         {
-            return AngleBetweenNormalized(lhs.normalized, rhs.normalized) * Mathf.Rad2Deg;
+            return UnsignedAngleBetween(from, to) * Mathf.Rad2Deg;
         }
-        // Same as AngleBetween, but assumes vec is already normalized. Results may be skewed if not.
-        public static float AngleBetweenNormalized(Vector2 lhs, Vector2 rhs)
+
+        // Get the signed angle between from and to
+        public static float SignedAngleBetween(Vector2 from, Vector2 to)
         {
-            return Mathf.Acos(Mathf.Clamp(Vector2.Dot(lhs, rhs), -1, 1)) * (Vector2.Dot(rhs, new Vector2(lhs.y, -lhs.x)) >= 0 ? 1 : -1);
+            return UnsignedAngleBetween(from, to) * Mathf.Sign(from.x * to.y - from.y * to.x);
         }
-        public static float AngleBetweenNormalizedDeg(Vector2 lhs, Vector2 rhs)
+        public static float SignedAngleBetweenDeg(Vector2 from, Vector2 to)
         {
-            return AngleBetweenNormalized(lhs, rhs) * Mathf.Rad2Deg;
+            return SignedAngleBetween(from, to) * Mathf.Rad2Deg;
         }
 
         // Project a vector2 along a surface
