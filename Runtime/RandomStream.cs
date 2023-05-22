@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace AggroBird.UnityEngineExtend
 {
-    public class RandomStream : Random
+    public class RandomStream : System.Random
     {
         public RandomStream()
         {
@@ -67,6 +67,13 @@ namespace AggroBird.UnityEngineExtend
                 return arr[Range(0, arr.Count)];
             }
             return default;
+        }
+
+        public Vector2 InsideUnitCircle()
+        {
+            float angle = NextFloat() * 2 * Mathf.PI;
+            float hyp = Mathf.Sqrt(NextFloat());
+            return new Vector2(Mathf.Sin(angle) * hyp, Mathf.Cos(angle) * hyp);
         }
     }
 }

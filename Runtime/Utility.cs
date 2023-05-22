@@ -30,22 +30,6 @@ namespace AggroBird.UnityEngineExtend
             list.RemoveAt(last);
         }
 
-        // Set transform to identity
-        public static void SetIdentity(this Transform transform)
-        {
-            transform.localPosition = Vector3.zero;
-            transform.localRotation = Quaternion.identity;
-            transform.localScale = Vector3.one;
-        }
-        public static Vector2 PositionXZ(this Transform transform)
-        {
-            return transform.position.GetXZ();
-        }
-        public static Vector2 PositionXY(this Transform transform)
-        {
-            return transform.position.GetXY();
-        }
-
         // Copy from transform
         public static void CopyTransform(this Transform transform, Transform copyFrom, bool copyScale = false)
         {

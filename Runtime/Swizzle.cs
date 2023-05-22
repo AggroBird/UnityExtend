@@ -5,6 +5,7 @@ namespace AggroBird.UnityEngineExtend
     // Swizzles for setting values in common structs
     public static class Swizzle
     {
+        // Vector swizzles
         public static Vector2 GetXY(this Vector3 vec)
         {
             return new Vector2(vec.x, vec.y);
@@ -71,6 +72,34 @@ namespace AggroBird.UnityEngineExtend
         public static Rect ToRect(this RectInt rect)
         {
             return new Rect(rect.x, rect.y, rect.width, rect.height);
+        }
+
+
+        // Transform swizzles
+        public static void SetIdentity(this Transform transform)
+        {
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+            transform.localScale = Vector3.one;
+        }
+        public static Vector2 PositionXZ(this Transform transform)
+        {
+            return transform.position.GetXZ();
+        }
+        public static Vector2 PositionXY(this Transform transform)
+        {
+            return transform.position.GetXY();
+        }
+
+        public static void SetYaw(this Transform transform, float yaw)
+        {
+            Vector3 euler = transform.eulerAngles;
+            euler.y = yaw;
+            transform.eulerAngles = euler;
+        }
+        public static float GetYaw(this Transform transform)
+        {
+            return transform.eulerAngles.y;
         }
     }
 }
