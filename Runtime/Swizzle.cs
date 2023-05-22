@@ -91,6 +91,16 @@ namespace AggroBird.UnityEngineExtend
             return transform.position.GetXY();
         }
 
+        public static void SetPitch(this Transform transform, float pitch)
+        {
+            Vector3 euler = transform.eulerAngles;
+            euler.x = pitch;
+            transform.eulerAngles = euler;
+        }
+        public static float GetPitch(this Transform transform)
+        {
+            return transform.eulerAngles.x;
+        }
         public static void SetYaw(this Transform transform, float yaw)
         {
             Vector3 euler = transform.eulerAngles;
@@ -100,6 +110,16 @@ namespace AggroBird.UnityEngineExtend
         public static float GetYaw(this Transform transform)
         {
             return transform.eulerAngles.y;
+        }
+        public static void SetRoll(this Transform transform, float roll)
+        {
+            Vector3 euler = transform.eulerAngles;
+            euler.z = roll;
+            transform.eulerAngles = euler;
+        }
+        public static float GetRoll(this Transform transform)
+        {
+            return transform.eulerAngles.z;
         }
     }
 }
