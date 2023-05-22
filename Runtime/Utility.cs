@@ -6,6 +6,13 @@ namespace AggroBird.UnityEngineExtend
 {
     public static class Utility
     {
+        // Reset transform to identity
+        public static void SetIdentity(this Transform transform)
+        {
+            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            transform.localScale = Vector3.one;
+        }
+
         // Null or empty check for arrays
         public static bool IsNullOrEmpty<T>(T[] array)
         {

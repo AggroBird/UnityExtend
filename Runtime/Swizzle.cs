@@ -74,21 +74,22 @@ namespace AggroBird.UnityEngineExtend
             return new Rect(rect.x, rect.y, rect.width, rect.height);
         }
 
-
         // Transform swizzles
-        public static void SetIdentity(this Transform transform)
-        {
-            transform.localPosition = Vector3.zero;
-            transform.localRotation = Quaternion.identity;
-            transform.localScale = Vector3.one;
-        }
-        public static Vector2 PositionXZ(this Transform transform)
+        public static Vector2 GetPositionXZ(this Transform transform)
         {
             return transform.position.GetXZ();
         }
-        public static Vector2 PositionXY(this Transform transform)
+        public static void SetPositionXZ(this Transform transform, Vector2 xz)
+        {
+            transform.position = new Vector3(xz.x, transform.position.y, xz.y);
+        }
+        public static Vector2 GetPositionXY(this Transform transform)
         {
             return transform.position.GetXY();
+        }
+        public static void SetPositionXY(this Transform transform, Vector2 xy)
+        {
+            transform.position = new Vector3(xy.x, xy.y, transform.position.z);
         }
 
         public static void SetPitch(this Transform transform, float pitch)
