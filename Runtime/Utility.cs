@@ -91,5 +91,21 @@ namespace AggroBird.UnityEngineExtend
             result = gameObject.GetComponentInChildren(type, includeInactive);
             return result != null;
         }
+
+        public static bool EnsureReference<T>(GameObject gameObject, ref T field) where T : Component
+        {
+            bool result = true;
+            if (!field || !ReferenceEquals(field.gameObject, gameObject))
+            {
+                result = field = gameObject.GetComponent<T>();
+#if UNITY_EDITOR
+                if (result)
+                {
+                    UnityEditor.EditorUtility.SetDirty(gameObject);
+                }
+#endif
+            }
+            return result;
+        }
     }
 }
