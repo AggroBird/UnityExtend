@@ -83,6 +83,12 @@ namespace AggroBird.UnityEngineExtend
         // Modulo that ensures the result is always positive (e.g. ModAbs(-45, 360) = 315)
         public static float ModAbs(float f, float m) => ((f % m) + m) % m;
 
+        // 1 - (1 - f) ^ p
+        public static float InvPow(float f, float p)
+        {
+            return 1 - Mathf.Pow(1 - f, p);
+        }
+
         // Add a value and clamp the result between +range and -range
         // If value is already outside of range, it will discard the addition
         // if the result does not end up being closer to range.
