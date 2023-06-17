@@ -19,6 +19,12 @@ namespace AggroBird.UnityEngineExtend
             return array == null || array.Length == 0;
         }
 
+        // Returns 0 if array is null
+        public static int GetLengthSafe<T>(T[] array)
+        {
+            return array == null ? 0 : array.Length;
+        }
+
         // Check if index is within range
         public static bool IsValidIndex<T>(this T[] arr, int idx)
         {
