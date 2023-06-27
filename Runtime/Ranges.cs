@@ -28,7 +28,7 @@ namespace AggroBird.UnityEngineExtend
 
         public float Range => max - min;
 
-        public bool IsWithin(float value)
+        public bool Contains(float value)
         {
             return value >= min && value <= max;
         }
@@ -64,7 +64,7 @@ namespace AggroBird.UnityEngineExtend
 
         public double Range => max - min;
 
-        public bool IsWithin(double value)
+        public bool Contains(double value)
         {
             return value >= min && value <= max;
         }
@@ -100,7 +100,7 @@ namespace AggroBird.UnityEngineExtend
 
         public int Range => max - min;
 
-        public bool IsWithin(int value)
+        public bool Contains(int value)
         {
             return value >= min && value <= max;
         }
