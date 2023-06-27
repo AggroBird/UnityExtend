@@ -50,6 +50,19 @@ namespace AggroBird.UnityEngineExtend
             return Next(min, max);
         }
 
+        public float Range(FloatRange range)
+        {
+            return (float)(range.Min + (NextDouble() * range.Range));
+        }
+        public double Range(DoubleRange range)
+        {
+            return range.Min + (NextDouble() * range.Range);
+        }
+        public int Range(IntRange range)
+        {
+            return Next(range.Min, range.Max);
+        }
+
         public float NextFloat()
         {
             return (float)NextDouble();

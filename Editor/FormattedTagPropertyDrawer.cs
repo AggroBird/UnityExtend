@@ -6,7 +6,6 @@ namespace AggroBird.UnityEngineExtend.Editor
     [CustomPropertyDrawer(typeof(FormattedTagAttribute))]
     internal sealed class FormattedTagPropertyDrawer : PropertyDrawer
     {
-
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             return EditorGUI.GetPropertyHeight(property, label, true);
