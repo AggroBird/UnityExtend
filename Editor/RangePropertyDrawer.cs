@@ -19,26 +19,15 @@ namespace AggroBird.UnityEngineExtend.Editor
             position.width /= 2;
             position.width -= 1;
             float w = position.width;
-            EditorGUI.BeginChangeCheck();
             EditorGUI.PropertyField(position, min);
-            if (EditorGUI.EndChangeCheck())
-            {
-                if (min.floatValue > max.floatValue)
-                {
-                    max.floatValue = min.floatValue;
-                }
-            }
             position.x += w + 2;
-            EditorGUI.BeginChangeCheck();
             EditorGUI.PropertyField(position, max);
-            if (EditorGUI.EndChangeCheck())
-            {
-                if (max.floatValue < min.floatValue)
-                {
-                    min.floatValue = max.floatValue;
-                }
-            }
             EditorGUIUtility.labelWidth = 0;
+
+            if (min.floatValue > max.floatValue)
+            {
+                max.floatValue = min.floatValue;
+            }
 
             EditorGUI.EndProperty();
         }
@@ -60,26 +49,15 @@ namespace AggroBird.UnityEngineExtend.Editor
             position.width /= 2;
             position.width -= 1;
             float w = position.width;
-            EditorGUI.BeginChangeCheck();
             EditorGUI.PropertyField(position, min);
-            if (EditorGUI.EndChangeCheck())
-            {
-                if (min.doubleValue > max.doubleValue)
-                {
-                    max.doubleValue = min.doubleValue;
-                }
-            }
             position.x += w + 2;
-            EditorGUI.BeginChangeCheck();
             EditorGUI.PropertyField(position, max);
-            if (EditorGUI.EndChangeCheck())
-            {
-                if (max.doubleValue < min.doubleValue)
-                {
-                    min.doubleValue = max.doubleValue;
-                }
-            }
             EditorGUIUtility.labelWidth = 0;
+
+            if (min.doubleValue > max.doubleValue)
+            {
+                max.doubleValue = min.doubleValue;
+            }
 
             EditorGUI.EndProperty();
         }
@@ -100,26 +78,15 @@ namespace AggroBird.UnityEngineExtend.Editor
                 position.width /= 2;
                 position.width -= 1;
                 float w = position.width;
-                EditorGUI.BeginChangeCheck();
                 EditorGUI.PropertyField(position, min);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    if (min.intValue > max.intValue)
-                    {
-                        max.intValue = min.intValue;
-                    }
-                }
                 position.x += w + 2;
-                EditorGUI.BeginChangeCheck();
                 EditorGUI.PropertyField(position, max);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    if (max.intValue < min.intValue)
-                    {
-                        min.intValue = max.intValue;
-                    }
-                }
                 EditorGUIUtility.labelWidth = 0;
+
+                if (min.intValue > max.intValue)
+                {
+                    max.intValue = min.intValue;
+                }
 
                 EditorGUI.EndProperty();
             }
