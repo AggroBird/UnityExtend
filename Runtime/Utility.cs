@@ -18,6 +18,10 @@ namespace AggroBird.UnityEngineExtend
         {
             return array == null || array.Length == 0;
         }
+        public static bool IsNullOrEmpty<T>(List<T> list)
+        {
+            return list == null || list.Count == 0;
+        }
 
         // Returns 0 if array is null
         public static int GetLengthSafe<T>(T[] array)
@@ -26,7 +30,7 @@ namespace AggroBird.UnityEngineExtend
         }
 
         // Returns Array.Empty if list is null
-        public static IReadOnlyList<T> GetReadOnlyList<T>(List<T> list)
+        public static IReadOnlyList<T> GetReadOnlyListSafe<T>(List<T> list)
         {
             return list == null ? Array.Empty<T>() : list;
         }
@@ -35,7 +39,7 @@ namespace AggroBird.UnityEngineExtend
         public static bool IsValidIndex<T>(this T[] arr, int idx)
         {
             if (arr == null) return false;
-            return idx >= 0 && idx < arr.Length;
+            return (uint)idx < (uint)arr.Length;
         }
 
         // Remove element and insert the last element at the location, when list order is not important
