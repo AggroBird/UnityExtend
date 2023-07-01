@@ -25,6 +25,12 @@ namespace AggroBird.UnityEngineExtend
             return array == null ? 0 : array.Length;
         }
 
+        // Returns Array.Empty if list is null
+        public static IReadOnlyList<T> GetReadOnlyList<T>(List<T> list)
+        {
+            return list == null ? Array.Empty<T>() : list;
+        }
+
         // Check if index is within range
         public static bool IsValidIndex<T>(this T[] arr, int idx)
         {
