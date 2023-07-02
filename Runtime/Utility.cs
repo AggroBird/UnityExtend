@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace AggroBird.UnityEngineExtend
 {
@@ -122,6 +123,13 @@ namespace AggroBird.UnityEngineExtend
 #endif
             }
             return result;
+        }
+
+        // Check if scene is active
+        public static bool IsSceneActive(string scene)
+        {
+            Scene activeScene = SceneManager.GetActiveScene();
+            return activeScene.IsValid() && (activeScene.path == scene || activeScene.name == scene);
         }
     }
 }
