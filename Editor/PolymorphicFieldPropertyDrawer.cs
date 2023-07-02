@@ -42,20 +42,20 @@ namespace AggroBird.UnityEngineExtend.Editor
 
             public bool TryGetCacheData(SerializedProperty property, out PolymorphicTypeCacheData result)
             {
-                if (property.TryGetFieldType(out Type fieldType))
+                if (property.TryGetFieldInfo(out FieldInfo fieldInfo))
                 {
-                    if (!cacheDataLookup.TryGetValue(fieldType, out result))
+                    if (!cacheDataLookup.TryGetValue(fieldInfo.FieldType, out result))
                     {
                         typeListBuilder.Clear();
-                        if (!fieldType.IsAbstract)
+                        if (!fieldInfo.FieldType.IsAbstract)
                         {
-                            typeListBuilder.Add(fieldType);
+                            typeListBuilder.Add(fieldInfo.FieldType);
                         }
                         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
                         {
                             foreach (var subType in assembly.GetTypes())
                             {
-                                if (!subType.IsAbstract && subType.IsSubclassOf(fieldType))
+                                if (!subType.IsAbstract && subType.IsSubclassOf(fieldInfo.FieldType))
                                 {
                                     typeListBuilder.Add(subType);
                                 }
@@ -64,7 +64,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                         typeListBuilder.Sort((a, b) => a.Name.CompareTo(b.Name));
 
                         result = new PolymorphicTypeCacheData(typeListBuilder.ToArray());
-                        cacheDataLookup.Add(fieldType, result);
+                        cacheDataLookup.Add(fieldInfo.FieldType, result);
                     }
                     return result.types.Length > 0;
                 }
@@ -94,6 +94,12 @@ namespace AggroBird.UnityEngineExtend.Editor
                 return false;
             }
             return true;
+        }
+
+        private static bool AllowNull(FieldInfo fieldInfo)
+        {
+            PolymorphicFieldAttribute attribute = fieldInfo.GetCustomAttribute<PolymorphicFieldAttribute>();
+            return attribute != null && attribute.AllowNull;
         }
 
 
@@ -250,7 +256,8 @@ namespace AggroBird.UnityEngineExtend.Editor
                     bool expand = EditorGUI.PropertyField(propertyFieldPos, property, label, false);
 
                     // Get current type
-                    int currentType = -1;
+                    int currentSelection = -1;
+                    List<string> dropdownOptions = new(cacheData.dropdownOptions);
                     if (obj != null)
                     {
                         Type objType = obj.GetType();
@@ -258,20 +265,43 @@ namespace AggroBird.UnityEngineExtend.Editor
                         {
                             if (objType.Equals(cacheData.types[i]))
                             {
-                                currentType = i;
+                                currentSelection = i;
                                 break;
                             }
                         }
+                    }
+                    bool allowNull = currentSelection == -1 || (property.TryGetFieldInfo(out FieldInfo fieldInfo) && AllowNull(fieldInfo));
+                    if (allowNull)
+                    {
+                        dropdownOptions.Insert(0, "<null>");
+                        currentSelection++;
                     }
 
                     Rect typeFieldPos = position;
                     typeFieldPos.x += labelWidth;
                     typeFieldPos.width -= labelWidth;
                     EditorGUI.BeginChangeCheck();
-                    int selectedType = EditorGUI.Popup(typeFieldPos, currentType, cacheData.dropdownOptions);
+                    int selectedType = EditorGUI.Popup(typeFieldPos, currentSelection, dropdownOptions.ToArray());
                     if (EditorGUI.EndChangeCheck())
                     {
-                        ChangeManagedReferenceType(serializedProperties, cacheData.types[selectedType]);
+                        if (allowNull)
+                        {
+                            if (selectedType == 0)
+                            {
+                                foreach (var p in serializedProperties)
+                                {
+                                    p.managedReferenceValue = null;
+                                }
+                            }
+                            else
+                            {
+                                ChangeManagedReferenceType(serializedProperties, cacheData.types[selectedType - 1]);
+                            }
+                        }
+                        else
+                        {
+                            ChangeManagedReferenceType(serializedProperties, cacheData.types[selectedType]);
+                        }
                     }
 
                     if (expand)
