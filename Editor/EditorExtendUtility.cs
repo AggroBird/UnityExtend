@@ -52,6 +52,21 @@ namespace AggroBird.UnityEngineExtend.Editor
         }
 
 
+        private static FieldInfo GetFieldRecursive(this Type type, string fieldName)
+        {
+            Type currentType = type;
+            while (currentType != null && currentType != typeof(object))
+            {
+                FieldInfo fieldInfo = currentType.GetField(fieldName, FieldBindingFlags);
+                if (fieldInfo != null)
+                {
+                    return fieldInfo;
+                }
+                currentType = currentType.BaseType;
+            }
+            return null;
+        }
+
         public static bool TryGetFieldInfo(this SerializedProperty property, out FieldInfo fieldInfo, List<object> values = null, bool useInheritedTypes = true)
         {
             object obj = property.serializedObject.targetObject;
@@ -114,13 +129,13 @@ namespace AggroBird.UnityEngineExtend.Editor
 
                     if (obj == null || !useInheritedTypes || endReached)
                     {
-                        fieldInfo = fieldType.GetField(fieldName, FieldBindingFlags);
+                        fieldInfo = fieldType.GetFieldRecursive(fieldName);
                         if (fieldInfo == null) goto OnFailure;
                         fieldType = fieldInfo.FieldType;
                     }
                     else
                     {
-                        fieldInfo = obj.GetType().GetField(fieldName, FieldBindingFlags);
+                        fieldInfo = obj.GetType().GetFieldRecursive(fieldName);
                         if (fieldInfo == null) goto OnFailure;
                         obj = fieldInfo.GetValue(obj);
                         fieldType = obj == null ? fieldInfo.FieldType : obj.GetType();
