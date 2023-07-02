@@ -128,8 +128,12 @@ namespace AggroBird.UnityEngineExtend
         // Check if scene is active
         public static bool IsSceneActive(string scene)
         {
-            Scene activeScene = SceneManager.GetActiveScene();
-            return activeScene.IsValid() && (activeScene.path == scene || activeScene.name == scene);
+            if (!string.IsNullOrEmpty(scene))
+            {
+                Scene activeScene = SceneManager.GetActiveScene();
+                return activeScene.IsValid() && (activeScene.path == scene || activeScene.name == scene);
+            }
+            return false;
         }
     }
 }
