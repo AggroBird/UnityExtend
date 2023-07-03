@@ -57,8 +57,7 @@ namespace AggroBird.UnityEngineExtend
         // Copy from transform
         public static void CopyTransform(this Transform transform, Transform copyFrom, bool copyScale = false)
         {
-            transform.position = copyFrom.position;
-            transform.rotation = copyFrom.rotation;
+            transform.SetPositionAndRotation(copyFrom.position, copyFrom.rotation);
             if (copyScale)
             {
                 transform.localScale = copyFrom.localScale;
