@@ -55,19 +55,14 @@ namespace AggroBird.UnityEngineExtend
         }
 
         // Copy from transform
-        public static void SetPositionAndRotation(this Transform transform, Transform otherTransform)
+        public static void CopyTransform(this Transform transform, Transform copyFrom, bool copyScale = false)
         {
-            transform.SetPositionAndRotation(otherTransform.position, otherTransform.rotation);
-        }
-        public static void SetLocalPositionAndRotation(this Transform transform, Transform otherTransform)
-        {
-            transform.SetLocalPositionAndRotation(otherTransform.localPosition, otherTransform.localRotation);
-        }
-        public static void CopyTransform(this Transform transform, Transform otherTransform)
-        {
-            transform.position = otherTransform.position;
-            transform.rotation = otherTransform.rotation;
-            transform.localScale = otherTransform.localScale;
+            transform.position = copyFrom.position;
+            transform.rotation = copyFrom.rotation;
+            if (copyScale)
+            {
+                transform.localScale = copyFrom.localScale;
+            }
         }
 
         // Try get for parent
