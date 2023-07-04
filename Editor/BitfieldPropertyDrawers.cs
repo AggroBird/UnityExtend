@@ -301,7 +301,7 @@ namespace AggroBird.UnityEngineExtend.Editor
             {
                 filter = EditorGUILayout.TextField(filter, EditorStyles.toolbarSearchField);
                 string[] filterSplit = filter.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                bool hasMultipleDifferentValues = property.hasMultipleDifferentValues;
+
                 foreach (var bitfieldLabel in labelList.Labels)
                 {
                     // Apply filter
