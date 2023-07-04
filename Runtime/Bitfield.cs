@@ -102,7 +102,9 @@ namespace AggroBird.UnityEngineExtend
 
     // Bitfield mask
     // Collection of flags that can perform bitwise operations.
-    // Can do bitwise-and with bitfield label list to ensure validity of flags.
+    // Before using bitwise-and on other masks, it is recommended to bitwise-and with the corresponding
+    // label list, in case there are any ghost fields that have been removed from the label list still
+    // present in the mask.
     public interface IBitfieldMask
     {
         // Precision
