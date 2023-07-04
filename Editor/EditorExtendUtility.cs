@@ -67,7 +67,7 @@ namespace AggroBird.UnityEngineExtend.Editor
             return null;
         }
 
-        public static bool TryGetFieldInfo(this SerializedProperty property, out FieldInfo fieldInfo, List<object> values = null, bool useInheritedTypes = true)
+        public static bool TryGetFieldInfo(this SerializedProperty property, out FieldInfo fieldInfo, out Type fieldType, List<object> values = null, bool useInheritedTypes = true)
         {
             object obj = property.serializedObject.targetObject;
             if (values != null)
@@ -76,7 +76,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                 values.Add(obj);
             }
 
-            Type fieldType = obj.GetType();
+            fieldType = obj.GetType();
             fieldInfo = null;
             string path = property.propertyPath;
             bool endReached = false;
@@ -150,6 +150,7 @@ namespace AggroBird.UnityEngineExtend.Editor
             return true;
 
         OnFailure:
+            fieldType = null;
             fieldInfo = null;
             return false;
         }

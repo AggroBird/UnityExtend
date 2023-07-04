@@ -42,20 +42,20 @@ namespace AggroBird.UnityEngineExtend.Editor
 
             public bool TryGetCacheData(SerializedProperty property, out PolymorphicTypeCacheData result)
             {
-                if (property.TryGetFieldInfo(out FieldInfo fieldInfo))
+                if (property.TryGetFieldInfo(out _, out Type fieldType))
                 {
-                    if (!cacheDataLookup.TryGetValue(fieldInfo.FieldType, out result))
+                    if (!cacheDataLookup.TryGetValue(fieldType, out result))
                     {
                         typeListBuilder.Clear();
-                        if (!fieldInfo.FieldType.IsAbstract)
+                        if (!fieldType.IsAbstract)
                         {
-                            typeListBuilder.Add(fieldInfo.FieldType);
+                            typeListBuilder.Add(fieldType);
                         }
                         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
                         {
                             foreach (var subType in assembly.GetTypes())
                             {
-                                if (!subType.IsAbstract && subType.IsSubclassOf(fieldInfo.FieldType))
+                                if (!subType.IsAbstract && subType.IsSubclassOf(fieldType))
                                 {
                                     typeListBuilder.Add(subType);
                                 }
@@ -64,7 +64,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                         typeListBuilder.Sort((a, b) => a.Name.CompareTo(b.Name));
 
                         result = new PolymorphicTypeCacheData(typeListBuilder.ToArray());
-                        cacheDataLookup.Add(fieldInfo.FieldType, result);
+                        cacheDataLookup.Add(fieldType, result);
                     }
                     return result.types.Length > 0;
                 }
@@ -270,7 +270,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                             }
                         }
                     }
-                    bool allowNull = currentSelection == -1 || (property.TryGetFieldInfo(out FieldInfo fieldInfo) && AllowNull(fieldInfo));
+                    bool allowNull = currentSelection == -1 || (property.TryGetFieldInfo(out FieldInfo fieldInfo, out _) && AllowNull(fieldInfo));
                     if (allowNull)
                     {
                         dropdownOptions.Insert(0, "<null>");
