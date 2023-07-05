@@ -237,12 +237,15 @@ namespace AggroBird.UnityEngineExtend.Editor
                     position = EditorGUI.PrefixLabel(position, label);
                     using (new EditorExtendUtility.MixedValueScope(true))
                     {
+                        int indentLevel = EditorGUI.indentLevel;
+                        EditorGUI.indentLevel = 0;
                         EditorGUI.BeginChangeCheck();
                         int selectedType = EditorGUI.Popup(position, -1, cacheData.dropdownOptions);
                         if (EditorGUI.EndChangeCheck())
                         {
                             ChangeManagedReferenceType(serializedProperties, cacheData.types[selectedType]);
                         }
+                        EditorGUI.indentLevel = indentLevel;
                     }
                     GUI.contentColor = Color.white;
                 }
