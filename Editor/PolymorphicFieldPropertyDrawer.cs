@@ -280,6 +280,8 @@ namespace AggroBird.UnityEngineExtend.Editor
                         currentSelection++;
                     }
 
+                    int indentLevel = EditorGUI.indentLevel;
+                    EditorGUI.indentLevel = 0;
                     Rect typeFieldPos = position;
                     typeFieldPos.x += labelWidth;
                     typeFieldPos.width -= labelWidth;
@@ -306,6 +308,7 @@ namespace AggroBird.UnityEngineExtend.Editor
                             ChangeManagedReferenceType(serializedProperties, cacheData.types[selectedType]);
                         }
                     }
+                    EditorGUI.indentLevel = indentLevel;
 
                     if (expand)
                     {
