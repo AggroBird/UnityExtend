@@ -61,7 +61,14 @@ namespace AggroBird.UnityEngineExtend.Editor
                                 }
                             }
                         }
-                        typeListBuilder.Sort((a, b) => a.Name.CompareTo(b.Name));
+                        typeListBuilder.Sort((lhs, rhs) =>
+                        {
+                            PolymorphicClassTypeAttribute lhsAttribute = lhs.GetCustomAttribute<PolymorphicClassTypeAttribute>();
+                            int lhsOrder = lhsAttribute != null ? int.MinValue : lhsAttribute.Order;
+                            PolymorphicClassTypeAttribute rhsAttribute = rhs.GetCustomAttribute<PolymorphicClassTypeAttribute>();
+                            int rhsOrder = rhsAttribute != null ? int.MinValue : rhsAttribute.Order;
+                            return lhsOrder == rhsOrder ? lhs.Name.CompareTo(rhs.Name) : lhsOrder.CompareTo(rhsOrder);
+                        });
 
                         result = new PolymorphicTypeCacheData(typeListBuilder.ToArray());
                         cacheDataLookup.Add(fieldType, result);
