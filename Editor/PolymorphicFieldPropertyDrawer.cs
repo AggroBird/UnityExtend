@@ -81,7 +81,7 @@ namespace AggroBird.UnityEngineExtend.Editor
             }
         }
 
-        private static PolymorphicTypeCache typeCache = new PolymorphicTypeCache();
+        private static readonly PolymorphicTypeCache typeCache = new PolymorphicTypeCache();
 
         private const BindingFlags SerializedFieldBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
         private static bool IsSerializedField(FieldInfo fieldInfo)

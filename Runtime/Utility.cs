@@ -29,18 +29,31 @@ namespace AggroBird.UnityEngineExtend
         {
             return array == null ? 0 : array.Length;
         }
+        public static int GetLengthSafe<T>(List<T> list)
+        {
+            return list == null ? 0 : list.Count;
+        }
 
-        // Returns Array.Empty if list is null
+        // Returns Array.Empty if array is null
+        public static IReadOnlyList<T> GetReadOnlyListSafe<T>(T[] array)
+        {
+            return array == null ? Array.Empty<T>() : array;
+        }
         public static IReadOnlyList<T> GetReadOnlyListSafe<T>(List<T> list)
         {
             return list == null ? Array.Empty<T>() : list;
         }
 
         // Check if index is within range
-        public static bool IsValidIndex<T>(this T[] arr, int idx)
+        public static bool IsValidIndex<T>(this T[] array, int idx)
         {
-            if (arr == null) return false;
-            return (uint)idx < (uint)arr.Length;
+            if (array == null) return false;
+            return (uint)idx < (uint)array.Length;
+        }
+        public static bool IsValidIndex<T>(this List<T> list, int idx)
+        {
+            if (list == null) return false;
+            return (uint)idx < (uint)list.Count;
         }
 
         // Remove element and insert the last element at the location, when list order is not important
