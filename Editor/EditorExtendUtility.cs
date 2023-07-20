@@ -102,7 +102,10 @@ namespace AggroBird.UnityEngineExtend.Editor
                     }
                     else
                     {
-                        obj = (obj as IList)[int.Parse(indexStr)];
+                        IList list = obj as IList;
+                        int idx = int.Parse(indexStr);
+                        if (idx < 0 || idx >= list.Count) goto OnFailure;
+                        obj = list[idx];
                         fieldType = obj == null ? GetElementType(fieldType) : obj.GetType();
 
                         if (values != null)
