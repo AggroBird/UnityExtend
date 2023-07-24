@@ -242,19 +242,16 @@ namespace AggroBird.UnityEngineExtend.Editor
 
                 // Get all supported types
                 List<Type> supportedTypes = new();
-                if (allowNull) supportedTypes.Insert(0, null);
                 supportedTypes.AddRange(GetSupportedFieldTypes(fieldType));
                 supportedTypes.Sort((lhs, rhs) =>
                 {
-                    if (lhs == null && rhs == null) return 0;
-                    if (lhs == null) return -1;
-                    if (rhs == null) return 1;
                     PolymorphicClassTypeAttribute lhsAttribute = lhs.GetCustomAttribute<PolymorphicClassTypeAttribute>();
                     int lhsOrder = lhsAttribute == null ? int.MinValue : lhsAttribute.Order;
                     PolymorphicClassTypeAttribute rhsAttribute = rhs.GetCustomAttribute<PolymorphicClassTypeAttribute>();
                     int rhsOrder = rhsAttribute == null ? int.MinValue : rhsAttribute.Order;
                     return lhsOrder == rhsOrder ? lhs.Name.CompareTo(rhs.Name) : lhsOrder.CompareTo(rhsOrder);
                 });
+                if (allowNull) supportedTypes.Insert(0, null);
 
                 // Check if we should show mixed values
                 bool showMixedValue = IsEditingMultipleDifferentTypes(property, out SerializedProperty[] serializedProperties);
@@ -297,17 +294,20 @@ namespace AggroBird.UnityEngineExtend.Editor
             return false;
         }
 
+        private static List<Type> supportedTypeListBuilder = new();
         private static IEnumerable<Type> GetSupportedFieldTypes(Type fieldType)
         {
-            return TypeCache.GetTypesDerivedFrom(fieldType).Where(IsAssignableNonUnityType);
+            supportedTypeListBuilder.Clear();
+            supportedTypeListBuilder.AddRange(TypeCache.GetTypesDerivedFrom(fieldType).Where(IsAssignableType));
+            if (IsAssignableType(fieldType))
+            {
+                supportedTypeListBuilder.Add(fieldType);
+            }
+            return supportedTypeListBuilder.ToArray();
         }
         private static bool IsAssignableType(Type type)
         {
-            return type.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface;
-        }
-        private static bool IsAssignableNonUnityType(Type type)
-        {
-            return IsAssignableType(type) && !type.IsSubclassOf(typeof(UnityObject));
+            return type.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface && !type.IsSubclassOf(typeof(UnityObject));
         }
 
         private static string GetTypeDisplayName(Type type)
