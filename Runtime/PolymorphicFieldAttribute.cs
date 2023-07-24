@@ -8,6 +8,7 @@ namespace AggroBird.UnityEngineExtend
     {
         public string DisplayName { get; set; }
         public string Tooltip { get; set; }
+        public int Order { get; set; }
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
