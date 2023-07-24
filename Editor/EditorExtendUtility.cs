@@ -158,7 +158,7 @@ namespace AggroBird.UnityEngineExtend.Editor
             return false;
         }
 
-        private static readonly StringBuilder tagBuilder = new StringBuilder();
+        private static readonly StringBuilder tagBuilder = new();
         public static void FormatTag(SerializedProperty tag, int maxLength = 32)
         {
             if (!tag.hasMultipleDifferentValues)

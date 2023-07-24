@@ -6,7 +6,8 @@ namespace AggroBird.UnityEngineExtend
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public sealed class PolymorphicClassTypeAttribute : Attribute
     {
-        public int Order { get; set; }
+        public string DisplayName { get; set; }
+        public string Tooltip { get; set; }
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
