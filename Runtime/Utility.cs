@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace AggroBird.UnityEngineExtend
+namespace AggroBird.UnityExtend
 {
     public static class Utility
     {

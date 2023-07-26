@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AggroBird.UnityEngineExtend
+namespace AggroBird.UnityExtend
 {
     // Swizzles for setting values in common structs
     public static class Swizzle

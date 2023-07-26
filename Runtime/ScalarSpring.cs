@@ -1,4 +1,4 @@
-﻿namespace AggroBird.UnityEngineExtend
+﻿namespace AggroBird.UnityExtend
 {
     // Source: http://allenchou.net/2015/04/game-math-precise-control-over-numeric-springing/
 

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AggroBird.UnityEngineExtend
+namespace AggroBird.UnityExtend
 {
     // 2D euler rotation
     [System.Serializable]

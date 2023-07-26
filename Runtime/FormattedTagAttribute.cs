@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AggroBird.UnityEngineExtend
+namespace AggroBird.UnityExtend
 {
     [AttributeUsage(AttributeTargets.Field)]
     public class FormattedTagAttribute : PropertyAttribute

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace AggroBird.UnityEngineExtend
+namespace AggroBird.UnityExtend
 {
     // Math extensions
     // All vector functions assume clockwise rotation and start from up (0,1) at angle 0

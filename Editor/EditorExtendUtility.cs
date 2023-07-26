@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using UnityEditor;
 
-namespace AggroBird.UnityEngineExtend.Editor
+namespace AggroBird.UnityExtend.Editor
 {
     public static class EditorExtendUtility
     {

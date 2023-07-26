@@ -1,3 +1,3 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("AggroBird.UnityEngineExtend.Editor")]
+[assembly: InternalsVisibleTo("AggroBird.UnityExtend.Editor")]

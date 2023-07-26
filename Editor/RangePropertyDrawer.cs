@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace AggroBird.UnityEngineExtend.Editor
+namespace AggroBird.UnityExtend.Editor
 {
     [CustomPropertyDrawer(typeof(FloatRange))]
     internal sealed class FloatRangePropertyDrawer : PropertyDrawer

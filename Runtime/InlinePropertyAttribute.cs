@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AggroBird.UnityEngineExtend
+namespace AggroBird.UnityExtend
 {
     public class InlinePropertyAttribute : PropertyAttribute
     {

@@ -1,8 +1,8 @@
 {
-    "name": "AggroBird.UnityEngineExtend.Editor",
-    "rootNamespace": "AggroBird.UnityEngineExtend.Editor",
+    "name": "AggroBird.UnityExtend.Editor",
+    "rootNamespace": "AggroBird.UnityExtend.Editor",
     "references": [
-        "AggroBird.UnityEngineExtend"
+        "AggroBird.UnityExtend"
     ],
     "includePlatforms": [
         "Editor"

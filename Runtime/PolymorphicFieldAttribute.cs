@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AggroBird.UnityEngineExtend
+namespace AggroBird.UnityExtend
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public sealed class PolymorphicClassTypeAttribute : Attribute

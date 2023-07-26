@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
 
-namespace AggroBird.UnityEngineExtend.Editor
+namespace AggroBird.UnityExtend.Editor
 {
     internal static class BitfieldEditorUtility
     {

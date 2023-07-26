@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace AggroBird.UnityEngineExtend.Editor
+namespace AggroBird.UnityExtend.Editor
 {
     public struct SerializedPropertyEnumerator
     {

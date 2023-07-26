@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace AggroBird.UnityEngineExtend.Editor
+namespace AggroBird.UnityExtend.Editor
 {
     [CustomPropertyDrawer(typeof(SceneAttribute))]
     internal class SceneAttributePropertyDrawer : PropertyDrawer
