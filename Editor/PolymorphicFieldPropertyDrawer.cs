@@ -14,7 +14,7 @@ namespace AggroBird.UnityEngineExtend.Editor
     [InitializeOnLoad]
     internal sealed class PolymorphicFieldPropertyDrawer : PropertyDrawer
     {
-        private const string ManagedRefenceDataKey = "MANAGED_REFERENCE_DATA:";
+        private const string ManagedRefenceDataKey = "MANAGED_REFERENCE_DATA";
 
         static PolymorphicFieldPropertyDrawer()
         {
@@ -181,30 +181,14 @@ namespace AggroBird.UnityEngineExtend.Editor
                 return;
             }
 
-            Type currentType = obj.GetType();
-
-            // Fetch current top-level fields
-            List<(string name, Type type, object value)> fields = new();
-            foreach (var iter in new SerializedPropertyEnumerator(property.Copy()))
-            {
-                if (TryGetSerializedField(currentType, iter.name, out FieldInfo fieldInfo))
-                {
-                    fields.Add((iter.name, fieldInfo.FieldType, fieldInfo.GetValue(obj)));
-                }
-            }
+            // Fetch current property data
+            string json = JsonUtility.ToJson(obj);
 
             // Create new object
             obj = FormatterServices.GetUninitializedObject(newType);
 
-            // Migrate shared fields
-            currentType = obj.GetType();
-            foreach (var field in fields)
-            {
-                if (TryGetSerializedField(currentType, field.name, out FieldInfo fieldInfo) && fieldInfo.FieldType.IsAssignableFrom(field.type))
-                {
-                    fieldInfo.SetValue(obj, field.value);
-                }
-            }
+            // Migrate shared properties
+            JsonUtility.FromJsonOverwrite(json, obj);
 
             // Assign new object
             property.managedReferenceValue = obj;
@@ -348,25 +332,6 @@ namespace AggroBird.UnityEngineExtend.Editor
         {
             attribute = type.GetCustomAttribute<PolymorphicClassTypeAttribute>();
             return attribute != null;
-        }
-
-        private static bool IsSerializedField(FieldInfo fieldInfo)
-        {
-            return fieldInfo.IsPublic || fieldInfo.GetCustomAttribute<SerializeField>() != null;
-        }
-        private static bool TryGetSerializedField(Type type, string name, out FieldInfo fieldInfo)
-        {
-            fieldInfo = type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            if (fieldInfo == null)
-            {
-                return false;
-            }
-            if (!IsSerializedField(fieldInfo))
-            {
-                fieldInfo = null;
-                return false;
-            }
-            return true;
         }
 
         private static bool AllowNull(FieldInfo fieldInfo)
