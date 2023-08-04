@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using UnityEditor;
@@ -198,6 +199,34 @@ namespace AggroBird.UnityExtend.Editor
                     tag.stringValue = str;
                 }
             }
+        }
+
+
+        private static bool TryGetPropertyNameFromExpression(Expression<Func<object>> exp, out string result)
+        {
+            if (exp.Body is MemberExpression member)
+            {
+                result = member.Member.Name;
+                return true;
+            }
+            else if (exp.Body is UnaryExpression unary)
+            {
+                if (unary.Operand is MemberExpression unaryMember)
+                {
+                    result = unaryMember.Member.Name;
+                    return true;
+                }
+            }
+            result = null;
+            return false;
+        }
+        public static SerializedProperty FindProperty(this SerializedObject serializedObject, Expression<Func<object>> exp)
+        {
+            return TryGetPropertyNameFromExpression(exp, out string name) ? serializedObject.FindProperty(name) : null;
+        }
+        public static SerializedProperty FindPropertyRelative(this SerializedProperty serializedProperty, Expression<Func<object>> exp)
+        {
+            return TryGetPropertyNameFromExpression(exp, out string name) ? serializedProperty.FindPropertyRelative(name) : null;
         }
     }
 }
