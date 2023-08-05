@@ -204,19 +204,32 @@ namespace AggroBird.UnityExtend.Editor
 
         private static bool TryGetPropertyNameFromExpression(Expression<Func<object>> exp, out string result)
         {
-            if (exp.Body is MemberExpression member)
+            static bool ExtractMemberName(MemberInfo memberInfo, out string result)
             {
-                result = member.Member.Name;
-                return true;
-            }
-            else if (exp.Body is UnaryExpression unary)
-            {
-                if (unary.Operand is MemberExpression unaryMember)
+                if (memberInfo.MemberType == MemberTypes.Field)
                 {
-                    result = unaryMember.Member.Name;
+                    result = memberInfo.Name;
                     return true;
                 }
+                else if (memberInfo.MemberType == MemberTypes.Property)
+                {
+                    result = $"<{memberInfo.Name}>k__BackingField";
+                    return true;
+                }
+
+                result = null;
+                return false;
             }
+
+            if (exp.Body is MemberExpression member)
+            {
+                return ExtractMemberName(member.Member, out result);
+            }
+            else if (exp.Body is UnaryExpression unary && unary.Operand is MemberExpression unaryMember)
+            {
+                return ExtractMemberName(unaryMember.Member, out result);
+            }
+
             result = null;
             return false;
         }
