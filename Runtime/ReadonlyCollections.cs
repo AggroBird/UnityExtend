@@ -40,6 +40,18 @@ namespace AggroBird.UnityExtend
             return obj is ReadOnlyArray<T> other && ReferenceEquals(arr, other.arr);
         }
 
+        public T[] ToArray()
+        {
+            if (arr == null || arr.Length == 0)
+            {
+                return Array.Empty<T>();
+            }
+
+            T[] result = new T[arr.Length];
+            Array.Copy(arr, result, arr.Length);
+            return result;
+        }
+
 
         public static implicit operator ReadOnlyArray<T>(T[] arr) => new(arr);
 
@@ -92,6 +104,16 @@ namespace AggroBird.UnityExtend
         public override bool Equals(object obj)
         {
             return obj is ReadOnlyList<T> other && ReferenceEquals(list, other.list);
+        }
+
+        public T[] ToArray()
+        {
+            if (list == null)
+            {
+                return Array.Empty<T>();
+            }
+
+            return list.ToArray();
         }
 
 
