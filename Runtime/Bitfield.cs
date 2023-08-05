@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace AggroBird.UnityExtend
@@ -73,19 +72,19 @@ namespace AggroBird.UnityExtend
         [SerializeField] private int value;
 
 
-        public static implicit operator BitfieldFlag(int flag) => new BitfieldFlag(flag);
+        public static implicit operator BitfieldFlag(int flag) => new(flag);
         public static implicit operator int(BitfieldFlag flag) => flag.value;
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             return value.GetHashCode();
         }
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is BitfieldFlag other && Equals(other);
         }
 
-        public bool Equals(BitfieldFlag other)
+        public readonly bool Equals(BitfieldFlag other)
         {
             return value == other.value;
         }
@@ -93,7 +92,7 @@ namespace AggroBird.UnityExtend
         public static bool operator ==(BitfieldFlag lhs, BitfieldFlag rhs) => lhs.Equals(rhs);
         public static bool operator !=(BitfieldFlag lhs, BitfieldFlag rhs) => !lhs.Equals(rhs);
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return value.ToString();
         }
@@ -116,11 +115,11 @@ namespace AggroBird.UnityExtend
     [Serializable]
     public struct BitfieldMask32 : IEquatable<BitfieldMask32>, IBitfieldMask
     {
-        public static readonly BitfieldMask32 none = new BitfieldMask32();
+        public static readonly BitfieldMask32 none = new();
 
         [SerializeField] private int mask0;
 
-        private int GetMask(int index)
+        private readonly int GetMask(int index)
         {
             switch (index)
             {
@@ -137,10 +136,10 @@ namespace AggroBird.UnityExtend
             throw new IndexOutOfRangeException();
         }
 
-        public int BitCount => 32;
+        public readonly int BitCount => 32;
         public bool this[BitfieldFlag index]
         {
-            get
+            readonly get
             {
                 BitfieldUtility.GetIdxFlag(index, out int idx, out int flag);
                 return (GetMask(idx) & flag) != 0;
@@ -177,17 +176,17 @@ namespace AggroBird.UnityExtend
             return result;
         }
 
-        public bool Equals(BitfieldMask32 other)
+        public readonly bool Equals(BitfieldMask32 other)
         {
             return mask0 == other.mask0;
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             int result = mask0;
             return result;
         }
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is BitfieldMask32 other && Equals(other);
         }
@@ -195,7 +194,7 @@ namespace AggroBird.UnityExtend
         public static bool operator ==(BitfieldMask32 lhs, BitfieldMask32 rhs) => lhs.Equals(rhs);
         public static bool operator !=(BitfieldMask32 lhs, BitfieldMask32 rhs) => !lhs.Equals(rhs);
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return $"{mask0:X8}";
         }
@@ -204,12 +203,12 @@ namespace AggroBird.UnityExtend
     [Serializable]
     public struct BitfieldMask64 : IEquatable<BitfieldMask64>, IBitfieldMask
     {
-        public static readonly BitfieldMask64 none = new BitfieldMask64();
+        public static readonly BitfieldMask64 none = new();
 
         [SerializeField] private int mask0;
         [SerializeField] private int mask1;
 
-        private int GetMask(int index)
+        private readonly int GetMask(int index)
         {
             switch (index)
             {
@@ -228,10 +227,10 @@ namespace AggroBird.UnityExtend
             throw new IndexOutOfRangeException();
         }
 
-        public int BitCount => 64;
+        public readonly int BitCount => 64;
         public bool this[BitfieldFlag index]
         {
-            get
+            readonly get
             {
                 BitfieldUtility.GetIdxFlag(index, out int idx, out int flag);
                 return (GetMask(idx) & flag) != 0;
@@ -272,19 +271,19 @@ namespace AggroBird.UnityExtend
             return result;
         }
 
-        public bool Equals(BitfieldMask64 other)
+        public readonly bool Equals(BitfieldMask64 other)
         {
             return mask0 == other.mask0 &&
                 mask1 == other.mask1;
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             int result = mask0;
             result ^= mask1;
             return result;
         }
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is BitfieldMask64 other && Equals(other);
         }
@@ -292,7 +291,7 @@ namespace AggroBird.UnityExtend
         public static bool operator ==(BitfieldMask64 lhs, BitfieldMask64 rhs) => lhs.Equals(rhs);
         public static bool operator !=(BitfieldMask64 lhs, BitfieldMask64 rhs) => !lhs.Equals(rhs);
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return $"{mask1:X8}{mask0:X8}";
         }
@@ -301,14 +300,14 @@ namespace AggroBird.UnityExtend
     [Serializable]
     public struct BitfieldMask128 : IEquatable<BitfieldMask128>, IBitfieldMask
     {
-        public static readonly BitfieldMask128 none = new BitfieldMask128();
+        public static readonly BitfieldMask128 none = new();
 
         [SerializeField] private int mask0;
         [SerializeField] private int mask1;
         [SerializeField] private int mask2;
         [SerializeField] private int mask3;
 
-        private int GetMask(int index)
+        private readonly int GetMask(int index)
         {
             switch (index)
             {
@@ -331,10 +330,10 @@ namespace AggroBird.UnityExtend
             throw new IndexOutOfRangeException();
         }
 
-        public int BitCount => 128;
+        public readonly int BitCount => 128;
         public bool this[BitfieldFlag index]
         {
-            get
+            readonly get
             {
                 BitfieldUtility.GetIdxFlag(index, out int idx, out int flag);
                 return (GetMask(idx) & flag) != 0;
@@ -383,7 +382,7 @@ namespace AggroBird.UnityExtend
             return result;
         }
 
-        public bool Equals(BitfieldMask128 other)
+        public readonly bool Equals(BitfieldMask128 other)
         {
             return mask0 == other.mask0 &&
                 mask1 == other.mask1 &&
@@ -391,7 +390,7 @@ namespace AggroBird.UnityExtend
                 mask3 == other.mask3;
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             int result = mask0;
             result ^= mask1;
@@ -399,7 +398,7 @@ namespace AggroBird.UnityExtend
             result ^= mask3;
             return result;
         }
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is BitfieldMask128 other && Equals(other);
         }
@@ -407,7 +406,7 @@ namespace AggroBird.UnityExtend
         public static bool operator ==(BitfieldMask128 lhs, BitfieldMask128 rhs) => lhs.Equals(rhs);
         public static bool operator !=(BitfieldMask128 lhs, BitfieldMask128 rhs) => !lhs.Equals(rhs);
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return $"{mask3:X8}{mask2:X8}{mask1:X8}{mask0:X8}";
         }
@@ -416,7 +415,7 @@ namespace AggroBird.UnityExtend
     [Serializable]
     public struct BitfieldMask256 : IEquatable<BitfieldMask256>, IBitfieldMask
     {
-        public static readonly BitfieldMask256 none = new BitfieldMask256();
+        public static readonly BitfieldMask256 none = new();
 
         [SerializeField] private int mask0;
         [SerializeField] private int mask1;
@@ -427,7 +426,7 @@ namespace AggroBird.UnityExtend
         [SerializeField] private int mask6;
         [SerializeField] private int mask7;
 
-        private int GetMask(int index)
+        private readonly int GetMask(int index)
         {
             switch (index)
             {
@@ -458,10 +457,10 @@ namespace AggroBird.UnityExtend
             throw new IndexOutOfRangeException();
         }
 
-        public int BitCount => 256;
+        public readonly int BitCount => 256;
         public bool this[BitfieldFlag index]
         {
-            get
+            readonly get
             {
                 BitfieldUtility.GetIdxFlag(index, out int idx, out int flag);
                 return (GetMask(idx) & flag) != 0;
@@ -526,7 +525,7 @@ namespace AggroBird.UnityExtend
             return result;
         }
 
-        public bool Equals(BitfieldMask256 other)
+        public readonly bool Equals(BitfieldMask256 other)
         {
             return mask0 == other.mask0 &&
                 mask1 == other.mask1 &&
@@ -538,7 +537,7 @@ namespace AggroBird.UnityExtend
                 mask7 == other.mask7;
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             int result = mask0;
             result ^= mask1;
@@ -550,7 +549,7 @@ namespace AggroBird.UnityExtend
             result ^= mask7;
             return result;
         }
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is BitfieldMask256 other && Equals(other);
         }
@@ -558,7 +557,7 @@ namespace AggroBird.UnityExtend
         public static bool operator ==(BitfieldMask256 lhs, BitfieldMask256 rhs) => lhs.Equals(rhs);
         public static bool operator !=(BitfieldMask256 lhs, BitfieldMask256 rhs) => !lhs.Equals(rhs);
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return $"{mask7:X8}{mask6:X8}{mask5:X8}{mask4:X8}{mask3:X8}{mask2:X8}{mask1:X8}{mask0:X8}";
         }
@@ -577,10 +576,10 @@ namespace AggroBird.UnityExtend
         [SerializeField] private int index;
         [SerializeField] private string name;
 
-        public int Index => index;
-        public string Name => name;
+        public readonly int Index => index;
+        public readonly string Name => name;
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return Name;
         }
@@ -593,7 +592,7 @@ namespace AggroBird.UnityExtend
         // Precision
         int BitCount { get; }
         // Get user defined labels (ordered by user definition, not index)
-        IReadOnlyList<BitfieldLabel> Labels { get; }
+        ReadOnlySpan<BitfieldLabel> Labels { get; }
         // Check if flag is defined in label list
         bool this[BitfieldFlag index] { get; }
     }
@@ -608,9 +607,9 @@ namespace AggroBird.UnityExtend
         [SerializeField] private BitfieldLabel[] values;
         [SerializeField] private BitfieldMask32 mask;
 
-        public int BitCount => 32;
-        public IReadOnlyList<BitfieldLabel> Labels => values;
-        public bool this[BitfieldFlag flag] => mask[flag];
+        public readonly int BitCount => 32;
+        public readonly ReadOnlySpan<BitfieldLabel> Labels => values;
+        public readonly bool this[BitfieldFlag flag] => mask[flag];
 
         public static BitfieldMask32 operator &(BitfieldMask32 lhs, BitfieldLabelList32 rhs)
         {
@@ -628,9 +627,9 @@ namespace AggroBird.UnityExtend
         [SerializeField] private BitfieldLabel[] values;
         [SerializeField] private BitfieldMask64 mask;
 
-        public int BitCount => 64;
-        public IReadOnlyList<BitfieldLabel> Labels => values;
-        public bool this[BitfieldFlag flag] => mask[flag];
+        public readonly int BitCount => 64;
+        public readonly ReadOnlySpan<BitfieldLabel> Labels => values;
+        public readonly bool this[BitfieldFlag flag] => mask[flag];
 
         public static BitfieldMask64 operator &(BitfieldMask64 lhs, BitfieldLabelList64 rhs)
         {
@@ -648,9 +647,9 @@ namespace AggroBird.UnityExtend
         [SerializeField] private BitfieldLabel[] values;
         [SerializeField] private BitfieldMask128 mask;
 
-        public int BitCount => 128;
-        public IReadOnlyList<BitfieldLabel> Labels => values;
-        public bool this[BitfieldFlag flag] => mask[flag];
+        public readonly int BitCount => 128;
+        public readonly ReadOnlySpan<BitfieldLabel> Labels => values;
+        public readonly bool this[BitfieldFlag flag] => mask[flag];
 
         public static BitfieldMask128 operator &(BitfieldMask128 lhs, BitfieldLabelList128 rhs)
         {
@@ -668,9 +667,9 @@ namespace AggroBird.UnityExtend
         [SerializeField] private BitfieldLabel[] values;
         [SerializeField] private BitfieldMask256 mask;
 
-        public int BitCount => 256;
-        public IReadOnlyList<BitfieldLabel> Labels => values;
-        public bool this[BitfieldFlag flag] => mask[flag];
+        public readonly int BitCount => 256;
+        public readonly ReadOnlySpan<BitfieldLabel> Labels => values;
+        public readonly bool this[BitfieldFlag flag] => mask[flag];
 
         public static BitfieldMask256 operator &(BitfieldMask256 lhs, BitfieldLabelList256 rhs)
         {

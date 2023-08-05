@@ -23,17 +23,17 @@ namespace AggroBird.UnityExtend
         [SerializeField] private float min;
         [SerializeField] private float max;
 
-        public float Min => min;
-        public float Max => max;
+        public readonly float Min => min;
+        public readonly float Max => max;
 
-        public float Range => max - min;
+        public readonly float Range => max - min;
 
-        public bool Contains(float value)
+        public readonly bool Contains(float value)
         {
             return value >= min && value <= max;
         }
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return $"({min} - {max})";
         }
@@ -59,17 +59,17 @@ namespace AggroBird.UnityExtend
         [SerializeField] private double min;
         [SerializeField] private double max;
 
-        public double Min => min;
-        public double Max => max;
+        public readonly double Min => min;
+        public readonly double Max => max;
 
-        public double Range => max - min;
+        public readonly double Range => max - min;
 
-        public bool Contains(double value)
+        public readonly bool Contains(double value)
         {
             return value >= min && value <= max;
         }
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return $"({min} - {max})";
         }
@@ -95,17 +95,17 @@ namespace AggroBird.UnityExtend
         [SerializeField] private int min;
         [SerializeField] private int max;
 
-        public int Min => min;
-        public int Max => max;
+        public readonly int Min => min;
+        public readonly int Max => max;
 
-        public int Range => max - min;
+        public readonly int Range => max - min;
 
-        public bool Contains(int value)
+        public readonly bool Contains(int value)
         {
             return value >= min && value <= max;
         }
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return $"({min} - {max})";
         }

@@ -33,7 +33,7 @@ namespace AggroBird.UnityExtend
         [SerializeField] private long value0;
         [SerializeField] private long value1;
 
-        public long this[int index]
+        public readonly long this[int index]
         {
             get
             {
@@ -46,16 +46,16 @@ namespace AggroBird.UnityExtend
             }
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             return (value0 ^ (value1 << 2)).GetHashCode();
         }
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is GUID other && Equals(other);
         }
 
-        public bool Equals(GUID other)
+        public readonly bool Equals(GUID other)
         {
             return value0 == other.value0 && value1 == other.value1;
         }
@@ -63,7 +63,7 @@ namespace AggroBird.UnityExtend
         public static bool operator ==(GUID lhs, GUID rhs) => lhs.Equals(rhs);
         public static bool operator !=(GUID lhs, GUID rhs) => !lhs.Equals(rhs);
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return $"{value0:x16}{value1:x16}";
         }

@@ -155,8 +155,8 @@ namespace AggroBird.UnityExtend
             float t3 = t2 * t;
 
             Vector2 c0 = p0 * tinv3;
-            Vector2 c1 = p1 * t * tinv2 * 3;
-            Vector2 c2 = p2 * t2 * tinv * 3;
+            Vector2 c1 = p1 * (t * tinv2 * 3);
+            Vector2 c2 = p2 * (t2 * tinv * 3);
             Vector2 c3 = p3 * t3;
 
             return c0 + c1 + c2 + c3;
@@ -170,8 +170,8 @@ namespace AggroBird.UnityExtend
             float t3 = t2 * t;
 
             Vector3 c0 = p0 * tinv3;
-            Vector3 c1 = p1 * t * tinv2 * 3;
-            Vector3 c2 = p2 * t2 * tinv * 3;
+            Vector3 c1 = p1 * (t * tinv2 * 3);
+            Vector3 c2 = p2 * (t2 * tinv * 3);
             Vector3 c3 = p3 * t3;
 
             return c0 + c1 + c2 + c3;

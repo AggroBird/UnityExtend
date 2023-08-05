@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 namespace AggroBird.UnityExtend
 {
-    // Readonly wrappers for list/array properties that are not meant to be modified
+    // Readonly wrappers for list/array properties that are not meant to be modified.
+    // For when Span is not applicable, and prevents casting back to collection type like interfaces such as IReadOnlyList.
 
     public readonly struct ReadOnlyArray<T> : IReadOnlyList<T>
     {

@@ -1,7 +1,10 @@
-﻿namespace AggroBird.UnityExtend
+﻿using System;
+
+namespace AggroBird.UnityExtend
 {
     // Source: http://allenchou.net/2015/04/game-math-precise-control-over-numeric-springing/
 
+    [Serializable]
     public struct ScalarSpring
     {
         public ScalarSpring(float target, float zeta, float omega, float current = 0, float velocity = 0)

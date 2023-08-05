@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace AggroBird.UnityExtend
 {
     // 2D euler rotation
-    [System.Serializable]
+    [Serializable]
     public struct Rotator2
     {
         public Rotator2(float pitch, float yaw)
@@ -28,7 +29,7 @@ namespace AggroBird.UnityExtend
         {
             return new Rotator2(euler.x, euler.y);
         }
-        
+
         public static Rotator2 operator +(Rotator2 lhs, Rotator2 rhs)
         {
             return new Rotator2(lhs.pitch + rhs.pitch, lhs.yaw + rhs.yaw);
@@ -38,11 +39,11 @@ namespace AggroBird.UnityExtend
             return new Rotator2(lhs.pitch - rhs.pitch, lhs.yaw - rhs.yaw);
         }
 
-        public static readonly Rotator2 zero = new Rotator2(0, 0);
+        public static readonly Rotator2 zero = new(0, 0);
     }
 
     // 3D euler rotation
-    [System.Serializable]
+    [Serializable]
     public struct Rotator3
     {
         public Rotator3(float pitch, float yaw, float roll)
@@ -60,7 +61,7 @@ namespace AggroBird.UnityExtend
         {
             return Quaternion.Euler(rotator.pitch, rotator.yaw, rotator.roll);
         }
-        
+
         public static implicit operator Rotator3(Quaternion quaternion)
         {
             return FromEuler(quaternion.eulerAngles);
@@ -79,7 +80,7 @@ namespace AggroBird.UnityExtend
             return new Rotator3(lhs.pitch - rhs.pitch, lhs.yaw - rhs.yaw, lhs.roll - rhs.roll);
         }
 
-        public static readonly Rotator3 zero = new Rotator3(0, 0, 0);
+        public static readonly Rotator3 zero = new(0, 0, 0);
     }
 
     public static class RotatorQuaternion
