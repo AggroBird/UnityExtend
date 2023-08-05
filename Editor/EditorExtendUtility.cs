@@ -202,23 +202,26 @@ namespace AggroBird.UnityExtend.Editor
         }
 
 
-        private static bool TryGetPropertyNameFromExpression(Expression<Func<object>> exp, out string result)
+        // Extension methods that help getting serialized field names through lambda analyzation.
+        // example: serializedObject.FindProperty((Foo foo) => foo.bar)
+        private static bool TryGetPropertyNameFromLambdaExpression(LambdaExpression exp, out string result)
         {
             static bool ExtractMemberName(MemberInfo memberInfo, out string result)
             {
-                if (memberInfo.MemberType == MemberTypes.Field)
+                switch (memberInfo.MemberType)
                 {
-                    result = memberInfo.Name;
-                    return true;
-                }
-                else if (memberInfo.MemberType == MemberTypes.Property)
-                {
-                    result = $"<{memberInfo.Name}>k__BackingField";
-                    return true;
-                }
+                    case MemberTypes.Field:
+                        result = memberInfo.Name;
+                        return true;
 
-                result = null;
-                return false;
+                    case MemberTypes.Property:
+                        result = $"<{memberInfo.Name}>k__BackingField";
+                        return true;
+
+                    default:
+                        result = null;
+                        return false;
+                }
             }
 
             if (exp.Body is MemberExpression member)
@@ -235,11 +238,19 @@ namespace AggroBird.UnityExtend.Editor
         }
         public static SerializedProperty FindProperty(this SerializedObject serializedObject, Expression<Func<object>> exp)
         {
-            return TryGetPropertyNameFromExpression(exp, out string name) ? serializedObject.FindProperty(name) : null;
+            return TryGetPropertyNameFromLambdaExpression(exp, out string name) ? serializedObject.FindProperty(name) : null;
         }
         public static SerializedProperty FindPropertyRelative(this SerializedProperty serializedProperty, Expression<Func<object>> exp)
         {
-            return TryGetPropertyNameFromExpression(exp, out string name) ? serializedProperty.FindPropertyRelative(name) : null;
+            return TryGetPropertyNameFromLambdaExpression(exp, out string name) ? serializedProperty.FindPropertyRelative(name) : null;
+        }
+        public static SerializedProperty FindProperty<T>(this SerializedObject serializedObject, Expression<Func<T, object>> exp)
+        {
+            return TryGetPropertyNameFromLambdaExpression(exp, out string name) ? serializedObject.FindProperty(name) : null;
+        }
+        public static SerializedProperty FindPropertyRelative<T>(this SerializedProperty serializedProperty, Expression<Func<T, object>> exp)
+        {
+            return TryGetPropertyNameFromLambdaExpression(exp, out string name) ? serializedProperty.FindPropertyRelative(name) : null;
         }
     }
 }
