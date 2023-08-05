@@ -2,7 +2,7 @@
 	"name": "com.aggrobird.unityextend",
 	"displayName":"Unity Engine Extension",
 	"version": "1.0.56",
-	"unity": "2019.4",
+	"unity": "2022.3",
 	"keywords": ["Utility", "Helper", "Functions"],
 	"category": "Utility",
 	"description": "Useful utility functions for Unity3D projects.",
