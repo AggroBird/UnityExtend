@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 namespace AggroBird.UnityExtend
 {
+    // Readonly wrappers for list/array properties that are not meant to be modified
+
     public readonly struct ReadOnlyArray<T> : IReadOnlyList<T>
     {
         public static ReadOnlyArray<T> Empty()
