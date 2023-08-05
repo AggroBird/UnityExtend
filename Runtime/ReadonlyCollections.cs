@@ -11,10 +11,12 @@ namespace AggroBird.UnityExtend
             return new(Array.Empty<T>());
         }
 
+
         public ReadOnlyArray(T[] arr)
         {
             this.arr = arr;
         }
+
 
         public T this[int index] => arr[index];
 
@@ -29,6 +31,10 @@ namespace AggroBird.UnityExtend
             return arr.GetEnumerator();
         }
 
+
+        public static implicit operator ReadOnlyArray<T>(T[] arr) => new(arr);
+
+
         private readonly T[] arr;
     }
 
@@ -41,10 +47,12 @@ namespace AggroBird.UnityExtend
             return new(empty);
         }
 
+
         public ReadOnlyList(List<T> list)
         {
             this.list = list;
         }
+
 
         public T this[int index] => list[index];
 
@@ -58,6 +66,10 @@ namespace AggroBird.UnityExtend
         {
             return list.GetEnumerator();
         }
+
+
+        public static implicit operator ReadOnlyList<T>(List<T> list) => new(list);
+
 
         private readonly List<T> list;
     }
