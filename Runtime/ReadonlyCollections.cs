@@ -43,6 +43,15 @@ namespace AggroBird.UnityExtend
 
         public static implicit operator ReadOnlyArray<T>(T[] arr) => new(arr);
 
+        public static bool operator ==(ReadOnlyArray<T> lhs, ReadOnlyArray<T> rhs)
+        {
+            return ReferenceEquals(lhs.arr, rhs.arr);
+        }
+        public static bool operator !=(ReadOnlyArray<T> lhs, ReadOnlyArray<T> rhs)
+        {
+            return !ReferenceEquals(lhs.arr, rhs.arr);
+        }
+
 
         private readonly T[] arr;
     }
@@ -82,11 +91,20 @@ namespace AggroBird.UnityExtend
         }
         public override bool Equals(object obj)
         {
-            return obj is ReadOnlyArray<T> other && ReferenceEquals(list, other.list);
+            return obj is ReadOnlyList<T> other && ReferenceEquals(list, other.list);
         }
 
 
         public static implicit operator ReadOnlyList<T>(List<T> list) => new(list);
+
+        public static bool operator ==(ReadOnlyList<T> lhs, ReadOnlyList<T> rhs)
+        {
+            return ReferenceEquals(lhs.list, rhs.list);
+        }
+        public static bool operator !=(ReadOnlyList<T> lhs, ReadOnlyList<T> rhs)
+        {
+            return !ReferenceEquals(lhs.list, rhs.list);
+        }
 
 
         private readonly List<T> list;
