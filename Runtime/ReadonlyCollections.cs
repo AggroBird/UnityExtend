@@ -31,6 +31,15 @@ namespace AggroBird.UnityExtend
             return arr.GetEnumerator();
         }
 
+        public override int GetHashCode()
+        {
+            return arr == null ? 0 : arr.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            return obj is ReadOnlyArray<T> other && ReferenceEquals(arr, other.arr);
+        }
+
 
         public static implicit operator ReadOnlyArray<T>(T[] arr) => new(arr);
 
@@ -65,6 +74,15 @@ namespace AggroBird.UnityExtend
         IEnumerator IEnumerable.GetEnumerator()
         {
             return list.GetEnumerator();
+        }
+
+        public override int GetHashCode()
+        {
+            return list == null ? 0 : list.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            return obj is ReadOnlyArray<T> other && ReferenceEquals(list, other.list);
         }
 
 
