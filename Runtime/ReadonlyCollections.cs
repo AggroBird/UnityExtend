@@ -1,13 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace AggroBird.UnityExtend
 {
     // Readonly wrappers for list/array properties that are not meant to be modified.
     // For when Span is not applicable, and prevents casting back to collection type like interfaces such as IReadOnlyList.
 
-    public readonly struct ReadOnlyArray<T> : IReadOnlyList<T>
+    [Serializable]
+    public struct ReadOnlyArray<T> : IReadOnlyList<T>
     {
         public static ReadOnlyArray<T> Empty()
         {
@@ -17,61 +19,67 @@ namespace AggroBird.UnityExtend
 
         public ReadOnlyArray(T[] arr)
         {
-            this.arr = arr;
+            this.value = arr;
         }
 
 
-        public T this[int index] => arr[index];
+        public readonly T this[int index] => value[index];
 
-        public int Count => arr.Length;
+        public readonly int Count => value.Length;
 
-        public IEnumerator<T> GetEnumerator()
+        public readonly IEnumerator<T> GetEnumerator()
         {
-            return ((IReadOnlyList<T>)arr).GetEnumerator();
+            return ((IReadOnlyList<T>)value).GetEnumerator();
         }
-        IEnumerator IEnumerable.GetEnumerator()
+        readonly IEnumerator IEnumerable.GetEnumerator()
         {
-            return arr.GetEnumerator();
-        }
-
-        public override int GetHashCode()
-        {
-            return arr == null ? 0 : arr.GetHashCode();
-        }
-        public override bool Equals(object obj)
-        {
-            return obj is ReadOnlyArray<T> other && ReferenceEquals(arr, other.arr);
+            return value.GetEnumerator();
         }
 
-        public T[] ToArray()
+        public override readonly int GetHashCode()
         {
-            if (arr == null || arr.Length == 0)
+            return value == null ? 0 : value.GetHashCode();
+        }
+        public override readonly bool Equals(object obj)
+        {
+            return obj is ReadOnlyArray<T> other && ReferenceEquals(value, other.value);
+        }
+
+        public readonly T[] ToArray()
+        {
+            if (value == null || value.Length == 0)
             {
                 return Array.Empty<T>();
             }
 
-            T[] result = new T[arr.Length];
-            Array.Copy(arr, result, arr.Length);
+            T[] result = new T[value.Length];
+            Array.Copy(value, result, value.Length);
             return result;
         }
 
+        public readonly Span<T> AsSpan() => value.AsSpan();
+        public readonly Span<T> AsSpan(int start) => value.AsSpan(start);
+        public readonly Span<T> AsSpan(int start, int length) => value.AsSpan(start, length);
+
 
         public static implicit operator ReadOnlyArray<T>(T[] arr) => new(arr);
+        public static implicit operator Span<T>(ReadOnlyArray<T> arr) => arr.AsSpan();
 
         public static bool operator ==(ReadOnlyArray<T> lhs, ReadOnlyArray<T> rhs)
         {
-            return ReferenceEquals(lhs.arr, rhs.arr);
+            return ReferenceEquals(lhs.value, rhs.value);
         }
         public static bool operator !=(ReadOnlyArray<T> lhs, ReadOnlyArray<T> rhs)
         {
-            return !ReferenceEquals(lhs.arr, rhs.arr);
+            return !ReferenceEquals(lhs.value, rhs.value);
         }
 
 
-        private readonly T[] arr;
+        [SerializeField] private T[] value;
     }
 
-    public readonly struct ReadOnlyList<T> : IReadOnlyList<T>
+    [Serializable]
+    public struct ReadOnlyList<T> : IReadOnlyList<T>
     {
         private static readonly List<T> empty = new();
 
@@ -83,40 +91,40 @@ namespace AggroBird.UnityExtend
 
         public ReadOnlyList(List<T> list)
         {
-            this.list = list;
+            this.value = list;
         }
 
 
-        public T this[int index] => list[index];
+        public readonly T this[int index] => value[index];
 
-        public int Count => list.Count;
+        public readonly int Count => value.Count;
 
-        public IEnumerator<T> GetEnumerator()
+        public readonly IEnumerator<T> GetEnumerator()
         {
-            return list.GetEnumerator();
+            return value.GetEnumerator();
         }
-        IEnumerator IEnumerable.GetEnumerator()
+        readonly IEnumerator IEnumerable.GetEnumerator()
         {
-            return list.GetEnumerator();
-        }
-
-        public override int GetHashCode()
-        {
-            return list == null ? 0 : list.GetHashCode();
-        }
-        public override bool Equals(object obj)
-        {
-            return obj is ReadOnlyList<T> other && ReferenceEquals(list, other.list);
+            return value.GetEnumerator();
         }
 
-        public T[] ToArray()
+        public override readonly int GetHashCode()
         {
-            if (list == null)
+            return value == null ? 0 : value.GetHashCode();
+        }
+        public override readonly bool Equals(object obj)
+        {
+            return obj is ReadOnlyList<T> other && ReferenceEquals(value, other.value);
+        }
+
+        public readonly T[] ToArray()
+        {
+            if (value == null)
             {
                 return Array.Empty<T>();
             }
 
-            return list.ToArray();
+            return value.ToArray();
         }
 
 
@@ -124,14 +132,14 @@ namespace AggroBird.UnityExtend
 
         public static bool operator ==(ReadOnlyList<T> lhs, ReadOnlyList<T> rhs)
         {
-            return ReferenceEquals(lhs.list, rhs.list);
+            return ReferenceEquals(lhs.value, rhs.value);
         }
         public static bool operator !=(ReadOnlyList<T> lhs, ReadOnlyList<T> rhs)
         {
-            return !ReferenceEquals(lhs.list, rhs.list);
+            return !ReferenceEquals(lhs.value, rhs.value);
         }
 
 
-        private readonly List<T> list;
+        [SerializeField] private List<T> value;
     }
 }
