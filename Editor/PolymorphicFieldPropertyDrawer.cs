@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using UnityObject = UnityEngine.Object;
+using Object = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend.Editor
 {
@@ -106,7 +106,7 @@ namespace AggroBird.UnityExtend.Editor
 
         private static bool IsEditingMultipleDifferentTypes(SerializedProperty property)
         {
-            UnityObject[] objects = property.serializedObject.targetObjects;
+            Object[] objects = property.serializedObject.targetObjects;
             if (objects.Length > 1)
             {
                 string propertyPath = property.propertyPath;
@@ -133,7 +133,7 @@ namespace AggroBird.UnityExtend.Editor
         }
         private static bool IsEditingMultipleDifferentTypes(SerializedProperty property, out SerializedProperty[] serializedProperties)
         {
-            UnityObject[] objects = property.serializedObject.targetObjects;
+            Object[] objects = property.serializedObject.targetObjects;
             if (objects.Length > 1)
             {
                 string propertyPath = property.propertyPath;
@@ -291,7 +291,7 @@ namespace AggroBird.UnityExtend.Editor
         }
         private static bool IsAssignableType(Type type)
         {
-            return type.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface && !type.IsSubclassOf(typeof(UnityObject));
+            return type.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface && !type.IsSubclassOf(typeof(Object));
         }
 
         private static string GetTypeDisplayName(Type type)

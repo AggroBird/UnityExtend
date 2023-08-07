@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
-using UnityObject = UnityEngine.Object;
+using Object = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend.Editor
 {
@@ -34,7 +34,7 @@ namespace AggroBird.UnityExtend.Editor
                             {
                                 for (int i = 0; i < guids.Length; i++)
                                 {
-                                    UnityObject obj = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[i]), globalProviderAttribute.ProviderType);
+                                    Object obj = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[i]), globalProviderAttribute.ProviderType);
                                     if (obj && obj is IBitfieldLabelNameProvider validProvider)
                                     {
                                         provider = validProvider;
@@ -66,7 +66,7 @@ namespace AggroBird.UnityExtend.Editor
                             case NestedNameProviderSource.SerializedObject:
                             {
                                 // Try to get from serialized object
-                                UnityObject obj = property.serializedObject.targetObject;
+                                Object obj = property.serializedObject.targetObject;
                                 if (obj && obj is IBitfieldLabelNameProvider validProvider)
                                 {
                                     provider = validProvider;
@@ -92,7 +92,7 @@ namespace AggroBird.UnityExtend.Editor
 
         private static bool IsValid(IBitfieldLabelNameProvider provider)
         {
-            return provider is UnityObject unityObject && unityObject;
+            return provider is Object unityObject && unityObject;
         }
 
         public static void GetBitfieldLabel(this SerializedProperty property, out string name, out int index)
@@ -264,7 +264,7 @@ namespace AggroBird.UnityExtend.Editor
             titleContent = new GUIContent(property.displayName);
             this.labelList = labelList;
 
-            UnityObject[] multipleObjects = property.serializedObject.targetObjects;
+            Object[] multipleObjects = property.serializedObject.targetObjects;
             serializedObjects = new SerializedObject[multipleObjects.Length];
             for (int i = 0; i < multipleObjects.Length; i++)
             {
