@@ -10,6 +10,7 @@ namespace AggroBird.UnityExtend.Editor
 {
     public static class EditorExtendUtility
     {
+        // Commonly used editor positioning values
         public const float IndentWidth = 15f;
         public static float SingleLineHeight = EditorGUIUtility.singleLineHeight;
         public static float StandardVerticalSpacing = EditorGUIUtility.standardVerticalSpacing;
@@ -17,6 +18,7 @@ namespace AggroBird.UnityExtend.Editor
         public const string MixedValueContent = "\u2014";
 
 
+        // Mixed value disposable
         public class MixedValueScope : IDisposable
         {
             public MixedValueScope(bool showMixedValue)

@@ -10,32 +10,29 @@ namespace AggroBird.UnityExtend
         {
             if (min > max)
             {
-                this.min = max;
-                this.max = min;
+                Min = max;
+                Max = min;
             }
             else
             {
-                this.min = min;
-                this.max = max;
+                Min = min;
+                Max = max;
             }
         }
 
-        [SerializeField] private float min;
-        [SerializeField] private float max;
+        [field: SerializeField, UnityEngine.Serialization.FormerlySerializedAs("min")] public float Min { get; private set; }
+        [field: SerializeField, UnityEngine.Serialization.FormerlySerializedAs("max")] public float Max { get; private set; }
 
-        public readonly float Min => min;
-        public readonly float Max => max;
-
-        public readonly float Range => max - min;
+        public readonly float Range => Max - Min;
 
         public readonly bool Contains(float value)
         {
-            return value >= min && value <= max;
+            return value >= Min && value <= Max;
         }
 
         public override readonly string ToString()
         {
-            return $"({min} - {max})";
+            return $"({Min} - {Max})";
         }
     }
 
@@ -46,32 +43,29 @@ namespace AggroBird.UnityExtend
         {
             if (min > max)
             {
-                this.min = max;
-                this.max = min;
+                Min = max;
+                Max = min;
             }
             else
             {
-                this.min = min;
-                this.max = max;
+                Min = min;
+                Max = max;
             }
         }
 
-        [SerializeField] private double min;
-        [SerializeField] private double max;
+        [field: SerializeField, UnityEngine.Serialization.FormerlySerializedAs("min")] public double Min { get; private set; }
+        [field: SerializeField, UnityEngine.Serialization.FormerlySerializedAs("max")] public double Max { get; private set; }
 
-        public readonly double Min => min;
-        public readonly double Max => max;
-
-        public readonly double Range => max - min;
+        public readonly double Range => Max - Min;
 
         public readonly bool Contains(double value)
         {
-            return value >= min && value <= max;
+            return value >= Min && value <= Max;
         }
 
         public override readonly string ToString()
         {
-            return $"({min} - {max})";
+            return $"({Min} - {Max})";
         }
     }
 
@@ -82,32 +76,29 @@ namespace AggroBird.UnityExtend
         {
             if (min > max)
             {
-                this.min = max;
-                this.max = min;
+                Min = max;
+                Max = min;
             }
             else
             {
-                this.min = min;
-                this.max = max;
+                Min = min;
+                Max = max;
             }
         }
 
-        [SerializeField] private int min;
-        [SerializeField] private int max;
+        [field: SerializeField, UnityEngine.Serialization.FormerlySerializedAs("min")] public int Min { get; private set; }
+        [field: SerializeField, UnityEngine.Serialization.FormerlySerializedAs("max")] public int Max { get; private set; }
 
-        public readonly int Min => min;
-        public readonly int Max => max;
-
-        public readonly int Range => max - min;
+        public readonly int Range => Max - Min;
 
         public readonly bool Contains(int value)
         {
-            return value >= min && value <= max;
+            return value >= Min && value <= Max;
         }
 
         public override readonly string ToString()
         {
-            return $"({min} - {max})";
+            return $"({Min} - {Max})";
         }
     }
 }
