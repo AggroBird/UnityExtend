@@ -10,7 +10,7 @@ namespace AggroBird.UnityExtend.Editor
 {
     public static class EditorExtendUtility
     {
-        public static float IndentWidth => 15f;
+        public const float IndentWidth = 15f;
         public static float SingleLineHeight = EditorGUIUtility.singleLineHeight;
         public static float StandardVerticalSpacing = EditorGUIUtility.standardVerticalSpacing;
         public static float SinglePropertyHeight => EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
@@ -25,7 +25,7 @@ namespace AggroBird.UnityExtend.Editor
                 EditorGUI.showMixedValue = showMixedValue;
             }
 
-            private bool currentValue;
+            private readonly bool currentValue;
 
             public void Dispose()
             {
@@ -34,42 +34,44 @@ namespace AggroBird.UnityExtend.Editor
         }
 
 
-        private const string ArrayDataStr = "Array.data[";
-        private const BindingFlags FieldBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-        private static Type GetElementType(Type fieldType)
-        {
-            if (fieldType.IsArray)
-            {
-                return fieldType.GetElementType();
-            }
-            else if (fieldType.GetGenericTypeDefinition() == typeof(List<>))
-            {
-                return fieldType.GetGenericArguments()[0];
-            }
-            else
-            {
-                throw new InvalidCastException($"Failed to extract element type from collection type '{fieldType}'");
-            }
-        }
-
-
-        private static FieldInfo GetFieldRecursive(this Type type, string fieldName)
-        {
-            Type currentType = type;
-            while (currentType != null && currentType != typeof(object))
-            {
-                FieldInfo fieldInfo = currentType.GetField(fieldName, FieldBindingFlags);
-                if (fieldInfo != null)
-                {
-                    return fieldInfo;
-                }
-                currentType = currentType.BaseType;
-            }
-            return null;
-        }
-
+        // Utility for getting the field info of a given property (based on property path)
+        // Additionally outputs the actual type (in case of serialized references) and a stack of all values if provided
         public static bool TryGetFieldInfo(this SerializedProperty property, out FieldInfo fieldInfo, out Type fieldType, List<object> values = null, bool useInheritedTypes = true)
         {
+            const string ArrayDataStr = "Array.data[";
+            const BindingFlags FieldBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+            static FieldInfo GetFieldRecursive(Type type, string fieldName)
+            {
+                Type currentType = type;
+                while (currentType != null && currentType != typeof(object))
+                {
+                    FieldInfo fieldInfo = currentType.GetField(fieldName, FieldBindingFlags);
+                    if (fieldInfo != null)
+                    {
+                        return fieldInfo;
+                    }
+                    currentType = currentType.BaseType;
+                }
+                return null;
+            }
+
+            static Type GetElementType(Type fieldType)
+            {
+                if (fieldType.IsArray)
+                {
+                    return fieldType.GetElementType();
+                }
+                else if (fieldType.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    return fieldType.GetGenericArguments()[0];
+                }
+                else
+                {
+                    throw new InvalidCastException($"Failed to extract element type from collection type '{fieldType}'");
+                }
+            }
+
             object obj = property.serializedObject.targetObject;
             if (values != null)
             {
@@ -133,13 +135,13 @@ namespace AggroBird.UnityExtend.Editor
 
                     if (obj == null || !useInheritedTypes || endReached)
                     {
-                        fieldInfo = fieldType.GetFieldRecursive(fieldName);
+                        fieldInfo = GetFieldRecursive(fieldType, fieldName);
                         if (fieldInfo == null) goto OnFailure;
                         fieldType = fieldInfo.FieldType;
                     }
                     else
                     {
-                        fieldInfo = obj.GetType().GetFieldRecursive(fieldName);
+                        fieldInfo = GetFieldRecursive(obj.GetType(), fieldName);
                         if (fieldInfo == null) goto OnFailure;
                         obj = fieldInfo.GetValue(obj);
                         fieldType = obj == null ? fieldInfo.FieldType : obj.GetType();
@@ -159,6 +161,8 @@ namespace AggroBird.UnityExtend.Editor
             return false;
         }
 
+
+        // Format a tag according to tag formatting rules (e.g. 'Test Tag' => 'TEST_TAG')
         private static readonly StringBuilder tagBuilder = new();
         public static void FormatTag(SerializedProperty tag, int maxLength = 32)
         {

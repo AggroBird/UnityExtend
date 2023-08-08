@@ -19,9 +19,7 @@ namespace AggroBird.UnityExtend
         {
             if (min > max)
             {
-                float tmp = max;
-                max = min;
-                min = tmp;
+                (min, max) = (max, min);
             }
             else if (min == max)
             {
