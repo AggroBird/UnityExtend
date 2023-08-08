@@ -16,9 +16,7 @@ namespace AggroBird.UnityExtend.Editor
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            EditorGUI.indentLevel--;
             EditorGUI.PropertyField(position, property.ReadOnlyCollectionValue(), label);
-            EditorGUI.indentLevel++;
         }
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
@@ -31,9 +29,7 @@ namespace AggroBird.UnityExtend.Editor
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            EditorGUI.indentLevel--;
             EditorGUI.PropertyField(position, property.ReadOnlyCollectionValue(), label);
-            EditorGUI.indentLevel++;
         }
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
