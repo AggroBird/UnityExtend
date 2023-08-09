@@ -30,6 +30,8 @@ namespace AggroBird.UnityExtend
             return value >= Min && value <= Max;
         }
 
+        public readonly float Clamp(float value) => Math.Clamp(value, Min, Max);
+
         public override readonly string ToString()
         {
             return $"({Min} - {Max})";
@@ -63,6 +65,9 @@ namespace AggroBird.UnityExtend
             return value >= Min && value <= Max;
         }
 
+        public readonly double Clamp(float value) => Math.Clamp(value, Min, Max);
+        public readonly double Clamp(double value) => Math.Clamp(value, Min, Max);
+
         public override readonly string ToString()
         {
             return $"({Min} - {Max})";
@@ -95,6 +100,10 @@ namespace AggroBird.UnityExtend
         {
             return value >= Min && value <= Max;
         }
+
+        public readonly double Clamp(float value) => Math.Clamp(value, Min, Max);
+        public readonly double Clamp(double value) => Math.Clamp(value, Min, Max);
+        public readonly double Clamp(int value) => Math.Clamp(value, Min, Max);
 
         public override readonly string ToString()
         {
