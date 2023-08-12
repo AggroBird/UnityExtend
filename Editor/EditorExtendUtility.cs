@@ -38,7 +38,7 @@ namespace AggroBird.UnityExtend.Editor
 
         // Utility for getting the field info of a given property (based on property path)
         // Additionally outputs the actual type (in case of serialized references) and a stack of all values if provided
-        public static bool TryGetFieldInfo(this SerializedProperty property, out FieldInfo fieldInfo, out Type fieldType, List<object> values = null, bool useInheritedTypes = true)
+        public static bool TryGetFieldInfo(this SerializedProperty property, out FieldInfo fieldInfo, out Type fieldType, List<object> stackTrace = null, bool useInheritedTypes = true)
         {
             const string ArrayDataStr = "Array.data[";
             const BindingFlags FieldBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
@@ -75,10 +75,10 @@ namespace AggroBird.UnityExtend.Editor
             }
 
             object obj = property.serializedObject.targetObject;
-            if (values != null)
+            if (stackTrace != null)
             {
-                values.Clear();
-                values.Add(obj);
+                stackTrace.Clear();
+                stackTrace.Add(obj);
             }
 
             fieldType = obj.GetType();
@@ -113,9 +113,9 @@ namespace AggroBird.UnityExtend.Editor
                         obj = list[idx];
                         fieldType = obj == null ? GetElementType(fieldType) : obj.GetType();
 
-                        if (values != null)
+                        if (stackTrace != null)
                         {
-                            values.Add(obj);
+                            stackTrace.Add(obj);
                         }
                     }
                 }
@@ -148,9 +148,9 @@ namespace AggroBird.UnityExtend.Editor
                         obj = fieldInfo.GetValue(obj);
                         fieldType = obj == null ? fieldInfo.FieldType : obj.GetType();
 
-                        if (values != null)
+                        if (stackTrace != null)
                         {
-                            values.Add(obj);
+                            stackTrace.Add(obj);
                         }
                     }
                 }

@@ -17,7 +17,7 @@ namespace AggroBird.UnityExtend.Editor
         {
             IBitfieldLabelNameProvider provider = null;
 
-            if (EditorExtendUtility.TryGetFieldInfo(property, out FieldInfo fieldInfo, out _, values: propertyValues))
+            if (EditorExtendUtility.TryGetFieldInfo(property, out FieldInfo fieldInfo, out _, stackTrace: propertyValues))
             {
                 BitfieldLabelGlobalNameProviderAttribute globalProviderAttribute = fieldInfo.GetCustomAttribute<BitfieldLabelGlobalNameProviderAttribute>();
                 if (globalProviderAttribute != null)

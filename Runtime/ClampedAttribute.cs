@@ -4,7 +4,7 @@ using UnityEngine;
 namespace AggroBird.UnityExtend
 {
     // Works the same as RangeAttribute, but doesn't display the property with a slider
-    [AttributeUsage(AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public sealed class ClampedAttribute : PropertyAttribute
     {
         public enum Precision
