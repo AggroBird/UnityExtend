@@ -1,3 +1,4 @@
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,11 +10,28 @@ namespace AggroBird.UnityExtend.Editor
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            position = EditorGUI.PrefixLabel(position, label);
-
-            DrawRangeProperties(position, property);
+            if (HasClampedAttribute(property, out ClampedAttribute clampedAttribute))
+            {
+                new ClampedAttributeDrawer.Context(clampedAttribute).OnGUI(position, property, label);
+            }
+            else
+            {
+                position = EditorGUI.PrefixLabel(position, label);
+                DrawRangeProperties(position, property);
+            }
 
             EditorGUI.EndProperty();
+        }
+
+        private static bool HasClampedAttribute(SerializedProperty property, out ClampedAttribute clampedAttribute)
+        {
+            if (property.TryGetFieldInfo(out FieldInfo fieldInfo, out _))
+            {
+                clampedAttribute = fieldInfo.GetCustomAttribute<ClampedAttribute>();
+                return clampedAttribute != null;
+            }
+            clampedAttribute = null;
+            return false;
         }
 
         public static void DrawRangeProperties(Rect position, SerializedProperty property)
