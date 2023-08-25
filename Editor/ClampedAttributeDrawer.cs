@@ -69,6 +69,10 @@ namespace AggroBird.UnityExtend.Editor
                     }
                 }
             }
+            private void Clamp(SerializedProperty property, string fieldName)
+            {
+                Clamp(property.FindPropertyRelative(fieldName));
+            }
 
             private static bool IsRangeType(Type type)
             {
@@ -88,16 +92,16 @@ namespace AggroBird.UnityExtend.Editor
                     case SerializedPropertyType.Vector2Int:
                     {
                         EditorGUI.PropertyField(position, property, label, true);
-                        Clamp(property.FindPropertyRelative((Vector2Int def) => def.x));
-                        Clamp(property.FindPropertyRelative((Vector2Int def) => def.y));
+                        Clamp(property, "x");
+                        Clamp(property, "y");
                     }
                     break;
                     case SerializedPropertyType.Vector3Int:
                     {
                         EditorGUI.PropertyField(position, property, label, true);
-                        Clamp(property.FindPropertyRelative((Vector3Int def) => def.x));
-                        Clamp(property.FindPropertyRelative((Vector3Int def) => def.y));
-                        Clamp(property.FindPropertyRelative((Vector3Int def) => def.z));
+                        Clamp(property, "x");
+                        Clamp(property, "y");
+                        Clamp(property, "z");
                     }
                     break;
 
@@ -110,25 +114,25 @@ namespace AggroBird.UnityExtend.Editor
                     case SerializedPropertyType.Vector2:
                     {
                         EditorGUI.PropertyField(position, property, label, true);
-                        Clamp(property.FindPropertyRelative((Vector2 def) => def.x));
-                        Clamp(property.FindPropertyRelative((Vector2 def) => def.y));
+                        Clamp(property, "x");
+                        Clamp(property, "y");
                     }
                     break;
                     case SerializedPropertyType.Vector3:
                     {
                         EditorGUI.PropertyField(position, property, label, true);
-                        Clamp(property.FindPropertyRelative((Vector3 def) => def.x));
-                        Clamp(property.FindPropertyRelative((Vector3 def) => def.y));
-                        Clamp(property.FindPropertyRelative((Vector3 def) => def.z));
+                        Clamp(property, "x");
+                        Clamp(property, "y");
+                        Clamp(property, "z");
                     }
                     break;
                     case SerializedPropertyType.Vector4:
                     {
                         EditorGUI.PropertyField(position, property, label, true);
-                        Clamp(property.FindPropertyRelative((Vector4 def) => def.x));
-                        Clamp(property.FindPropertyRelative((Vector4 def) => def.y));
-                        Clamp(property.FindPropertyRelative((Vector4 def) => def.z));
-                        Clamp(property.FindPropertyRelative((Vector4 def) => def.w));
+                        Clamp(property, "x");
+                        Clamp(property, "y");
+                        Clamp(property, "z");
+                        Clamp(property, "w");
                     }
                     break;
 
