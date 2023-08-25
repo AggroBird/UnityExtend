@@ -79,6 +79,11 @@ namespace AggroBird.UnityExtend.Editor
                 return type.Equals(typeof(IntRange)) || type.Equals(typeof(FloatRange)) || type.Equals(typeof(DoubleRange));
             }
 
+            private const string X = "x";
+            private const string Y = "y";
+            private const string Z = "z";
+            private const string W = "w";
+
             public void OnGUI(Rect position, SerializedProperty property, GUIContent label)
             {
                 switch (property.propertyType)
@@ -92,16 +97,16 @@ namespace AggroBird.UnityExtend.Editor
                     case SerializedPropertyType.Vector2Int:
                     {
                         EditorGUI.PropertyField(position, property, label, true);
-                        Clamp(property, "x");
-                        Clamp(property, "y");
+                        Clamp(property, X);
+                        Clamp(property, Y);
                     }
                     break;
                     case SerializedPropertyType.Vector3Int:
                     {
                         EditorGUI.PropertyField(position, property, label, true);
-                        Clamp(property, "x");
-                        Clamp(property, "y");
-                        Clamp(property, "z");
+                        Clamp(property, X);
+                        Clamp(property, Y);
+                        Clamp(property, Z);
                     }
                     break;
 
@@ -114,25 +119,25 @@ namespace AggroBird.UnityExtend.Editor
                     case SerializedPropertyType.Vector2:
                     {
                         EditorGUI.PropertyField(position, property, label, true);
-                        Clamp(property, "x");
-                        Clamp(property, "y");
+                        Clamp(property, X);
+                        Clamp(property, Y);
                     }
                     break;
                     case SerializedPropertyType.Vector3:
                     {
                         EditorGUI.PropertyField(position, property, label, true);
-                        Clamp(property, "x");
-                        Clamp(property, "y");
-                        Clamp(property, "z");
+                        Clamp(property, X);
+                        Clamp(property, Y);
+                        Clamp(property, Z);
                     }
                     break;
                     case SerializedPropertyType.Vector4:
                     {
                         EditorGUI.PropertyField(position, property, label, true);
-                        Clamp(property, "x");
-                        Clamp(property, "y");
-                        Clamp(property, "z");
-                        Clamp(property, "w");
+                        Clamp(property, X);
+                        Clamp(property, Y);
+                        Clamp(property, Z);
+                        Clamp(property, W);
                     }
                     break;
 
