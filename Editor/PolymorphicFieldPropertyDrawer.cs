@@ -168,23 +168,23 @@ namespace AggroBird.UnityExtend.Editor
 
         private static void ChangeManagedReferenceType(SerializedProperty property, Type newType)
         {
-            if (newType == null)
+            object newObj = null;
+
+            if (newType != null)
             {
-                property.managedReferenceValue = null;
-                return;
-            }
+                // Create new object (call default constructor if available)
+                newObj = newType.GetConstructor(Type.EmptyTypes) != null ? Activator.CreateInstance(newType) : FormatterServices.GetUninitializedObject(newType);
 
-            // Create new object (call default constructor if available)
-            object newObj = newType.GetConstructor(Type.EmptyTypes) != null ? Activator.CreateInstance(newType) : FormatterServices.GetUninitializedObject(newType);
+                // Migrate compatible property values if possible
+                object currentObj = property.managedReferenceValue;
+                if (currentObj != null)
+                {
+                    // Fetch current property data
+                    string json = JsonUtility.ToJson(currentObj);
 
-            object currentObj = property.managedReferenceValue;
-            if (currentObj != null)
-            {
-                // Fetch current property data
-                string json = JsonUtility.ToJson(currentObj);
-
-                // Migrate shared properties
-                JsonUtility.FromJsonOverwrite(json, newObj);
+                    // Migrate shared properties
+                    JsonUtility.FromJsonOverwrite(json, newObj);
+                }
             }
 
             // Assign new object
