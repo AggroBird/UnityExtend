@@ -174,24 +174,21 @@ namespace AggroBird.UnityExtend.Editor
                 return;
             }
 
-            object obj = property.managedReferenceValue;
-            if (obj == null)
+            // Create new object (call default constructor if available)
+            object newObj = newType.GetConstructor(Type.EmptyTypes) != null ? Activator.CreateInstance(newType) : FormatterServices.GetUninitializedObject(newType);
+
+            object currentObj = property.managedReferenceValue;
+            if (currentObj != null)
             {
-                property.managedReferenceValue = FormatterServices.GetUninitializedObject(newType);
-                return;
+                // Fetch current property data
+                string json = JsonUtility.ToJson(currentObj);
+
+                // Migrate shared properties
+                JsonUtility.FromJsonOverwrite(json, newObj);
             }
 
-            // Fetch current property data
-            string json = JsonUtility.ToJson(obj);
-
-            // Create new object
-            obj = FormatterServices.GetUninitializedObject(newType);
-
-            // Migrate shared properties
-            JsonUtility.FromJsonOverwrite(json, obj);
-
             // Assign new object
-            property.managedReferenceValue = obj;
+            property.managedReferenceValue = newObj;
         }
         private static void ChangeManagedReferenceType(SerializedProperty[] properties, Type newType)
         {
@@ -278,7 +275,7 @@ namespace AggroBird.UnityExtend.Editor
             return false;
         }
 
-        private static List<Type> supportedTypeListBuilder = new();
+        private static readonly List<Type> supportedTypeListBuilder = new();
         private static IEnumerable<Type> GetSupportedFieldTypes(Type fieldType)
         {
             supportedTypeListBuilder.Clear();
