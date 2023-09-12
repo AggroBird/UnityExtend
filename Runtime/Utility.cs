@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityObject = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend
 {
@@ -65,6 +66,30 @@ namespace AggroBird.UnityExtend
                 list[idx] = list[last];
             }
             list.RemoveAt(last);
+        }
+
+        // Destroy objects and clear the list
+        public static void DestroyObjectsAndClear<T>(List<T> list) where T : Component
+        {
+            foreach (var item in list)
+            {
+                if (item)
+                {
+                    UnityObject.Destroy(item);
+                }
+            }
+            list.Clear();
+        }
+        public static void DestroyGameObjectsAndClear<T>(List<T> list) where T : Component
+        {
+            foreach (var item in list)
+            {
+                if (item)
+                {
+                    UnityObject.Destroy(item.gameObject);
+                }
+            }
+            list.Clear();
         }
 
         // Copy from transform
