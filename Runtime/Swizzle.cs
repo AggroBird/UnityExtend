@@ -51,20 +51,29 @@ namespace AggroBird.UnityExtend
             vec.z = z;
         }
 
+        public static Vector3 OnlyX(this Vector3 vec)
+        {
+            return new(vec.x, 0, 0);
+        }
+        public static Vector3 OnlyY(this Vector3 vec)
+        {
+            return new(0, vec.y, 0);
+        }
+        public static Vector3 OnlyZ(this Vector3 vec)
+        {
+            return new(0, 0, vec.z);
+        }
         public static Vector3 OnlyXY(this Vector3 vec)
         {
-            vec.z = 0;
-            return vec;
+            return new(vec.x, vec.y, 0);
         }
         public static Vector3 OnlyXZ(this Vector3 vec)
         {
-            vec.y = 0;
-            return vec;
+            return new(vec.x, 0, vec.z);
         }
         public static Vector3 OnlyYZ(this Vector3 vec)
         {
-            vec.x = 0;
-            return vec;
+            return new(0, vec.y, vec.z);
         }
 
         public static Vector3 Horizontal3D(this Vector2 vec)
