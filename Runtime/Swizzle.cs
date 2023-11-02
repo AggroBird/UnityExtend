@@ -76,6 +76,31 @@ namespace AggroBird.UnityExtend
             return new(0, vec.y, vec.z);
         }
 
+        public static Vector3 OverrideX(this Vector3 vec, float x)
+        {
+            return new(x, vec.y, vec.z);
+        }
+        public static Vector3 OverrideY(this Vector3 vec, float y)
+        {
+            return new(vec.x, y, vec.z);
+        }
+        public static Vector3 OverrideZ(this Vector3 vec, float z)
+        {
+            return new(vec.x, vec.y, z);
+        }
+        public static Vector3 OverrideXY(this Vector3 vec, Vector2 xy)
+        {
+            return new(xy.x, xy.y, vec.z);
+        }
+        public static Vector3 OverrideXZ(this Vector3 vec, Vector2 xz)
+        {
+            return new(xz.x, vec.y, xz.y);
+        }
+        public static Vector3 OverrideYZ(this Vector3 vec, Vector2 yz)
+        {
+            return new(vec.x, yz.x, yz.y);
+        }
+
         public static Vector3 Horizontal3D(this Vector2 vec)
         {
             return new Vector3(vec.x, 0, vec.y);
