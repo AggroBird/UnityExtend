@@ -74,11 +74,6 @@ namespace AggroBird.UnityExtend.Editor
                 Clamp(property.FindPropertyRelative(fieldName));
             }
 
-            private static bool IsRangeType(Type type)
-            {
-                return type.Equals(typeof(IntRange)) || type.Equals(typeof(FloatRange)) || type.Equals(typeof(DoubleRange));
-            }
-
             private const string X = "x";
             private const string Y = "y";
             private const string Z = "z";
@@ -142,30 +137,43 @@ namespace AggroBird.UnityExtend.Editor
                     break;
 
                     default:
-                        if (EditorExtendUtility.TryGetFieldInfo(property, out _, out Type type) && IsRangeType(type))
+                        // Special cases
+                        if (EditorExtendUtility.TryGetFieldInfo(property, out _, out Type type))
                         {
-                            // Special case for range properties
                             position = EditorGUI.PrefixLabel(position, label);
-                            RangePropertyDrawer.DrawRangeProperties(position, property);
-                            Clamp(property.FindPropertyRelative((IntRange def) => def.Min));
-                            Clamp(property.FindPropertyRelative((IntRange def) => def.Max));
+                            if (type.Equals(typeof(IntRange)) || type.Equals(typeof(FloatRange)) || type.Equals(typeof(DoubleRange)))
+                            {
+                                RangePropertyDrawer.DrawProperties(position, property);
+                                Clamp(property.FindPropertyRelative((IntRange def) => def.Min));
+                                Clamp(property.FindPropertyRelative((IntRange def) => def.Max));
+                                break;
+                            }
+                            else if (type.Equals(typeof(Rotator2)))
+                            {
+                                Rotator2PropertyDrawer.DrawProperties(position, property);
+                                Clamp(property.FindPropertyRelative((Rotator2 def) => def.pitch));
+                                Clamp(property.FindPropertyRelative((Rotator2 def) => def.yaw));
+                                break;
+                            }
+                            else if (type.Equals(typeof(Rotator3)))
+                            {
+                                Rotator3PropertyDrawer.DrawProperties(position, property);
+                                Clamp(property.FindPropertyRelative((Rotator3 def) => def.pitch));
+                                Clamp(property.FindPropertyRelative((Rotator3 def) => def.yaw));
+                                Clamp(property.FindPropertyRelative((Rotator3 def) => def.roll));
+                                break;
+                            }
                         }
-                        else
-                        {
-                            EditorGUI.LabelField(position, label.text, "Invalid property type used for Clamped attribute");
-                        }
+                        EditorGUI.LabelField(position, label.text, "Invalid property type used for Clamped attribute");
                         break;
                 }
             }
         }
 
-
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             return EditorGUI.GetPropertyHeight(property, label, true);
         }
-
-
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {

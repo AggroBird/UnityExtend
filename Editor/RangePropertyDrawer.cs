@@ -17,7 +17,7 @@ namespace AggroBird.UnityExtend.Editor
             else
             {
                 position = EditorGUI.PrefixLabel(position, label);
-                DrawRangeProperties(position, property);
+                DrawProperties(position, property);
             }
 
             EditorGUI.EndProperty();
@@ -34,7 +34,7 @@ namespace AggroBird.UnityExtend.Editor
             return false;
         }
 
-        public static void DrawRangeProperties(Rect position, SerializedProperty property)
+        public static void DrawProperties(Rect position, SerializedProperty property)
         {
             SerializedProperty min = property.FindPropertyRelative((IntRange def) => def.Min);
             SerializedProperty max = property.FindPropertyRelative((IntRange def) => def.Max);

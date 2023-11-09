@@ -12,22 +12,28 @@ namespace AggroBird.UnityExtend.Editor
 
             position = EditorGUI.PrefixLabel(position, label);
 
-            SerializedProperty pitch = property.FindPropertyRelative((Rotator2 def) => def.pitch);
-            SerializedProperty yaw = property.FindPropertyRelative((Rotator2 def) => def.yaw);
-
-            EditorGUIUtility.labelWidth = 13;
-            position.width -= 3;
-            position.width /= 2;
-            EditorGUI.PropertyField(position, pitch, new GUIContent(char.ToUpper(pitch.displayName[0]).ToString()));
-            position.x += position.width + 3;
-            EditorGUI.PropertyField(position, yaw, new GUIContent(char.ToUpper(yaw.displayName[0]).ToString()));
-            EditorGUIUtility.labelWidth = 0;
+            DrawProperties(position, property);
 
             EditorGUI.EndProperty();
         }
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             return base.GetPropertyHeight(property, label);
+        }
+
+        public static void DrawProperties(Rect position, SerializedProperty property)
+        {
+            SerializedProperty pitch = property.FindPropertyRelative((Rotator2 def) => def.pitch);
+            SerializedProperty yaw = property.FindPropertyRelative((Rotator2 def) => def.yaw);
+
+            float currentLabelWidth = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = 13;
+            position.width -= 3;
+            position.width /= 2;
+            EditorGUI.PropertyField(position, pitch, new GUIContent(char.ToUpper(pitch.displayName[0]).ToString()));
+            position.x += position.width + 3;
+            EditorGUI.PropertyField(position, yaw, new GUIContent(char.ToUpper(yaw.displayName[0]).ToString()));
+            EditorGUIUtility.labelWidth = currentLabelWidth;
         }
     }
 
@@ -40,10 +46,22 @@ namespace AggroBird.UnityExtend.Editor
 
             position = EditorGUI.PrefixLabel(position, label);
 
+            DrawProperties(position, property);
+
+            EditorGUI.EndProperty();
+        }
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return base.GetPropertyHeight(property, label);
+        }
+
+        public static void DrawProperties(Rect position, SerializedProperty property)
+        {
             SerializedProperty pitch = property.FindPropertyRelative((Rotator3 def) => def.pitch);
             SerializedProperty yaw = property.FindPropertyRelative((Rotator3 def) => def.yaw);
             SerializedProperty roll = property.FindPropertyRelative((Rotator3 def) => def.roll);
 
+            float currentLabelWidth = EditorGUIUtility.labelWidth;
             EditorGUIUtility.labelWidth = 13;
             position.width -= 6;
             position.width /= 3;
@@ -52,13 +70,7 @@ namespace AggroBird.UnityExtend.Editor
             EditorGUI.PropertyField(position, yaw, new GUIContent(char.ToUpper(yaw.displayName[0]).ToString()));
             position.x += position.width + 3;
             EditorGUI.PropertyField(position, roll, new GUIContent(char.ToUpper(roll.displayName[0]).ToString()));
-            EditorGUIUtility.labelWidth = 0;
-
-            EditorGUI.EndProperty();
-        }
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            return base.GetPropertyHeight(property, label);
+            EditorGUIUtility.labelWidth = currentLabelWidth;
         }
     }
 }

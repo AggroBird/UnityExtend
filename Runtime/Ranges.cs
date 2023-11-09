@@ -20,8 +20,8 @@ namespace AggroBird.UnityExtend
             }
         }
 
-        [field: SerializeField] public int Min { get; private set; }
-        [field: SerializeField] public int Max { get; private set; }
+        [field: SerializeField, Delayed] public int Min { get; private set; }
+        [field: SerializeField, Delayed] public int Max { get; private set; }
 
         public readonly int Range => Max - Min;
 
@@ -57,8 +57,8 @@ namespace AggroBird.UnityExtend
             }
         }
 
-        [field: SerializeField] public float Min { get; private set; }
-        [field: SerializeField] public float Max { get; private set; }
+        [field: SerializeField, Delayed] public float Min { get; private set; }
+        [field: SerializeField, Delayed] public float Max { get; private set; }
 
         public readonly float Range => Max - Min;
 
@@ -92,8 +92,8 @@ namespace AggroBird.UnityExtend
             }
         }
 
-        [field: SerializeField] public double Min { get; private set; }
-        [field: SerializeField] public double Max { get; private set; }
+        [field: SerializeField, Delayed] public double Min { get; private set; }
+        [field: SerializeField, Delayed] public double Max { get; private set; }
 
         public readonly double Range => Max - Min;
 
