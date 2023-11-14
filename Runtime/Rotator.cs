@@ -32,11 +32,20 @@ namespace AggroBird.UnityExtend
 
         public static Rotator2 operator +(Rotator2 lhs, Rotator2 rhs)
         {
-            return new Rotator2(lhs.pitch + rhs.pitch, lhs.yaw + rhs.yaw);
+            return new(lhs.pitch + rhs.pitch, lhs.yaw + rhs.yaw);
         }
         public static Rotator2 operator -(Rotator2 lhs, Rotator2 rhs)
         {
-            return new Rotator2(lhs.pitch - rhs.pitch, lhs.yaw - rhs.yaw);
+            return new(lhs.pitch - rhs.pitch, lhs.yaw - rhs.yaw);
+        }
+
+        public static Rotator2 operator *(Rotator2 lhs, float f)
+        {
+            return new(lhs.pitch * f, lhs.yaw * f);
+        }
+        public static Rotator2 operator /(Rotator2 lhs, float f)
+        {
+            return new(lhs.pitch / f, lhs.yaw / f);
         }
 
         public static readonly Rotator2 zero = new(0, 0);
@@ -73,11 +82,20 @@ namespace AggroBird.UnityExtend
 
         public static Rotator3 operator +(Rotator3 lhs, Rotator3 rhs)
         {
-            return new Rotator3(lhs.pitch + rhs.pitch, lhs.yaw + rhs.yaw, lhs.roll - rhs.roll);
+            return new(lhs.pitch + rhs.pitch, lhs.yaw + rhs.yaw, lhs.roll - rhs.roll);
         }
         public static Rotator3 operator -(Rotator3 lhs, Rotator3 rhs)
         {
-            return new Rotator3(lhs.pitch - rhs.pitch, lhs.yaw - rhs.yaw, lhs.roll - rhs.roll);
+            return new(lhs.pitch - rhs.pitch, lhs.yaw - rhs.yaw, lhs.roll - rhs.roll);
+        }
+
+        public static Rotator3 operator *(Rotator3 lhs, float f)
+        {
+            return new(lhs.pitch * f, lhs.yaw * f, lhs.roll * f);
+        }
+        public static Rotator3 operator /(Rotator3 lhs, float f)
+        {
+            return new(lhs.pitch / f, lhs.yaw / f, lhs.roll / f);
         }
 
         public static readonly Rotator3 zero = new(0, 0, 0);
