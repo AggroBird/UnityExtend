@@ -253,16 +253,18 @@ namespace AggroBird.UnityExtend.Editor
 
         private SerializedProperty property;
         private IBitfieldLabelList labelList;
+        private bool editable = false;
 
         private SerializedObject[] serializedObjects = Array.Empty<SerializedObject>();
         private SerializedProperty[] serializedProperties = Array.Empty<SerializedProperty>();
 
 
-        public void SetProperty(SerializedProperty property, IBitfieldLabelList labelList)
+        public void SetProperty(SerializedProperty property, IBitfieldLabelList labelList, bool editable)
         {
             this.property = property;
             titleContent = new GUIContent(property.displayName);
             this.labelList = labelList;
+            this.editable = editable;
 
             Object[] multipleObjects = property.serializedObject.targetObjects;
             serializedObjects = new SerializedObject[multipleObjects.Length];
@@ -302,55 +304,58 @@ namespace AggroBird.UnityExtend.Editor
                 filter = EditorGUILayout.TextField(filter, EditorStyles.toolbarSearchField);
                 string[] filterSplit = filter.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                foreach (var bitfieldLabel in labelList.Labels)
+                using (new EditorGUI.DisabledGroupScope(!editable))
                 {
-                    // Apply filter
-                    foreach (var filterStr in filterSplit)
+                    foreach (var bitfieldLabel in labelList.Labels)
                     {
-                        if (!bitfieldLabel.Name.Contains(filterStr, StringComparison.OrdinalIgnoreCase))
+                        // Apply filter
+                        foreach (var filterStr in filterSplit)
                         {
-                            goto Skip;
-                        }
-                    }
-
-                    // Show tags
-                    BitfieldUtility.GetIdxFlag(bitfieldLabel.Index, out int idx, out int flag);
-                    SerializedProperty maskValueProperty = property.FindPropertyRelative($"mask{idx}");
-                    if (maskValueProperty != null)
-                    {
-                        EditorGUILayout.BeginHorizontal();
-                        EditorGUILayout.PrefixLabel(bitfieldLabel.Name);
-                        GUILayout.FlexibleSpace();
-                        for (int i = 0; i < serializedObjects.Length; i++)
-                        {
-                            serializedProperties[i] = serializedObjects[i].FindProperty(maskValueProperty.propertyPath);
-                        }
-                        bool showMixedValue = false;
-                        bool isSet = (serializedProperties[0].intValue & flag) != 0;
-                        for (int i = 1; i < serializedObjects.Length; i++)
-                        {
-                            int nestedValue = serializedProperties[i].intValue;
-                            showMixedValue |= ((nestedValue & flag) != 0) != isSet;
-                            if (showMixedValue) break;
-                        }
-                        using (new EditorExtendUtility.MixedValueScope(showMixedValue))
-                        {
-                            EditorGUI.BeginChangeCheck();
-                            bool setValue = EditorGUILayout.Toggle(isSet, GUILayout.Width(20));
-                            if (EditorGUI.EndChangeCheck())
+                            if (!bitfieldLabel.Name.Contains(filterStr, StringComparison.OrdinalIgnoreCase))
                             {
-                                setValue |= showMixedValue;
-                                for (int i = 0; i < serializedObjects.Length; i++)
-                                {
-                                    serializedProperties[i].intValue = setValue ? (serializedProperties[i].intValue | flag) : (serializedProperties[i].intValue & ~flag);
-                                }
+                                goto Skip;
                             }
                         }
-                        EditorGUILayout.EndHorizontal();
-                    }
 
-                Skip:
-                    continue;
+                        // Show tags
+                        BitfieldUtility.GetIdxFlag(bitfieldLabel.Index, out int idx, out int flag);
+                        SerializedProperty maskValueProperty = property.FindPropertyRelative($"mask{idx}");
+                        if (maskValueProperty != null)
+                        {
+                            EditorGUILayout.BeginHorizontal();
+                            EditorGUILayout.PrefixLabel(bitfieldLabel.Name);
+                            GUILayout.FlexibleSpace();
+                            for (int i = 0; i < serializedObjects.Length; i++)
+                            {
+                                serializedProperties[i] = serializedObjects[i].FindProperty(maskValueProperty.propertyPath);
+                            }
+                            bool showMixedValue = false;
+                            bool isSet = (serializedProperties[0].intValue & flag) != 0;
+                            for (int i = 1; i < serializedObjects.Length; i++)
+                            {
+                                int nestedValue = serializedProperties[i].intValue;
+                                showMixedValue |= ((nestedValue & flag) != 0) != isSet;
+                                if (showMixedValue) break;
+                            }
+                            using (new EditorExtendUtility.MixedValueScope(showMixedValue))
+                            {
+                                EditorGUI.BeginChangeCheck();
+                                bool setValue = EditorGUILayout.Toggle(isSet, GUILayout.Width(20));
+                                if (EditorGUI.EndChangeCheck())
+                                {
+                                    setValue |= showMixedValue;
+                                    for (int i = 0; i < serializedObjects.Length; i++)
+                                    {
+                                        serializedProperties[i].intValue = setValue ? (serializedProperties[i].intValue | flag) : (serializedProperties[i].intValue & ~flag);
+                                    }
+                                }
+                            }
+                            EditorGUILayout.EndHorizontal();
+                        }
+
+                    Skip:
+                        continue;
+                    }
                 }
             }
             EditorGUILayout.EndScrollView();
@@ -395,7 +400,7 @@ namespace AggroBird.UnityExtend.Editor
                 using (new EditorExtendUtility.MixedValueScope(showMixedValue))
                 {
                     GUI.contentColor = showMixedValue ? new Color(1, 1, 1, 0.5f) : Color.white;
-                    if (GUI.Button(position, showMixedValue ? EditorExtendUtility.MixedValueContent : labelBuilder.Length == 0 ? "<none>" : labelBuilder.ToString(), EditorStyles.popup))
+                    if (PopupButton(position, showMixedValue ? EditorExtendUtility.MixedValueContent : labelBuilder.Length == 0 ? "<none>" : labelBuilder.ToString()))
                     {
                         if (BitfieldMaskSelectWindow.CurrentWindow)
                         {
@@ -403,7 +408,7 @@ namespace AggroBird.UnityExtend.Editor
                         }
 
                         BitfieldMaskSelectWindow window = ScriptableObject.CreateInstance<BitfieldMaskSelectWindow>();
-                        window.SetProperty(property, labelList);
+                        window.SetProperty(property, labelList, GUI.enabled);
                         window.ShowUtility();
                     }
                     GUI.contentColor = Color.white;
@@ -415,6 +420,20 @@ namespace AggroBird.UnityExtend.Editor
             }
 
             EditorGUI.EndProperty();
+        }
+        private static bool PopupButton(Rect position, string text)
+        {
+            bool result = GUI.Button(position, text, EditorStyles.popup);
+            if (!GUI.enabled)
+            {
+                Color color = GUI.color;
+                GUI.color = new(0, 0, 0, 0);
+                GUI.enabled = true;
+                result |= GUI.Button(position, string.Empty);
+                GUI.enabled = false;
+                GUI.color = color;
+            }
+            return result;
         }
     }
 
