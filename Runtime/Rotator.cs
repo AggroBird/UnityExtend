@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using UnityEngine;
 
 namespace AggroBird.UnityExtend
@@ -49,6 +50,31 @@ namespace AggroBird.UnityExtend
         }
 
         public static readonly Rotator2 zero = new(0, 0);
+
+
+        public override readonly int GetHashCode()
+        {
+            return pitch.GetHashCode() ^ (yaw.GetHashCode() << 2);
+        }
+        public override readonly bool Equals(object obj)
+        {
+            return obj is Rotator2 other && Equals(other);
+        }
+        public readonly bool Equals(Rotator2 other)
+        {
+            return pitch.Equals(other.pitch) && yaw.Equals(other.yaw);
+        }
+
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
+        public readonly string ToString(string format, IFormatProvider formatProvider = null)
+        {
+            if (string.IsNullOrEmpty(format)) format = "F2";
+            formatProvider ??= CultureInfo.InvariantCulture.NumberFormat;
+            return $"({pitch.ToString(format, formatProvider)}, {yaw.ToString(format, formatProvider)})";
+        }
     }
 
     // 3D euler rotation
@@ -99,6 +125,31 @@ namespace AggroBird.UnityExtend
         }
 
         public static readonly Rotator3 zero = new(0, 0, 0);
+
+
+        public override readonly int GetHashCode()
+        {
+            return pitch.GetHashCode() ^ (yaw.GetHashCode() << 2) ^ (roll.GetHashCode() >> 2);
+        }
+        public override readonly bool Equals(object obj)
+        {
+            return obj is Rotator3 other && Equals(other);
+        }
+        public readonly bool Equals(Rotator3 other)
+        {
+            return pitch.Equals(other.pitch) && yaw.Equals(other.yaw) && roll.Equals(other.roll);
+        }
+
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
+        public readonly string ToString(string format, IFormatProvider formatProvider = null)
+        {
+            if (string.IsNullOrEmpty(format)) format = "F2";
+            formatProvider ??= CultureInfo.InvariantCulture.NumberFormat;
+            return $"({pitch.ToString(format, formatProvider)}, {yaw.ToString(format, formatProvider)}, {roll.ToString(format, formatProvider)})";
+        }
     }
 
     public static class RotatorQuaternion

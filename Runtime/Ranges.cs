@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using UnityEngine;
 
 namespace AggroBird.UnityExtend
@@ -34,9 +35,29 @@ namespace AggroBird.UnityExtend
         public readonly double Clamp(double value) => Math.Clamp(value, Min, Max);
         public readonly double Clamp(int value) => Math.Clamp(value, Min, Max);
 
-        public override readonly string ToString()
+
+        public override readonly int GetHashCode()
         {
-            return $"({Min} - {Max})";
+            return Min.GetHashCode() ^ (Max.GetHashCode() << 2);
+        }
+        public override readonly bool Equals(object obj)
+        {
+            return obj is IntRange other && Equals(other);
+        }
+        public readonly bool Equals(IntRange other)
+        {
+            return Min.Equals(other.Max) && Min.Equals(other.Max);
+        }
+
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
+        public readonly string ToString(string format, IFormatProvider formatProvider = null)
+        {
+            if (string.IsNullOrEmpty(format)) format = "F2";
+            formatProvider ??= CultureInfo.InvariantCulture.NumberFormat;
+            return $"({Min.ToString(format, formatProvider)} - {Max.ToString(format, formatProvider)})";
         }
     }
 
@@ -69,9 +90,29 @@ namespace AggroBird.UnityExtend
 
         public readonly float Clamp(float value) => Math.Clamp(value, Min, Max);
 
-        public override readonly string ToString()
+
+        public override readonly int GetHashCode()
         {
-            return $"({Min} - {Max})";
+            return Min.GetHashCode() ^ (Max.GetHashCode() << 2);
+        }
+        public override readonly bool Equals(object obj)
+        {
+            return obj is FloatRange other && Equals(other);
+        }
+        public readonly bool Equals(FloatRange other)
+        {
+            return Min.Equals(other.Max) && Min.Equals(other.Max);
+        }
+
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
+        public readonly string ToString(string format, IFormatProvider formatProvider = null)
+        {
+            if (string.IsNullOrEmpty(format)) format = "F2";
+            formatProvider ??= CultureInfo.InvariantCulture.NumberFormat;
+            return $"({Min.ToString(format, formatProvider)} - {Max.ToString(format, formatProvider)})";
         }
     }
 
@@ -105,9 +146,29 @@ namespace AggroBird.UnityExtend
         public readonly double Clamp(float value) => Math.Clamp(value, Min, Max);
         public readonly double Clamp(double value) => Math.Clamp(value, Min, Max);
 
-        public override readonly string ToString()
+
+        public override readonly int GetHashCode()
         {
-            return $"({Min} - {Max})";
+            return Min.GetHashCode() ^ (Max.GetHashCode() << 2);
+        }
+        public override readonly bool Equals(object obj)
+        {
+            return obj is DoubleRange other && Equals(other);
+        }
+        public readonly bool Equals(DoubleRange other)
+        {
+            return Min.Equals(other.Max) && Min.Equals(other.Max);
+        }
+
+        public readonly override string ToString()
+        {
+            return ToString(null, null);
+        }
+        public readonly string ToString(string format, IFormatProvider formatProvider = null)
+        {
+            if (string.IsNullOrEmpty(format)) format = "F2";
+            formatProvider ??= CultureInfo.InvariantCulture.NumberFormat;
+            return $"({Min.ToString(format, formatProvider)} - {Max.ToString(format, formatProvider)})";
         }
     }
 }
