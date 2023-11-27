@@ -24,10 +24,11 @@ namespace AggroBird.UnityExtend.Editor
 
                 int selectedIndex = -1;
                 labelBuffer.Clear();
-                int labelCount = provider.StringLabelCount;
+                var labelList = provider.GetStringLabelList(index);
+                int labelCount = labelList.StringLabelCount;
                 for (int i = 0; i < labelCount; i++)
                 {
-                    string name = provider.GetStringLabelName(i);
+                    string name = labelList.GetStringLabelName(i);
                     if (!labelBuffer.Contains(name))
                     {
                         labelBuffer.Add(name);
