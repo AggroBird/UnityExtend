@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace AggroBird.UnityExtend
 {
@@ -11,7 +12,7 @@ namespace AggroBird.UnityExtend
     }
 
     [AttributeUsage(AttributeTargets.Field)]
-    public sealed class StringLabelAttribute : Attribute
+    public sealed class StringLabelAttribute : PropertyAttribute
     {
 
     }
