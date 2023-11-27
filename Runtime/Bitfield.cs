@@ -17,51 +17,10 @@ namespace AggroBird.UnityExtend
 
 
     // Implement this interface to allow editor to load label names from asset.
-    // Asset must be loadable by AssetDatabase.
+    // Asset must be loadable by AssetDatabase when referencing scriptable objects.
     public interface IBitfieldLabelNameProvider
     {
         IBitfieldLabelList GetBitfieldLabelList(int index);
-    }
-
-    // Add this attribute to any field that is a BitfieldFlag or a BitfieldMask.
-    // Allows the editor to load the string values defined in a bitfield label list.
-    // ProviderType must implement IBitfieldLabelNameProvider interface and must be
-    // loadable by the AssetDatabase.
-    [AttributeUsage(AttributeTargets.Field)]
-    public sealed class BitfieldLabelGlobalNameProviderAttribute : Attribute
-    {
-        public BitfieldLabelGlobalNameProviderAttribute(Type providerType, int index = 0)
-        {
-            ProviderType = providerType;
-            Index = index;
-        }
-
-        public Type ProviderType { get; private set; }
-        public int Index { get; private set; }
-    }
-
-    public enum NestedNameProviderSource
-    {
-        DeclaringType,
-        SerializedObject,
-    }
-
-    // Add this attribute to any field that is a BitfieldFlag or a BitfieldMask.
-    // Allows the editor to load the string values defined in a bitfield label list.
-    // If Source is DeclaringType, the declaring type of the current field will be used.
-    // If Source is SerializedObject, the serialized object value of the property will be used.
-    // Source must implement IBitfieldLabelNameProvider interface.
-    [AttributeUsage(AttributeTargets.Field)]
-    public sealed class BitfieldLabelNestedNameProviderAttribute : Attribute
-    {
-        public BitfieldLabelNestedNameProviderAttribute(NestedNameProviderSource source, int index = 0)
-        {
-            Source = source;
-            Index = index;
-        }
-
-        public NestedNameProviderSource Source { get; private set; }
-        public int Index { get; private set; }
     }
 
     // Individual bitfield flag
