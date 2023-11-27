@@ -10,8 +10,8 @@ namespace AggroBird.UnityExtend.Editor
 {
     internal static class BitfieldEditorUtility
     {
-        private static Dictionary<Type, IBitfieldLabelNameProvider> providerCache = new();
-        private static List<object> propertyValues = new();
+        private static readonly Dictionary<Type, IBitfieldLabelNameProvider> providerCache = new();
+        private static readonly List<object> propertyValues = new();
 
         public static bool TryGetLabelNameProvider(SerializedProperty property, out IBitfieldLabelList labelList)
         {
@@ -58,10 +58,13 @@ namespace AggroBird.UnityExtend.Editor
                             case NestedNameProviderSource.DeclaringType:
                             {
                                 // Try to get from parent property
-                                object parent = propertyValues[propertyValues.Count - 1];
-                                if (parent != null && parent is IBitfieldLabelNameProvider validProvider)
+                                if (propertyValues.Count > 0)
                                 {
-                                    target = (validProvider, nestedProviderAttribute.Index);
+                                    object parent = propertyValues[^1];
+                                    if (parent != null && parent is IBitfieldLabelNameProvider validProvider)
+                                    {
+                                        target = (validProvider, nestedProviderAttribute.Index);
+                                    }
                                 }
                             }
                             break;
@@ -369,7 +372,7 @@ namespace AggroBird.UnityExtend.Editor
 
     internal abstract class BitfieldMask : PropertyDrawer
     {
-        private static StringBuilder labelBuilder = new();
+        private static readonly StringBuilder labelBuilder = new();
 
         public abstract int BitCount { get; }
 
