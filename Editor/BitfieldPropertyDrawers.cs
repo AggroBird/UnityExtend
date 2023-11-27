@@ -45,8 +45,7 @@ namespace AggroBird.UnityExtend.Editor
             int idx = 0;
             foreach (var value in values)
             {
-                property.GetArrayElementAtIndex(idx).SetBitfieldLabel(value.Name, value.Index);
-                idx++;
+                property.GetArrayElementAtIndex(idx++).SetBitfieldLabel(value.Name, value.Index);
             }
         }
     }
