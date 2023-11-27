@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace AggroBird.UnityExtend
 {
@@ -11,10 +10,9 @@ namespace AggroBird.UnityExtend
         int StringLabelCount { get; }
     }
 
-    // Unique string label.
-    [Serializable]
-    public struct StringLabel
+    [AttributeUsage(AttributeTargets.Field)]
+    public sealed class StringLabelAttribute : Attribute
     {
-        [field: SerializeField] public string Value { get; private set; }
+
     }
 }

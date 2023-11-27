@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace AggroBird.UnityExtend.Editor
 {
-    [CustomPropertyDrawer(typeof(StringLabel))]
+    [CustomPropertyDrawer(typeof(StringLabelAttribute))]
     internal sealed class StringLabelPropertyDrawer : PropertyDrawer
     {
         private static readonly LabelNameProviderCache<IStringLabelNameProvider> providerCache = new();
@@ -16,9 +16,7 @@ namespace AggroBird.UnityExtend.Editor
 
             if (providerCache.TryGetProvider(property, out IStringLabelNameProvider provider, out int index))
             {
-                SerializedProperty valueProperty = property.FindPropertyRelative((StringLabel def) => def.Value);
-
-                string selectedValue = valueProperty.stringValue;
+                string selectedValue = property.stringValue;
 
                 int selectedIndex = -1;
                 labelBuffer.Clear();
@@ -46,7 +44,7 @@ namespace AggroBird.UnityExtend.Editor
                 int selection = EditorGUI.Popup(position, selectedIndex, labelBuffer.ToArray());
                 if (selection != selectedIndex)
                 {
-                    valueProperty.stringValue = labelBuffer[selection];
+                    property.stringValue = labelBuffer[selection];
                 }
             }
             else
