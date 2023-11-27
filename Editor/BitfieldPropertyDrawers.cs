@@ -15,7 +15,7 @@ namespace AggroBird.UnityExtend.Editor
 
         public static bool TryGetLabelNameProvider(SerializedProperty property, out IBitfieldLabelList labelList)
         {
-            IBitfieldLabelNameProvider provider = null;
+            (IBitfieldLabelNameProvider provider, int index)? target = null;
 
             if (EditorExtendUtility.TryGetFieldInfo(property, out FieldInfo fieldInfo, out _, stackTrace: propertyValues))
             {
@@ -25,10 +25,8 @@ namespace AggroBird.UnityExtend.Editor
                     // Load from asset
                     if (globalProviderAttribute.ProviderType != null)
                     {
-                        if (!providerCache.TryGetValue(globalProviderAttribute.ProviderType, out provider) || !IsValid(provider))
+                        if (!providerCache.TryGetValue(globalProviderAttribute.ProviderType, out IBitfieldLabelNameProvider cachedProvider) || !IsValid(cachedProvider))
                         {
-                            provider = null;
-
                             string[] guids = AssetDatabase.FindAssets($"t:{globalProviderAttribute.ProviderType.Name}");
                             if (guids != null && guids.Length > 0)
                             {
@@ -37,12 +35,16 @@ namespace AggroBird.UnityExtend.Editor
                                     Object obj = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[i]), globalProviderAttribute.ProviderType);
                                     if (obj && obj is IBitfieldLabelNameProvider validProvider)
                                     {
-                                        provider = validProvider;
-                                        providerCache[globalProviderAttribute.ProviderType] = provider;
+                                        providerCache[globalProviderAttribute.ProviderType] = validProvider;
+                                        target = (validProvider, globalProviderAttribute.Index);
                                         break;
                                     }
                                 }
                             }
+                        }
+                        else
+                        {
+                            target = (cachedProvider, globalProviderAttribute.Index);
                         }
                     }
                 }
@@ -59,7 +61,7 @@ namespace AggroBird.UnityExtend.Editor
                                 object parent = propertyValues[propertyValues.Count - 1];
                                 if (parent != null && parent is IBitfieldLabelNameProvider validProvider)
                                 {
-                                    provider = validProvider;
+                                    target = (validProvider, nestedProviderAttribute.Index);
                                 }
                             }
                             break;
@@ -69,7 +71,7 @@ namespace AggroBird.UnityExtend.Editor
                                 Object obj = property.serializedObject.targetObject;
                                 if (obj && obj is IBitfieldLabelNameProvider validProvider)
                                 {
-                                    provider = validProvider;
+                                    target = (validProvider, nestedProviderAttribute.Index);
                                 }
                             }
                             break;
@@ -78,16 +80,18 @@ namespace AggroBird.UnityExtend.Editor
                 }
             }
 
-            if (provider != null)
+            if (target.HasValue)
             {
-                labelList = provider.GetBitfieldLabelList();
-                return labelList != null;
+                var (provider, index) = target.Value;
+                var resultLabelList = provider.GetBitfieldLabelList(index);
+                if (resultLabelList != null)
+                {
+                    labelList = resultLabelList;
+                    return true;
+                }
             }
-            else
-            {
-                labelList = null;
-                return false;
-            }
+            labelList = null;
+            return false;
         }
 
         private static bool IsValid(IBitfieldLabelNameProvider provider)

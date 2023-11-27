@@ -20,7 +20,7 @@ namespace AggroBird.UnityExtend
     // Asset must be loadable by AssetDatabase.
     public interface IBitfieldLabelNameProvider
     {
-        IBitfieldLabelList GetBitfieldLabelList();
+        IBitfieldLabelList GetBitfieldLabelList(int index);
     }
 
     // Add this attribute to any field that is a BitfieldFlag or a BitfieldMask.
@@ -30,12 +30,14 @@ namespace AggroBird.UnityExtend
     [AttributeUsage(AttributeTargets.Field)]
     public sealed class BitfieldLabelGlobalNameProviderAttribute : Attribute
     {
-        public BitfieldLabelGlobalNameProviderAttribute(Type providerType)
+        public BitfieldLabelGlobalNameProviderAttribute(Type providerType, int index = 0)
         {
-            this.ProviderType = providerType;
+            ProviderType = providerType;
+            Index = index;
         }
 
         public Type ProviderType { get; private set; }
+        public int Index { get; private set; }
     }
 
     public enum NestedNameProviderSource
@@ -52,12 +54,14 @@ namespace AggroBird.UnityExtend
     [AttributeUsage(AttributeTargets.Field)]
     public sealed class BitfieldLabelNestedNameProviderAttribute : Attribute
     {
-        public BitfieldLabelNestedNameProviderAttribute(NestedNameProviderSource source)
+        public BitfieldLabelNestedNameProviderAttribute(NestedNameProviderSource source, int index = 0)
         {
             Source = source;
+            Index = index;
         }
 
         public NestedNameProviderSource Source { get; private set; }
+        public int Index { get; private set; }
     }
 
     // Individual bitfield flag
