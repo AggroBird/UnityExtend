@@ -32,7 +32,7 @@ namespace AggroBird.UnityExtend.Editor
 
                 if ((uint)selectedValue >= (uint)labelCount)
                 {
-                    labelBuffer.Add($"{selectedValue} (missing)");
+                    labelBuffer.Add("<invalid index>");
                     selectedValue = labelBuffer.Count - 1;
                 }
 
