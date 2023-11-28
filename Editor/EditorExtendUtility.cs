@@ -208,6 +208,12 @@ namespace AggroBird.UnityExtend.Editor
         }
 
 
+        // Extension method for getting property compiler-generated backing field name
+        public static string GetPropertyBackingFieldName(string propertyName)
+        {
+            return $"<{propertyName}>k__BackingField";
+        }
+
         // Extension methods that help getting serialized field names through lambda analyzation.
         // example: serializedObject.FindProperty((Foo foo) => foo.bar)
         private static bool TryGetPropertyNameFromLambdaExpression(LambdaExpression exp, out string result)
@@ -221,7 +227,7 @@ namespace AggroBird.UnityExtend.Editor
                         return true;
 
                     case MemberTypes.Property:
-                        result = $"<{memberInfo.Name}>k__BackingField";
+                        result = GetPropertyBackingFieldName(memberInfo.Name);
                         return true;
 
                     default:

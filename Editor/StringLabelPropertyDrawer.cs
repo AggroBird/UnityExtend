@@ -16,7 +16,7 @@ namespace AggroBird.UnityExtend.Editor
 
             if (property.propertyType != SerializedPropertyType.String)
             {
-                EditorGUI.LabelField(position, "StringLabel property can only be used with string properties");
+                EditorGUI.LabelField(position, "StringLabel attribute can only be used with string properties");
             }
             else if (providerCache.TryGetProvider(property, out IStringLabelNameProvider provider, out int index))
             {
