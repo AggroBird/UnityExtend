@@ -10,7 +10,7 @@ namespace AggroBird.UnityExtend.Editor
         {
             using (new EditorGUI.DisabledGroupScope(true))
             {
-                EditorGUI.PropertyField(position, property);
+                EditorGUI.PropertyField(position, property, label, true);
             }
         }
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
