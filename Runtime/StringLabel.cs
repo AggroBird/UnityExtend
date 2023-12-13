@@ -16,7 +16,7 @@ namespace AggroBird.UnityExtend
         int StringLabelCount { get; }
     }
 
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public sealed class StringLabelAttribute : PropertyAttribute
     {
 

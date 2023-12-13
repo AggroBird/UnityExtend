@@ -16,7 +16,7 @@ namespace AggroBird.UnityExtend
         int ElementCount { get; }
     }
 
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public sealed class NamedArrayElementAttribute : PropertyAttribute
     {
 
