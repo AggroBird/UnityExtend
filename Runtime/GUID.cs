@@ -11,10 +11,7 @@ namespace AggroBird.UnityExtend
 
         public GUID(string value)
         {
-            if (value == null) throw new NullReferenceException(nameof(value));
-            if (value.Length != 32 ||
-                !ulong.TryParse(value.Substring(0, 16), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out ulong upper) ||
-                !ulong.TryParse(value.Substring(16, 16), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out ulong lower))
+            if (!TryParse(value, out ulong upper, out ulong lower))
             {
                 throw new ArgumentException("Invalid GUID string");
             }
@@ -26,6 +23,32 @@ namespace AggroBird.UnityExtend
         {
             Upper = upper;
             Lower = lower;
+        }
+
+        private static bool TryParse(string str, out ulong upper, out ulong lower)
+        {
+            if (str != null && str.Length == 32)
+            {
+                if (ulong.TryParse(str.Substring(0, 16), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out upper))
+                {
+                    if (ulong.TryParse(str.Substring(16, 16), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out lower))
+                    {
+                        return true;
+                    }
+                }
+            }
+            upper = lower = default;
+            return false;
+        }
+        public static bool TryParse(string str, out GUID guid)
+        {
+            if (TryParse(str, out ulong upper, out ulong lower))
+            {
+                guid = new(upper, lower);
+                return true;
+            }
+            guid = default;
+            return false;
         }
 
         [field: SerializeField, UnityEngine.Serialization.FormerlySerializedAs("value0")] public ulong Upper { get; private set; }
