@@ -21,6 +21,9 @@ namespace AggroBird.UnityExtend.Editor
 
 
         // Missing object to show in object fields
+        // If SerializedProperty.objectReferenceInstanceIDValue is not 0, but objectReferenceValue is null,
+        // it means the object link is broken or the object has been destroyed.
+        // Use this object instead of the original value to make the ObjectField show "Missing" in inspector.
         private static ScriptableObject missingObject;
         public static UnityObject MissingObject
         {
