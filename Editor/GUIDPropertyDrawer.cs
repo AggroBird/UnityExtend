@@ -12,9 +12,9 @@ namespace AggroBird.UnityExtend.Editor
             {
                 using (new EditorExtendUtility.MixedValueScope(property.hasMultipleDifferentValues))
                 {
-                    long value0 = property.FindPropertyRelative("value0").longValue;
-                    long value1 = property.FindPropertyRelative("value1").longValue;
-                    EditorGUI.TextField(position, label, $"{value0:x16}{value1:x16}");
+                    ulong upper = property.FindPropertyRelative("upper").ulongValue;
+                    ulong lower = property.FindPropertyRelative("lower").ulongValue;
+                    EditorGUI.TextField(position, label, $"{upper:x16}{lower:x16}");
                 }
             }
         }

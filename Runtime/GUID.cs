@@ -13,34 +13,32 @@ namespace AggroBird.UnityExtend
         {
             if (value == null) throw new NullReferenceException(nameof(value));
             if (value.Length != 32 ||
-                !long.TryParse(value.Substring(0, 16), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out long result0) ||
-                !long.TryParse(value.Substring(16, 16), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out long result1))
+                !ulong.TryParse(value.Substring(0, 16), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out ulong upper) ||
+                !ulong.TryParse(value.Substring(16, 16), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out ulong lower))
             {
                 throw new ArgumentException("Invalid GUID string");
             }
 
-            value0 = result0;
-            value1 = result1;
+            this.upper = upper;
+            this.lower = lower;
         }
-        public GUID(params long[] value)
+        public GUID(ulong upper, ulong lower)
         {
-            if (value == null) throw new NullReferenceException(nameof(value));
-            if (value.Length != 2) throw new ArgumentException("Invalid GUID length");
-            value0 = value[0];
-            value1 = value[1];
+            this.upper = upper;
+            this.lower = lower;
         }
 
-        [SerializeField] private long value0;
-        [SerializeField] private long value1;
+        [SerializeField] private ulong upper;
+        [SerializeField] private ulong lower;
 
-        public readonly long this[int index]
+        public readonly ulong this[int index]
         {
             get
             {
                 switch (index)
                 {
-                    case 0: return value0;
-                    case 1: return value1;
+                    case 0: return upper;
+                    case 1: return lower;
                 }
                 throw new IndexOutOfRangeException();
             }
@@ -48,7 +46,7 @@ namespace AggroBird.UnityExtend
 
         public override readonly int GetHashCode()
         {
-            return (value0 ^ (value1 << 2)).GetHashCode();
+            return (upper ^ (lower << 2)).GetHashCode();
         }
         public override readonly bool Equals(object obj)
         {
@@ -57,7 +55,7 @@ namespace AggroBird.UnityExtend
 
         public readonly bool Equals(GUID other)
         {
-            return value0 == other.value0 && value1 == other.value1;
+            return upper == other.upper && lower == other.lower;
         }
 
         public static bool operator ==(GUID lhs, GUID rhs) => lhs.Equals(rhs);
@@ -65,7 +63,7 @@ namespace AggroBird.UnityExtend
 
         public override readonly string ToString()
         {
-            return $"{value0:x16}{value1:x16}";
+            return $"{upper:x16}{lower:x16}";
         }
     }
 }
