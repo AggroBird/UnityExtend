@@ -5,6 +5,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using UnityEditor;
+using UnityEngine;
+using UnityObject = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend.Editor
 {
@@ -18,8 +20,24 @@ namespace AggroBird.UnityExtend.Editor
         public const string MixedValueContent = "\u2014";
 
 
+        // Missing object to show in object fields
+        private static ScriptableObject missingObject;
+        public static UnityObject MissingObject
+        {
+            get
+            {
+                if (missingObject is null)
+                {
+                    missingObject = ScriptableObject.CreateInstance<ScriptableObject>();
+                    UnityObject.DestroyImmediate(missingObject);
+                }
+                return missingObject;
+            }
+        }
+
+
         // Mixed value disposable
-        public class MixedValueScope : IDisposable
+        public sealed class MixedValueScope : IDisposable
         {
             public MixedValueScope(bool showMixedValue)
             {
