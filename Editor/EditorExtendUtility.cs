@@ -37,6 +37,10 @@ namespace AggroBird.UnityExtend.Editor
                 return missingObject;
             }
         }
+        public static UnityObject GetObjectReferenceValueOrMissing(this SerializedProperty property)
+        {
+            return property.objectReferenceValue ? property.objectReferenceValue : property.objectReferenceInstanceIDValue != 0 ? MissingObject : null;
+        }
 
 
         // Mixed value disposable
