@@ -19,34 +19,21 @@ namespace AggroBird.UnityExtend
                 throw new ArgumentException("Invalid GUID string");
             }
 
-            this.upper = upper;
-            this.lower = lower;
+            Upper = upper;
+            Lower = lower;
         }
         public GUID(ulong upper, ulong lower)
         {
-            this.upper = upper;
-            this.lower = lower;
+            Upper = upper;
+            Lower = lower;
         }
 
-        [SerializeField] private ulong upper;
-        [SerializeField] private ulong lower;
-
-        public readonly ulong this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return upper;
-                    case 1: return lower;
-                }
-                throw new IndexOutOfRangeException();
-            }
-        }
+        [field: SerializeField, UnityEngine.Serialization.FormerlySerializedAs("value0")] public ulong Upper { get; private set; }
+        [field: SerializeField, UnityEngine.Serialization.FormerlySerializedAs("value1")] public ulong Lower { get; private set; }
 
         public override readonly int GetHashCode()
         {
-            return (upper ^ (lower << 2)).GetHashCode();
+            return (Upper ^ (Lower << 2)).GetHashCode();
         }
         public override readonly bool Equals(object obj)
         {
@@ -55,7 +42,7 @@ namespace AggroBird.UnityExtend
 
         public readonly bool Equals(GUID other)
         {
-            return upper == other.upper && lower == other.lower;
+            return Upper == other.Upper && Lower == other.Lower;
         }
 
         public static bool operator ==(GUID lhs, GUID rhs) => lhs.Equals(rhs);
@@ -63,7 +50,7 @@ namespace AggroBird.UnityExtend
 
         public override readonly string ToString()
         {
-            return $"{upper:x16}{lower:x16}";
+            return $"{Upper:x16}{Lower:x16}";
         }
     }
 }
