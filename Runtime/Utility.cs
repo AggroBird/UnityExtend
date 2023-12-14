@@ -172,5 +172,11 @@ namespace AggroBird.UnityExtend
             }
             return false;
         }
+
+        // Get property compiler-generated backing field name
+        public static string GetPropertyBackingFieldName(string propertyName)
+        {
+            return $"<{propertyName}>k__BackingField";
+        }
     }
 }
