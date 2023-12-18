@@ -29,9 +29,9 @@ namespace AggroBird.UnityExtend
         {
             if (str != null && str.Length == 32)
             {
-                if (ulong.TryParse(str.Substring(0, 16), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out upper))
+                if (ulong.TryParse(str.AsSpan(0, 16), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out upper))
                 {
-                    if (ulong.TryParse(str.Substring(16, 16), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out lower))
+                    if (ulong.TryParse(str.AsSpan(16, 16), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out lower))
                     {
                         return true;
                     }
