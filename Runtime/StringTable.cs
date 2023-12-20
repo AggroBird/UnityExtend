@@ -50,44 +50,7 @@ namespace AggroBird.UnityExtend
                 int order = 1;
                 foreach (var kv in list)
                 {
-                    int idx = 0;
-                    string originalKey = string.IsNullOrEmpty(kv.name) ? "Empty" : kv.name;
-                    if (dictionary.ContainsKey(originalKey))
-                    {
-                        // If the key is already present, generate a followup number (Foo_1, Foo_2, etc.)
-                        int lastUnderscore = originalKey.LastIndexOf('_');
-                        if (lastUnderscore > 0 && lastUnderscore != originalKey.Length - 1)
-                        {
-                            bool validFollowUpNumber = true;
-                            if (originalKey[lastUnderscore + 1] != '0')
-                            {
-                                for (int i = lastUnderscore + 1; i < originalKey.Length; i++)
-                                {
-                                    if (originalKey[i] < '0' || originalKey[i] > '9')
-                                    {
-                                        validFollowUpNumber = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (validFollowUpNumber)
-                            {
-                                int.TryParse(originalKey.Substring(lastUnderscore + 1), out idx);
-                                originalKey = originalKey.Substring(0, lastUnderscore);
-                            }
-                        }
-                        string newKey = originalKey;
-                        do
-                        {
-                            newKey = originalKey + $"_{++idx}";
-                        }
-                        while (dictionary.ContainsKey(newKey));
-                        dictionary[newKey] = (kv.value, order++);
-                    }
-                    else
-                    {
-                        dictionary[originalKey] = (kv.value, order++);
-                    }
+                    dictionary[FormattedTagUtility.GenerateUniqueFormattedTag(kv.name, (string tag) => dictionary.ContainsKey(tag))] = (kv.value, order++);
                 }
             }
         }

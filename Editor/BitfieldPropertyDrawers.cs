@@ -394,6 +394,14 @@ namespace AggroBird.UnityExtend.Editor
     }
 
 
+    public static class EditorFormattedTagUtility
+    {
+        public static void FormatTag(SerializedProperty serializedProperty, int maxLength = 32)
+        {
+            serializedProperty.stringValue = FormattedTagUtility.FormatTag(serializedProperty.stringValue, maxLength);
+        }
+    }
+
     [CustomPropertyDrawer(typeof(BitfieldLabel))]
     internal sealed class BitfieldLabelPropertyDrawer : PropertyDrawer
     {
@@ -413,7 +421,7 @@ namespace AggroBird.UnityExtend.Editor
                 EditorGUI.PropertyField(position, nameProperty, label);
 
                 // Validate after modification
-                EditorExtendUtility.FormatTag(nameProperty);
+                EditorFormattedTagUtility.FormatTag(nameProperty);
                 property.GetBitfieldLabel(out name, out int index);
 
                 if (!string.IsNullOrEmpty(name) && !BitfieldLabelListPropertyDrawer.UniqueLabels.ContainsKey(name))

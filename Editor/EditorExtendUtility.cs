@@ -189,50 +189,6 @@ namespace AggroBird.UnityExtend.Editor
         }
 
 
-        // Format a tag according to tag formatting rules (e.g. 'Test Tag' => 'Test_Tag')
-        private static readonly StringBuilder tagBuilder = new();
-        public static void FormatTag(SerializedProperty tag, int maxLength = 32)
-        {
-            if (!tag.hasMultipleDifferentValues)
-            {
-                if (maxLength < 1) maxLength = 1;
-                string str = tag.stringValue.Trim();
-                if (str.Length > maxLength) str = str.Substring(0, maxLength);
-
-                tagBuilder.Clear();
-                bool allowNumber = false;
-                for (int i = 0; i < str.Length; i++)
-                {
-                    char c = str[i];
-                    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
-                    {
-                        tagBuilder.Append(c);
-                        allowNumber = true;
-                    }
-                    else if (c >= '0' && c <= '9')
-                    {
-                        // Dont allow starting with a number (most programming languages dont support this)
-                        if (allowNumber)
-                        {
-                            tagBuilder.Append(c);
-                        }
-                    }
-                    else if (c == ' ' || c == '_')
-                    {
-                        tagBuilder.Append('_');
-                        allowNumber = true;
-                    }
-                }
-
-                str = tagBuilder.ToString();
-                if (str != tag.stringValue)
-                {
-                    tag.stringValue = str;
-                }
-            }
-        }
-
-
         // Extension methods that help getting serialized field names through lambda analyzation.
         // example: serializedObject.FindProperty((Foo foo) => foo.bar)
         private static bool TryGetPropertyNameFromLambdaExpression(LambdaExpression exp, out string result)

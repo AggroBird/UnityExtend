@@ -21,7 +21,7 @@ namespace AggroBird.UnityExtend.Editor
             if (property.propertyType == SerializedPropertyType.String)
             {
                 EditorGUI.PropertyField(position, property, label, true);
-                EditorExtendUtility.FormatTag(property, attribute.MaxLength);
+                EditorFormattedTagUtility.FormatTag(property, attribute.MaxLength);
             }
             else
             {
