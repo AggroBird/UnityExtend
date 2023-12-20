@@ -266,6 +266,10 @@ namespace AggroBird.UnityExtend.Editor
             result = null;
             return false;
         }
+        public static string GetPropertyName(Expression<Func<object>> exp)
+        {
+            return TryGetPropertyNameFromLambdaExpression(exp, out string name) ? name : string.Empty;
+        }
         public static SerializedProperty FindProperty(this SerializedObject serializedObject, Expression<Func<object>> exp)
         {
             return TryGetPropertyNameFromLambdaExpression(exp, out string name) ? serializedObject.FindProperty(name) : null;
@@ -273,6 +277,10 @@ namespace AggroBird.UnityExtend.Editor
         public static SerializedProperty FindPropertyRelative(this SerializedProperty serializedProperty, Expression<Func<object>> exp)
         {
             return TryGetPropertyNameFromLambdaExpression(exp, out string name) ? serializedProperty.FindPropertyRelative(name) : null;
+        }
+        public static string GetPropertyName<T>(Expression<Func<T, object>> exp)
+        {
+            return TryGetPropertyNameFromLambdaExpression(exp, out string name) ? name : string.Empty;
         }
         public static SerializedProperty FindProperty<T>(this SerializedObject serializedObject, Expression<Func<T, object>> exp)
         {
