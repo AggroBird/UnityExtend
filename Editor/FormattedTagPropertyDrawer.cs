@@ -1,3 +1,4 @@
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,10 +16,12 @@ namespace AggroBird.UnityExtend.Editor
         {
             EditorGUI.BeginProperty(position, label, property);
 
+            FormattedTagAttribute attribute = fieldInfo.GetCustomAttribute<FormattedTagAttribute>();
+
             if (property.propertyType == SerializedPropertyType.String)
             {
                 EditorGUI.PropertyField(position, property, label, true);
-                EditorExtendUtility.FormatTag(property);
+                EditorExtendUtility.FormatTag(property, attribute.MaxLength);
             }
             else
             {

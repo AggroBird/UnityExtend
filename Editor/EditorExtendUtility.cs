@@ -189,39 +189,38 @@ namespace AggroBird.UnityExtend.Editor
         }
 
 
-        // Format a tag according to tag formatting rules (e.g. 'Test Tag' => 'TEST_TAG')
+        // Format a tag according to tag formatting rules (e.g. 'Test Tag' => 'Test_Tag')
         private static readonly StringBuilder tagBuilder = new();
         public static void FormatTag(SerializedProperty tag, int maxLength = 32)
         {
             if (!tag.hasMultipleDifferentValues)
             {
                 if (maxLength < 1) maxLength = 1;
-                string str = tag.stringValue.Trim().ToUpper();
+                string str = tag.stringValue.Trim();
                 if (str.Length > maxLength) str = str.Substring(0, maxLength);
 
                 tagBuilder.Clear();
-                bool allowUnderscore = false;
+                bool allowNumber = false;
                 for (int i = 0; i < str.Length; i++)
                 {
                     char c = str[i];
-                    if ((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9'))
+                    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
                     {
                         tagBuilder.Append(c);
-                        allowUnderscore = true;
+                        allowNumber = true;
+                    }
+                    else if (c >= '0' && c <= '9')
+                    {
+                        if (allowNumber)
+                        {
+                            tagBuilder.Append(c);
+                        }
                     }
                     else if (c == ' ' || c == '_')
                     {
-                        if (allowUnderscore)
-                        {
-                            tagBuilder.Append('_');
-                            allowUnderscore = false;
-                        }
+                        tagBuilder.Append('_');
+                        allowNumber = true;
                     }
-                }
-
-                if (tagBuilder.Length > 0 && tagBuilder[tagBuilder.Length - 1] == '_')
-                {
-                    tagBuilder.Remove(tagBuilder.Length - 1, 1);
                 }
 
                 str = tagBuilder.ToString();
