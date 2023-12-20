@@ -10,16 +10,18 @@ namespace AggroBird.UnityExtend
         [Serializable]
         private struct ListValue
         {
-            [FormattedTag] public string key;
+            [FormattedTag] public string name;
             public T value;
+#if UNITY_EDITOR
             [HideInInspector] public int order;
+#endif
         }
 
         [SerializeField] private List<ListValue> list;
         private readonly Dictionary<string, (T value, int order)> dictionary = new();
 
         int IStringLabelList.StringLabelCount => list.Count;
-        string IStringLabelList.GetStringLabelName(int index) => list[index].key;
+        string IStringLabelList.GetStringLabelName(int index) => list[index].name;
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
@@ -27,10 +29,18 @@ namespace AggroBird.UnityExtend
             list.Clear();
             foreach (var kv in dictionary)
             {
-                list.Add(new ListValue { key = kv.Key, value = kv.Value.value, order = kv.Value.order });
+                list.Add(new ListValue
+                {
+                    name = kv.Key,
+                    value = kv.Value.value,
+#if UNITY_EDITOR
+                    order = kv.Value.order,
+#endif
+                });
             }
+#if UNITY_EDITOR
             list.Sort((a, b) => a.order.CompareTo(b.order));
-            dictionary.Clear();
+#endif
         }
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
@@ -41,24 +51,23 @@ namespace AggroBird.UnityExtend
                 foreach (var kv in list)
                 {
                     int idx = 0;
-                    string originalKey = kv.key;
+                    string originalKey = string.IsNullOrEmpty(kv.name) ? "Empty" : kv.name;
                     if (dictionary.ContainsKey(originalKey))
                     {
+                        // If the key is already present, generate a followup number (Foo_1, Foo_2, etc.)
                         int lastUnderscore = originalKey.LastIndexOf('_');
-                        if (lastUnderscore > 0)
+                        if (lastUnderscore > 0 && lastUnderscore != originalKey.Length - 1)
                         {
                             bool validFollowUpNumber = true;
-                            for (int i = lastUnderscore + 1; i < originalKey.Length; i++)
+                            if (originalKey[lastUnderscore + 1] != '0')
                             {
-                                if (originalKey[i] == '0' && i == 0)
+                                for (int i = lastUnderscore + 1; i < originalKey.Length; i++)
                                 {
-                                    validFollowUpNumber = false;
-                                    break;
-                                }
-                                if (originalKey[i] < '0' || originalKey[i] > '9')
-                                {
-                                    validFollowUpNumber = false;
-                                    break;
+                                    if (originalKey[i] < '0' || originalKey[i] > '9')
+                                    {
+                                        validFollowUpNumber = false;
+                                        break;
+                                    }
                                 }
                             }
                             if (validFollowUpNumber)
@@ -67,7 +76,6 @@ namespace AggroBird.UnityExtend
                                 originalKey = originalKey.Substring(0, lastUnderscore);
                             }
                         }
-                        if (string.IsNullOrEmpty(originalKey)) originalKey = "Empty";
                         string newKey = originalKey;
                         do
                         {
