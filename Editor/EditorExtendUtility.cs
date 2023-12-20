@@ -211,6 +211,7 @@ namespace AggroBird.UnityExtend.Editor
                     }
                     else if (c >= '0' && c <= '9')
                     {
+                        // Dont allow starting with a number (most programming languages dont support this)
                         if (allowNumber)
                         {
                             tagBuilder.Append(c);
