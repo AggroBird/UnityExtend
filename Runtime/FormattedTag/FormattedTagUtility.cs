@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using UnityEngine;
 
 namespace AggroBird.UnityExtend
 {
@@ -84,11 +83,5 @@ namespace AggroBird.UnityExtend
             }
             return str;
         }
-    }
-
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class FormattedTagAttribute : PropertyAttribute
-    {
-        public int MaxLength { get; set; } = 32;
     }
 }
