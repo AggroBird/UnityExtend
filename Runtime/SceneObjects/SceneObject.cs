@@ -26,9 +26,11 @@ namespace AggroBird.UnityExtend
         // The GUID of the scene this object is in at play time (zero if registration failed)
         private GUID sceneGUID;
 
+        // Check if this object is referenced by the provided reference
+        // (Either its part of the same prefab family, or it is the actual scene object pointed to)
         public bool IsReferenced(SceneObjectReference reference)
         {
-            if (reference.guid != GUID.zero && guid != GUID.zero)
+            if (reference.guid != GUID.zero && sceneGUID != GUID.zero)
             {
                 if (reference.objectId == 0)
                 {
@@ -49,9 +51,6 @@ namespace AggroBird.UnityExtend
             return false;
         }
 
-        private Vector3 initialPosition;
-        private Quaternion initialRotation;
-
 
         private static class ListBuffer<T>
         {
@@ -62,7 +61,6 @@ namespace AggroBird.UnityExtend
                 return list;
             }
         }
-
 
         // Find first scene object that matches reference within all current scenes
         public static bool TryFindSceneObject<T>(SceneObjectReference reference, out T result) where T : SceneObject
@@ -139,19 +137,7 @@ namespace AggroBird.UnityExtend
 
         protected virtual void Awake()
         {
-            SceneGUID.RegisterSceneObject(this, out sceneGUID);
-
-            transform.GetPositionAndRotation(out initialPosition, out initialRotation);
-        }
-
-        public virtual void SetActive(bool active)
-        {
-
-        }
-
-        public void ReturnToInitialLocation()
-        {
-            transform.SetPositionAndRotation(initialPosition, initialRotation);
+            sceneGUID = SceneGUID.RegisterSceneObject(this, ref objectId);
         }
 
 #if UNITY_EDITOR

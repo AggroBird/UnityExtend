@@ -7,7 +7,7 @@ namespace AggroBird.UnityExtend
     [DefaultExecutionOrder(int.MinValue)]
     internal sealed class SceneGUID : MonoBehaviour
     {
-        [SerializeField] private GUID guid;
+        [SerializeField] private GUID sceneGUID;
 
         private int refCount = 0;
 
@@ -37,7 +37,7 @@ namespace AggroBird.UnityExtend
         {
             if (TryGetSceneGUIDObject(scene, out SceneGUID obj))
             {
-                guid = obj.guid;
+                guid = obj.sceneGUID;
                 return true;
             }
             guid = default;
@@ -48,8 +48,27 @@ namespace AggroBird.UnityExtend
         private readonly Dictionary<ulong, SceneObject> allLocalSceneObjects = new();
         // All pre-placed scene prefab instances, grouped by GUID
         private readonly Dictionary<GUID, Dictionary<ulong, SceneObject>> allLocalScenePrefabInstances = new();
-        // All later instantiated objects
-        //private readonly Dictionary<GUID, List<SceneObject>> instantiatedPrefabs = new();
+
+        // Utility function to get a new ID in case of a collision (Object.Instantiated scene object)
+        // Granted instantiation does not run from SceneObject.Awake(), all scene objects should have already
+        // had their ID's registered (SceneObject.Awake should not be able to instantiate anyway, because of recursion)
+        private ulong lastReassignedObjectId = 0;
+        private ulong GetUniqueObjectID(ulong currentId)
+        {
+            // Prefab instantiation
+            if (currentId == 0)
+            {
+                currentId = ++lastReassignedObjectId;
+            }
+
+            // Ensure ID not 0 or in use
+            while (currentId == 0 || allLocalSceneObjects.ContainsKey(currentId))
+            {
+                currentId++;
+            }
+
+            return currentId;
+        }
 
 
         internal bool TryFindSceneObject<T>(SceneObjectReference reference, out T result) where T : SceneObject
@@ -57,7 +76,7 @@ namespace AggroBird.UnityExtend
             if (reference.guid != GUID.zero)
             {
                 // Check if object within this scene
-                if (reference.guid == guid)
+                if (reference.guid == sceneGUID)
                 {
                     // Object ID cannot be 0 here
                     if (reference.objectId != 0)
@@ -114,7 +133,7 @@ namespace AggroBird.UnityExtend
             if (reference.guid != GUID.zero)
             {
                 // Check if object within this scene
-                if (reference.guid == guid)
+                if (reference.guid == sceneGUID)
                 {
                     // Object ID cannot be 0 here
                     if (reference.objectId != 0)
@@ -162,50 +181,56 @@ namespace AggroBird.UnityExtend
         }
 
 
-        internal static void RegisterSceneObject(SceneObject sceneObject, out GUID sceneGUID)
+        private GUID RegisterLocalSceneObject(SceneObject sceneObject, ref ulong objectId)
         {
             GUID objectGUID = sceneObject.SceneObjectGUID;
+            objectId = sceneObject.SceneObjectID;
             if (objectGUID != GUID.zero)
             {
-                // Register this object to the scene that its currently in
-                if (TryGetSceneGUIDObject(sceneObject.gameObject.scene, out SceneGUID sceneGUIDObj))
+                bool isPrefabInstance = objectGUID != sceneGUID;
+                if (objectId != 0 || isPrefabInstance)
                 {
-                    ulong objectId = sceneObject.SceneObjectID;
-                    if (objectId != 0)
-                    {
-                        // TODO: Check for duplicates
+                    objectId = GetUniqueObjectID(objectId);
 
-                        // If the guid is not the scene GUID, its a prefab instance
-                        if (objectGUID != sceneGUIDObj.guid)
+                    // If the guid is not the scene GUID, its a prefab instance
+                    if (isPrefabInstance)
+                    {
+                        // Add to prefab instance table
+                        if (!allLocalScenePrefabInstances.TryGetValue(objectGUID, out var table))
                         {
-                            // Add to prefab instance table
-                            if (!sceneGUIDObj.allLocalScenePrefabInstances.TryGetValue(objectGUID, out var table))
-                            {
-                                sceneGUIDObj.allLocalScenePrefabInstances[objectGUID] = table = new();
-                            }
-                            table[objectId] = sceneObject;
+                            allLocalScenePrefabInstances[objectGUID] = table = new();
                         }
-
-                        // Add to all objects table
-                        sceneGUIDObj.allLocalSceneObjects[objectId] = sceneObject;
-                    }
-                    else
-                    {
-                        // TODO: Instantiated scene object or prefab
+                        table[objectId] = sceneObject;
                     }
 
-                    sceneGUID = sceneGUIDObj.guid;
-                    return;
+                    // Add to all objects table
+                    allLocalSceneObjects[objectId] = sceneObject;
                 }
-            }
 
-            sceneGUID = GUID.zero;
+                return sceneGUID;
+            }
+            else
+            {
+                return GUID.zero;
+            }
+        }
+        internal static GUID RegisterSceneObject(SceneObject sceneObject, ref ulong objectId)
+        {
+            if (TryGetSceneGUIDObject(sceneObject.gameObject.scene, out SceneGUID sceneGUIDObj))
+            {
+                // Register this object to the scene that its currently in
+                return sceneGUIDObj.RegisterLocalSceneObject(sceneObject, ref objectId);
+            }
+            else
+            {
+                return GUID.zero;
+            }
         }
 
 
         private void Awake()
         {
-            if (guid != GUID.zero)
+            if (sceneGUID != GUID.zero)
             {
                 var scene = gameObject.scene;
                 if (scene.IsValid())
@@ -225,7 +250,7 @@ namespace AggroBird.UnityExtend
         }
         private void OnDestroy()
         {
-            if (guid != GUID.zero)
+            if (sceneGUID != GUID.zero)
             {
                 var scene = gameObject.scene;
                 if (scene.IsValid())
@@ -261,17 +286,17 @@ namespace AggroBird.UnityExtend
             if (globalObjectId.identifierType == 2)
             {
                 GUID sceneGUID = new(globalObjectId.assetGUID.ToString());
-                if (guid != sceneGUID)
+                if (this.sceneGUID != sceneGUID)
                 {
-                    guid = sceneGUID;
+                    this.sceneGUID = sceneGUID;
                     UnityEditor.EditorUtility.SetDirty(this);
                 }
             }
             else
             {
-                if (guid != GUID.zero)
+                if (sceneGUID != GUID.zero)
                 {
-                    guid = GUID.zero;
+                    sceneGUID = GUID.zero;
                     UnityEditor.EditorUtility.SetDirty(this);
                 }
             }
