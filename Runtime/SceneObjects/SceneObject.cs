@@ -18,7 +18,7 @@ namespace AggroBird.UnityExtend
         // In the case of a scene prefab instance, this contains the prefab GUID
         [SerializeField] private GUID guid;
         // In case of an actual prefab, this will be 0
-        [SerializeField, ReadOnly] private ulong objectId;
+        [SerializeField, SceneObjectID] private ulong objectId;
 
         internal GUID SceneObjectGUID => guid;
         internal ulong SceneObjectID => objectId;
