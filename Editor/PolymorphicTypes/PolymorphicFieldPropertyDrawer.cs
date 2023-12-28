@@ -220,7 +220,6 @@ namespace AggroBird.UnityExtend.Editor
                 TryGetTypeFromManagedReferenceTypename(property.managedReferenceFullTypename, out Type currentType);
 
                 var fieldAttribute = fieldInfo.GetCustomAttribute<PolymorphicFieldAttribute>();
-                //bool allowNull = property.TryGetFieldInfo(out FieldInfo fieldInfo, out _) && AllowNull(fieldInfo);
 
                 // Get all supported types
                 List<Type> supportedTypes = new();
@@ -369,6 +368,21 @@ namespace AggroBird.UnityExtend.Editor
             if (property.propertyType != SerializedPropertyType.ManagedReference || IsEditingMultipleDifferentTypes(property))
             {
                 return EditorGUIUtility.singleLineHeight;
+            }
+
+            var fieldAttribute = fieldInfo.GetCustomAttribute<PolymorphicFieldAttribute>();
+            bool showFoldout = fieldAttribute.ShowFoldout;
+            if (TryGetTypeFromManagedReferenceTypename(property.managedReferenceFullTypename, out Type currentType))
+            {
+                if (TryGetPolymorphicClassTypeAttribute(currentType, out var attribute))
+                {
+                    showFoldout |= attribute.ShowFoldout;
+                }
+            }
+
+            if (!showFoldout)
+            {
+                property.isExpanded = true;
             }
 
             return EditorGUI.GetPropertyHeight(property);
