@@ -226,11 +226,7 @@ namespace AggroBird.UnityExtend.Editor
                 supportedTypes.AddRange(GetSupportedFieldTypes(fieldType));
                 supportedTypes.Sort((lhs, rhs) =>
                 {
-                    PolymorphicClassTypeAttribute lhsAttribute = lhs.GetCustomAttribute<PolymorphicClassTypeAttribute>();
-                    int lhsOrder = lhsAttribute == null ? int.MinValue : lhsAttribute.Order;
-                    PolymorphicClassTypeAttribute rhsAttribute = rhs.GetCustomAttribute<PolymorphicClassTypeAttribute>();
-                    int rhsOrder = rhsAttribute == null ? int.MinValue : rhsAttribute.Order;
-                    return lhsOrder == rhsOrder ? lhs.Name.CompareTo(rhs.Name) : lhsOrder.CompareTo(rhsOrder);
+                    return GetTypeDisplayName(lhs).CompareTo(GetTypeDisplayName(rhs));
                 });
                 if (allowNull) supportedTypes.Insert(0, null);
 
@@ -299,7 +295,8 @@ namespace AggroBird.UnityExtend.Editor
             }
             else if (TryGetPolymorphicClassTypeAttribute(type, out var attribute))
             {
-                return string.IsNullOrEmpty(attribute.DisplayName) ? ObjectNames.NicifyVariableName(type.Name) : attribute.DisplayName;
+                string displayName = attribute.DisplayName;
+                return string.IsNullOrEmpty(displayName) ? ObjectNames.NicifyVariableName(type.Name) : displayName;
             }
             else
             {
@@ -315,7 +312,11 @@ namespace AggroBird.UnityExtend.Editor
             }
             else if (TryGetPolymorphicClassTypeAttribute(type, out var attribute))
             {
-                displayName = string.IsNullOrEmpty(attribute.DisplayName) ? ObjectNames.NicifyVariableName(type.Name) : attribute.DisplayName;
+                displayName = attribute.DisplayName;
+                if(string.IsNullOrEmpty(displayName))
+                {
+                    displayName = ObjectNames.NicifyVariableName(type.Name);
+                }
                 tooltip = attribute.Tooltip;
             }
             else

@@ -7,6 +7,6 @@ namespace AggroBird.UnityExtend
     {
         public string DisplayName { get; set; }
         public string Tooltip { get; set; }
-        public int Order { get; set; }
+        public bool Expand { get; set; }
     }
 }
