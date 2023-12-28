@@ -11,7 +11,9 @@ namespace AggroBird.UnityExtend
             AllowNull = allowNull;
         }
 
+        // Can this field be nulled
         public bool AllowNull { get; set; }
+        // Should this property be expandable in the inspector (overrides the class setting)
         public bool ShowFoldout { get; set; }
     }
 }
