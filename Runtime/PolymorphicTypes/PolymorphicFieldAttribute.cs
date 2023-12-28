@@ -11,6 +11,7 @@ namespace AggroBird.UnityExtend
             AllowNull = allowNull;
         }
 
-        public bool AllowNull { get; private set; }
+        public bool AllowNull { get; set; }
+        public bool ShowFoldout { get; set; }
     }
 }

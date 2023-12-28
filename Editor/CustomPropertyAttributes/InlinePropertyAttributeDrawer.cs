@@ -23,16 +23,14 @@ namespace AggroBird.UnityExtend.Editor
         {
             if (property.hasChildren)
             {
-                SerializedProperty iter = property.Copy();
-                iter.Next(true);
-                do
+                foreach (var iter in new SerializedPropertyEnumerator(property.Copy()))
                 {
                     float height = EditorGUI.GetPropertyHeight(iter, iter.hasVisibleChildren);
                     position.height = height;
                     EditorGUI.PropertyField(position, iter, iter.hasVisibleChildren);
                     position.y += height;
+                    position.y += EditorExtendUtility.StandardVerticalSpacing;
                 }
-                while (iter.NextVisible(false));
             }
             else
             {

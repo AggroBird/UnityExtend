@@ -219,7 +219,8 @@ namespace AggroBird.UnityExtend.Editor
                 TryGetTypeFromManagedReferenceTypename(property.managedReferenceFieldTypename, out Type fieldType);
                 TryGetTypeFromManagedReferenceTypename(property.managedReferenceFullTypename, out Type currentType);
 
-                bool allowNull = property.TryGetFieldInfo(out FieldInfo fieldInfo, out _) && AllowNull(fieldInfo);
+                var fieldAttribute = fieldInfo.GetCustomAttribute<PolymorphicFieldAttribute>();
+                //bool allowNull = property.TryGetFieldInfo(out FieldInfo fieldInfo, out _) && AllowNull(fieldInfo);
 
                 // Get all supported types
                 List<Type> supportedTypes = new();
@@ -228,10 +229,18 @@ namespace AggroBird.UnityExtend.Editor
                 {
                     return GetTypeDisplayName(lhs).CompareTo(GetTypeDisplayName(rhs));
                 });
-                if (allowNull) supportedTypes.Insert(0, null);
+                if (fieldAttribute.AllowNull) supportedTypes.Insert(0, null);
 
                 // Check if we should show mixed values
                 bool showMixedValue = IsEditingMultipleDifferentTypes(property, out SerializedProperty[] serializedProperties);
+                GetTypeEditorInfo(currentType, out string displayName, out string tooltip, out bool showFoldout);
+                showFoldout |= fieldAttribute.ShowFoldout;
+                if (!showFoldout || showMixedValue)
+                {
+                    Rect labelPos = position;
+                    labelPos.height = EditorExtendUtility.SingleLineHeight;
+                    EditorGUI.PrefixLabel(position, label);
+                }
                 using (new EditorExtendUtility.MixedValueScope(showMixedValue))
                 {
                     Rect dropdownRect = position;
@@ -239,7 +248,6 @@ namespace AggroBird.UnityExtend.Editor
                     dropdownRect.x += indent;
                     dropdownRect.width -= indent;
                     dropdownRect.height = EditorGUIUtility.singleLineHeight;
-                    GetTypeEditorInfo(currentType, out string displayName, out string tooltip);
                     if (EditorGUI.DropdownButton(dropdownRect, new GUIContent(text: displayName, tooltip: tooltip), FocusType.Keyboard))
                     {
                         var dropdown = new PolymorphicTypeDropdown(new AdvancedDropdownState(), supportedTypes.Select(GetTypeDisplayName), (int selection) =>
@@ -250,7 +258,28 @@ namespace AggroBird.UnityExtend.Editor
                     }
                 }
 
-                EditorGUI.PropertyField(position, property, label, !showMixedValue);
+                if (!showMixedValue)
+                {
+                    if (showFoldout)
+                    {
+                        EditorGUI.PropertyField(position, property, label, !showMixedValue);
+                    }
+                    else
+                    {
+                        using (new EditorGUI.IndentLevelScope())
+                        {
+                            position.y += EditorExtendUtility.SinglePropertyHeight;
+                            foreach (var iter in new SerializedPropertyEnumerator(property.Copy()))
+                            {
+                                float height = EditorGUI.GetPropertyHeight(iter, iter.hasVisibleChildren);
+                                position.height = height;
+                                EditorGUI.PropertyField(position, iter, iter.hasVisibleChildren);
+                                position.y += height;
+                                position.y += EditorExtendUtility.StandardVerticalSpacing;
+                            }
+                        }
+                    }
+                }
             }
 
             EditorGUI.EndProperty();
@@ -303,26 +332,29 @@ namespace AggroBird.UnityExtend.Editor
                 return ObjectNames.NicifyVariableName(type.Name);
             }
         }
-        private static void GetTypeEditorInfo(Type type, out string displayName, out string tooltip)
+        private static void GetTypeEditorInfo(Type type, out string displayName, out string tooltip, out bool showFoldout)
         {
             if (type == null)
             {
                 displayName = "null";
                 tooltip = string.Empty;
+                showFoldout = false;
             }
             else if (TryGetPolymorphicClassTypeAttribute(type, out var attribute))
             {
                 displayName = attribute.DisplayName;
-                if(string.IsNullOrEmpty(displayName))
+                if (string.IsNullOrEmpty(displayName))
                 {
                     displayName = ObjectNames.NicifyVariableName(type.Name);
                 }
                 tooltip = attribute.Tooltip;
+                showFoldout = attribute.ShowFoldout;
             }
             else
             {
                 displayName = ObjectNames.NicifyVariableName(type.Name);
                 tooltip = string.Empty;
+                showFoldout = false;
             }
         }
 
@@ -332,22 +364,14 @@ namespace AggroBird.UnityExtend.Editor
             return attribute != null;
         }
 
-        private static bool AllowNull(FieldInfo fieldInfo)
-        {
-            PolymorphicFieldAttribute attribute = fieldInfo.GetCustomAttribute<PolymorphicFieldAttribute>();
-            return attribute != null && attribute.AllowNull;
-        }
-
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            if (property.propertyType == SerializedPropertyType.ManagedReference && !IsEditingMultipleDifferentTypes(property))
-            {
-                return EditorGUI.GetPropertyHeight(property);
-            }
-            else
+            if (property.propertyType != SerializedPropertyType.ManagedReference || IsEditingMultipleDifferentTypes(property))
             {
                 return EditorGUIUtility.singleLineHeight;
             }
+
+            return EditorGUI.GetPropertyHeight(property);
         }
     }
 }
