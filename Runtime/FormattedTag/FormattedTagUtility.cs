@@ -41,6 +41,7 @@ namespace AggroBird.UnityExtend
         }
 
         // If the tag is already in use, append a followup number (Foo becomes Foo_1, Foo_2, etc.)
+		// Keeps generating until predicate returns true
         public static string GenerateUniqueFormattedTag(string str, Func<string, bool> predicate, int maxLength = 32)
         {
             if (predicate == null)
@@ -49,7 +50,7 @@ namespace AggroBird.UnityExtend
             }
 
             str = FormatTag(str, maxLength);
-            if (predicate(str))
+            if (!predicate(str))
             {
                 int idx = 0;
                 int lastUnderscore = str.LastIndexOf('_');
@@ -78,7 +79,7 @@ namespace AggroBird.UnityExtend
                 {
                     result = str + $"_{++idx}";
                 }
-                while (predicate(result));
+                while (!predicate(result));
                 return result;
             }
             return str;

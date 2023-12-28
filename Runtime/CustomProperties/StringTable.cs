@@ -50,7 +50,7 @@ namespace AggroBird.UnityExtend
                 int order = 1;
                 foreach (var kv in list)
                 {
-                    dictionary[FormattedTagUtility.GenerateUniqueFormattedTag(kv.name, (string tag) => dictionary.ContainsKey(tag))] = (kv.value, order++);
+                    dictionary[FormattedTagUtility.GenerateUniqueFormattedTag(kv.name, (string tag) => !dictionary.ContainsKey(tag))] = (kv.value, order++);
                 }
             }
         }
