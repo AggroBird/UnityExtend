@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
@@ -13,10 +12,15 @@ namespace AggroBird.UnityExtend.Editor
     public static class EditorExtendUtility
     {
         // Commonly used editor positioning values
+        // Unity's default indent width
         public const float IndentWidth = 15f;
+        // Actual property height
         public static float SingleLineHeight = EditorGUIUtility.singleLineHeight;
+        // Distance margin between two consecutive properties
         public static float StandardVerticalSpacing = EditorGUIUtility.standardVerticalSpacing;
+        // Property height + bottom spacing
         public static float SinglePropertyHeight => EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+        // Mixed value content character
         public const string MixedValueContent = "\u2014";
 
 
