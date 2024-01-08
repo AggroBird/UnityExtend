@@ -23,7 +23,7 @@ namespace AggroBird.UnityExtend.Editor
         {
             if (property.hasChildren)
             {
-                foreach (var iter in new SerializedPropertyEnumerator(property.Copy()))
+                foreach (var iter in new SerializedPropertyEnumerator(property))
                 {
                     float height = EditorGUI.GetPropertyHeight(iter, iter.hasVisibleChildren);
                     position.height = height;
