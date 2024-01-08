@@ -31,6 +31,7 @@ namespace AggroBird.UnityExtend.Editor
 
         public SerializedPropertyEnumerator(SerializedProperty serializedProperty)
         {
+            serializedProperty = serializedProperty.Copy();
             enumerator = new Enumerator(serializedProperty, serializedProperty.GetEndProperty());
         }
         public SerializedPropertyEnumerator(SerializedObject serializedObject)
