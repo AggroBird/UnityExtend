@@ -204,6 +204,8 @@ namespace AggroBird.UnityExtend.Editor
             }
         }
 
+
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
@@ -220,15 +222,6 @@ namespace AggroBird.UnityExtend.Editor
                 TryGetTypeFromManagedReferenceTypename(property.managedReferenceFullTypename, out Type currentType);
 
                 var fieldAttribute = fieldInfo.GetCustomAttribute<PolymorphicFieldAttribute>();
-
-                // Get all supported types
-                List<Type> supportedTypes = new();
-                supportedTypes.AddRange(GetSupportedFieldTypes(fieldType));
-                supportedTypes.Sort((lhs, rhs) =>
-                {
-                    return GetTypeDisplayName(lhs).CompareTo(GetTypeDisplayName(rhs));
-                });
-                if (fieldAttribute.AllowNull) supportedTypes.Insert(0, null);
 
                 // Check if we should show mixed values
                 bool showMixedValue = IsEditingMultipleDifferentTypes(property, out SerializedProperty[] serializedProperties);
@@ -249,6 +242,10 @@ namespace AggroBird.UnityExtend.Editor
                     dropdownRect.height = EditorGUIUtility.singleLineHeight;
                     if (EditorGUI.DropdownButton(dropdownRect, new GUIContent(text: displayName, tooltip: tooltip), FocusType.Keyboard))
                     {
+                        // Get all supported types
+                        List<Type> supportedTypes = new();
+                        supportedTypes.AddRange(GetSupportedFieldTypes(fieldType));
+                        if (fieldAttribute.AllowNull) supportedTypes.Insert(0, null);
                         var dropdown = new PolymorphicTypeDropdown(new AdvancedDropdownState(), supportedTypes.Select(GetTypeDisplayName), (int selection) =>
                         {
                             ChangeManagedReferenceType(serializedProperties, supportedTypes[selection]);
@@ -300,15 +297,24 @@ namespace AggroBird.UnityExtend.Editor
         }
 
         private static readonly List<Type> supportedTypeListBuilder = new();
+        private static readonly Dictionary<Type, Type[]> supportedFieldTypeCache = new();
         private static IEnumerable<Type> GetSupportedFieldTypes(Type fieldType)
         {
-            supportedTypeListBuilder.Clear();
-            supportedTypeListBuilder.AddRange(TypeCache.GetTypesDerivedFrom(fieldType).Where(IsAssignableType));
-            if (IsAssignableType(fieldType))
+            if (!supportedFieldTypeCache.TryGetValue(fieldType, out var supportedTypes))
             {
-                supportedTypeListBuilder.Add(fieldType);
+                supportedTypeListBuilder.Clear();
+                supportedTypeListBuilder.AddRange(TypeCache.GetTypesDerivedFrom(fieldType).Where(IsAssignableType));
+                if (IsAssignableType(fieldType))
+                {
+                    supportedTypeListBuilder.Add(fieldType);
+                }
+                supportedTypeListBuilder.Sort((lhs, rhs) =>
+                {
+                    return GetTypeDisplayName(lhs).CompareTo(GetTypeDisplayName(rhs));
+                });
+                supportedFieldTypeCache[fieldType] = supportedTypes = supportedTypeListBuilder.ToArray();
             }
-            return supportedTypeListBuilder.ToArray();
+            return supportedTypes;
         }
         private static bool IsAssignableType(Type type)
         {
