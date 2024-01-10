@@ -12,7 +12,7 @@ namespace AggroBird.UnityExtend.Editor
 
             if (HasClampedAttribute(out ClampedAttribute clampedAttribute))
             {
-                new ClampedAttributeDrawer.Context(clampedAttribute).OnGUI(position, property, label);
+                new ClampedAttributeDrawer.Context(clampedAttribute).OnGUI(position, property, fieldInfo.FieldType, label);
             }
             else
             {
