@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -79,7 +80,7 @@ namespace AggroBird.UnityExtend.Editor
             private const string Z = "z";
             private const string W = "w";
 
-            public void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+            public void OnGUI(Rect position, SerializedProperty property, Type fieldType, GUIContent label)
             {
                 switch (property.propertyType)
                 {
@@ -138,31 +139,28 @@ namespace AggroBird.UnityExtend.Editor
 
                     default:
                         // Special cases
-                        if (EditorExtendUtility.TryGetFieldInfo(property, out _, out Type type))
+                        position = EditorGUI.PrefixLabel(position, label);
+                        if (fieldType.Equals(typeof(IntRange)) || fieldType.Equals(typeof(FloatRange)) || fieldType.Equals(typeof(DoubleRange)))
                         {
-                            position = EditorGUI.PrefixLabel(position, label);
-                            if (type.Equals(typeof(IntRange)) || type.Equals(typeof(FloatRange)) || type.Equals(typeof(DoubleRange)))
-                            {
-                                RangePropertyDrawer.DrawProperties(position, property);
-                                Clamp(property.FindPropertyRelative((IntRange def) => def.Min));
-                                Clamp(property.FindPropertyRelative((IntRange def) => def.Max));
-                                break;
-                            }
-                            else if (type.Equals(typeof(Rotator2)))
-                            {
-                                Rotator2PropertyDrawer.DrawProperties(position, property);
-                                Clamp(property.FindPropertyRelative((Rotator2 def) => def.pitch));
-                                Clamp(property.FindPropertyRelative((Rotator2 def) => def.yaw));
-                                break;
-                            }
-                            else if (type.Equals(typeof(Rotator3)))
-                            {
-                                Rotator3PropertyDrawer.DrawProperties(position, property);
-                                Clamp(property.FindPropertyRelative((Rotator3 def) => def.pitch));
-                                Clamp(property.FindPropertyRelative((Rotator3 def) => def.yaw));
-                                Clamp(property.FindPropertyRelative((Rotator3 def) => def.roll));
-                                break;
-                            }
+                            RangePropertyDrawer.DrawProperties(position, property);
+                            Clamp(property.FindPropertyRelative((IntRange def) => def.Min));
+                            Clamp(property.FindPropertyRelative((IntRange def) => def.Max));
+                            break;
+                        }
+                        else if (fieldType.Equals(typeof(Rotator2)))
+                        {
+                            Rotator2PropertyDrawer.DrawProperties(position, property);
+                            Clamp(property.FindPropertyRelative((Rotator2 def) => def.pitch));
+                            Clamp(property.FindPropertyRelative((Rotator2 def) => def.yaw));
+                            break;
+                        }
+                        else if (fieldType.Equals(typeof(Rotator3)))
+                        {
+                            Rotator3PropertyDrawer.DrawProperties(position, property);
+                            Clamp(property.FindPropertyRelative((Rotator3 def) => def.pitch));
+                            Clamp(property.FindPropertyRelative((Rotator3 def) => def.yaw));
+                            Clamp(property.FindPropertyRelative((Rotator3 def) => def.roll));
+                            break;
                         }
                         EditorGUI.LabelField(position, label.text, "Invalid property type used for Clamped attribute");
                         break;
@@ -179,7 +177,7 @@ namespace AggroBird.UnityExtend.Editor
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            new Context((ClampedAttribute)attribute).OnGUI(position, property, label);
+            new Context((ClampedAttribute)attribute).OnGUI(position, property, fieldInfo.FieldType, label);
 
             EditorGUI.EndProperty();
         }

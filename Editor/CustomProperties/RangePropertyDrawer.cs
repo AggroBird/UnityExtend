@@ -10,7 +10,7 @@ namespace AggroBird.UnityExtend.Editor
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            if (HasClampedAttribute(property, out ClampedAttribute clampedAttribute))
+            if (HasClampedAttribute(out ClampedAttribute clampedAttribute))
             {
                 new ClampedAttributeDrawer.Context(clampedAttribute).OnGUI(position, property, label);
             }
@@ -23,15 +23,10 @@ namespace AggroBird.UnityExtend.Editor
             EditorGUI.EndProperty();
         }
 
-        private static bool HasClampedAttribute(SerializedProperty property, out ClampedAttribute clampedAttribute)
+        private bool HasClampedAttribute(out ClampedAttribute clampedAttribute)
         {
-            if (property.TryGetFieldInfo(out FieldInfo fieldInfo, out _))
-            {
-                clampedAttribute = fieldInfo.GetCustomAttribute<ClampedAttribute>();
-                return clampedAttribute != null;
-            }
-            clampedAttribute = null;
-            return false;
+            clampedAttribute = fieldInfo.GetCustomAttribute<ClampedAttribute>();
+            return clampedAttribute != null;
         }
 
         public static void DrawProperties(Rect position, SerializedProperty property)

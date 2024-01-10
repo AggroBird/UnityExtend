@@ -7,7 +7,7 @@ namespace AggroBird.UnityExtend
     [Serializable]
     public struct GUID : IEquatable<GUID>
     {
-        public static readonly GUID zero = new GUID();
+        public static readonly GUID zero = new();
 
         public GUID(string value)
         {
