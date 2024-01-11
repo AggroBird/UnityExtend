@@ -10,6 +10,31 @@ using Object = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend.Editor
 {
+    public static class PolymorphicFieldUtility
+    {
+        public static string GetTypeDisplayName(Type type)
+        {
+            if (type == null)
+            {
+                return "null";
+            }
+            else if (TryGetPolymorphicClassTypeAttribute(type, out var attribute))
+            {
+                string displayName = attribute.DisplayName;
+                return string.IsNullOrEmpty(displayName) ? ObjectNames.NicifyVariableName(type.Name) : displayName;
+            }
+            else
+            {
+                return ObjectNames.NicifyVariableName(type.Name);
+            }
+        }
+        internal static bool TryGetPolymorphicClassTypeAttribute(Type type, out PolymorphicClassTypeAttribute attribute)
+        {
+            attribute = type.GetCustomAttribute<PolymorphicClassTypeAttribute>();
+            return attribute != null;
+        }
+    }
+
     [CustomPropertyDrawer(typeof(PolymorphicFieldAttribute))]
     [InitializeOnLoad]
     internal sealed class PolymorphicFieldPropertyDrawer : PropertyDrawer
@@ -246,7 +271,7 @@ namespace AggroBird.UnityExtend.Editor
                         List<Type> supportedTypes = new();
                         supportedTypes.AddRange(GetSupportedFieldTypes(fieldType));
                         if (fieldAttribute.AllowNull) supportedTypes.Insert(0, null);
-                        var dropdown = new PolymorphicTypeDropdown(new AdvancedDropdownState(), supportedTypes.Select(GetTypeDisplayName), (int selection) =>
+                        var dropdown = new PolymorphicTypeDropdown(new AdvancedDropdownState(), supportedTypes.Select(PolymorphicFieldUtility.GetTypeDisplayName), (int selection) =>
                         {
                             ChangeManagedReferenceType(serializedProperties, supportedTypes[selection]);
                         });
@@ -310,7 +335,7 @@ namespace AggroBird.UnityExtend.Editor
                 }
                 supportedTypeListBuilder.Sort((lhs, rhs) =>
                 {
-                    return GetTypeDisplayName(lhs).CompareTo(GetTypeDisplayName(rhs));
+                    return PolymorphicFieldUtility.GetTypeDisplayName(lhs).CompareTo(PolymorphicFieldUtility.GetTypeDisplayName(rhs));
                 });
                 supportedFieldTypeCache[fieldType] = supportedTypes = supportedTypeListBuilder.ToArray();
             }
@@ -321,22 +346,6 @@ namespace AggroBird.UnityExtend.Editor
             return type.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface && !type.IsSubclassOf(typeof(Object));
         }
 
-        private static string GetTypeDisplayName(Type type)
-        {
-            if (type == null)
-            {
-                return "null";
-            }
-            else if (TryGetPolymorphicClassTypeAttribute(type, out var attribute))
-            {
-                string displayName = attribute.DisplayName;
-                return string.IsNullOrEmpty(displayName) ? ObjectNames.NicifyVariableName(type.Name) : displayName;
-            }
-            else
-            {
-                return ObjectNames.NicifyVariableName(type.Name);
-            }
-        }
         private static void GetTypeEditorInfo(Type type, out string displayName, out string tooltip, out bool showFoldout)
         {
             if (type == null)
@@ -345,7 +354,7 @@ namespace AggroBird.UnityExtend.Editor
                 tooltip = string.Empty;
                 showFoldout = false;
             }
-            else if (TryGetPolymorphicClassTypeAttribute(type, out var attribute))
+            else if (PolymorphicFieldUtility.TryGetPolymorphicClassTypeAttribute(type, out var attribute))
             {
                 displayName = attribute.DisplayName;
                 if (string.IsNullOrEmpty(displayName))
@@ -363,12 +372,6 @@ namespace AggroBird.UnityExtend.Editor
             }
         }
 
-        private static bool TryGetPolymorphicClassTypeAttribute(Type type, out PolymorphicClassTypeAttribute attribute)
-        {
-            attribute = type.GetCustomAttribute<PolymorphicClassTypeAttribute>();
-            return attribute != null;
-        }
-
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             if (property.propertyType != SerializedPropertyType.ManagedReference || IsEditingMultipleDifferentTypes(property))
@@ -380,7 +383,7 @@ namespace AggroBird.UnityExtend.Editor
             bool showFoldout = fieldAttribute.ShowFoldout;
             if (TryGetTypeFromManagedReferenceTypename(property.managedReferenceFullTypename, out Type currentType))
             {
-                if (TryGetPolymorphicClassTypeAttribute(currentType, out var attribute))
+                if (PolymorphicFieldUtility.TryGetPolymorphicClassTypeAttribute(currentType, out var attribute))
                 {
                     showFoldout |= attribute.ShowFoldout;
                 }
