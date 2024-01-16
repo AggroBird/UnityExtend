@@ -13,28 +13,22 @@ namespace AggroBird.UnityExtend
     {
         public static ReadOnlyArray<T> Empty()
         {
-            return new(Array.Empty<T>());
+            return new();
         }
 
 
         public ReadOnlyArray(T[] arr)
         {
-            this.value = arr;
+            value = arr;
         }
 
 
         public readonly T this[int index] => value[index];
 
-        public readonly int Count => value.Length;
+        public readonly int Count => Utility.GetLengthSafe(value);
 
-        public readonly IEnumerator<T> GetEnumerator()
-        {
-            return ((IReadOnlyList<T>)value).GetEnumerator();
-        }
-        readonly IEnumerator IEnumerable.GetEnumerator()
-        {
-            return value.GetEnumerator();
-        }
+        public readonly IEnumerator<T> GetEnumerator() => ((IReadOnlyList<T>)ValueSafe).GetEnumerator();
+        readonly IEnumerator IEnumerable.GetEnumerator() => ValueSafe.GetEnumerator();
 
         public override readonly int GetHashCode()
         {
@@ -57,9 +51,9 @@ namespace AggroBird.UnityExtend
             return result;
         }
 
-        public readonly Span<T> AsSpan() => value.AsSpan();
-        public readonly Span<T> AsSpan(int start) => value.AsSpan(start);
-        public readonly Span<T> AsSpan(int start, int length) => value.AsSpan(start, length);
+        public readonly Span<T> AsSpan() => ValueSafe.AsSpan();
+        public readonly Span<T> AsSpan(int start) => ValueSafe.AsSpan(start);
+        public readonly Span<T> AsSpan(int start, int length) => ValueSafe.AsSpan(start, length);
 
 
         public static implicit operator ReadOnlyArray<T>(T[] arr) => new(arr);
@@ -76,6 +70,7 @@ namespace AggroBird.UnityExtend
 
 
         [SerializeField] private T[] value;
+        private readonly T[] ValueSafe => value ?? Array.Empty<T>();
     }
 
     [Serializable]
@@ -85,28 +80,22 @@ namespace AggroBird.UnityExtend
 
         public static ReadOnlyList<T> Empty()
         {
-            return new(empty);
+            return new(null);
         }
 
 
         public ReadOnlyList(List<T> list)
         {
-            this.value = list;
+            value = list;
         }
 
 
         public readonly T this[int index] => value[index];
 
-        public readonly int Count => value.Count;
+        public readonly int Count => Utility.GetLengthSafe(value);
 
-        public readonly IEnumerator<T> GetEnumerator()
-        {
-            return value.GetEnumerator();
-        }
-        readonly IEnumerator IEnumerable.GetEnumerator()
-        {
-            return value.GetEnumerator();
-        }
+        public readonly IEnumerator<T> GetEnumerator() => ValueSafe.GetEnumerator();
+        readonly IEnumerator IEnumerable.GetEnumerator() => ValueSafe.GetEnumerator();
 
         public override readonly int GetHashCode()
         {
@@ -141,5 +130,6 @@ namespace AggroBird.UnityExtend
 
 
         [SerializeField] private List<T> value;
+        private readonly List<T> ValueSafe => value ?? empty;
     }
 }
