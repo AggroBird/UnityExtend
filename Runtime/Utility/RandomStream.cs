@@ -71,11 +71,15 @@ namespace AggroBird.UnityExtend
 
         public T Select<T>(IReadOnlyList<T> arr)
         {
-            if (arr != null && arr.Count > 0)
+            if (arr == null)
             {
-                return arr[Range(0, arr.Count)];
+                throw new System.ArgumentNullException(nameof(arr));
             }
-            return default;
+            if (arr.Count == 0)
+            {
+                throw new System.IndexOutOfRangeException();
+            }
+            return arr[Range(0, arr.Count)];
         }
 
         public Vector2 InsideUnitCircle()
