@@ -12,25 +12,36 @@ namespace AggroBird.UnityExtend.Editor
 
             if (property.propertyType == SerializedPropertyType.String)
             {
-                SceneAsset sceneObject = AssetDatabase.LoadAssetAtPath<SceneAsset>(property.stringValue);
-
-                if (sceneObject == null && !string.IsNullOrWhiteSpace(property.stringValue))
-                {
-                    sceneObject = GetBuildSettingsSceneObject(property.stringValue);
-                }
-
-                if (sceneObject == null && !string.IsNullOrWhiteSpace(property.stringValue))
-                {
-                    Debug.LogError($"Failed to find scene {property.stringValue} in {property.serializedObject.targetObject} property {property.propertyPath}");
-                }
-
+                SceneAsset scene;
+                EditorGUI.BeginChangeCheck();
                 using (new EditorExtendUtility.MixedValueScope(property.hasMultipleDifferentValues))
                 {
-                    SceneAsset scene = (SceneAsset)EditorGUI.ObjectField(position, label, sceneObject, typeof(SceneAsset), true);
-
-                    if (!property.hasMultipleDifferentValues)
+                    if (string.IsNullOrWhiteSpace(property.stringValue))
+                    {
+                        scene = (SceneAsset)EditorGUI.ObjectField(position, label, null, typeof(SceneAsset), false);
+                    }
+                    else
+                    {
+                        scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(property.stringValue);
+                        if (!scene)
+                        {
+                            scene = (SceneAsset)EditorGUI.ObjectField(position, label, EditorExtendUtility.MissingObject, typeof(SceneAsset), false);
+                        }
+                        else
+                        {
+                            scene = (SceneAsset)EditorGUI.ObjectField(position, label, scene, typeof(SceneAsset), false);
+                        }
+                    }
+                }
+                if (EditorGUI.EndChangeCheck())
+                {
+                    if (scene)
                     {
                         property.stringValue = AssetDatabase.GetAssetPath(scene);
+                    }
+                    else
+                    {
+                        property.stringValue = string.Empty;
                     }
                 }
             }
@@ -40,19 +51,6 @@ namespace AggroBird.UnityExtend.Editor
             }
 
             EditorGUI.EndProperty();
-        }
-
-        protected SceneAsset GetBuildSettingsSceneObject(string sceneName)
-        {
-            foreach (EditorBuildSettingsScene buildScene in EditorBuildSettings.scenes)
-            {
-                SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(buildScene.path);
-                if (sceneAsset != null && sceneAsset.name == sceneName)
-                {
-                    return sceneAsset;
-                }
-            }
-            return null;
         }
     }
 }
