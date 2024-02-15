@@ -25,7 +25,11 @@ namespace AggroBird.UnityExtend.Editor
                         scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(property.stringValue);
                         if (!scene)
                         {
-                            scene = (SceneAsset)EditorGUI.ObjectField(position, label, EditorExtendUtility.MissingObject, typeof(SceneAsset), false);
+                            Object obj = EditorGUI.ObjectField(position, label, EditorExtendUtility.MissingObject, typeof(SceneAsset), false);
+                            if (obj is SceneAsset sceneAsset)
+                            {
+                                scene = sceneAsset;
+                            }
                         }
                         else
                         {
