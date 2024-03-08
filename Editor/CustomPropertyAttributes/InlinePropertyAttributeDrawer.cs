@@ -11,7 +11,7 @@ namespace AggroBird.UnityExtend.Editor
             if (property.hasChildren)
             {
                 property.isExpanded = true;
-                return EditorGUI.GetPropertyHeight(property, label, true) - EditorGUI.GetPropertyHeight(property, label, false);
+                return EditorGUI.GetPropertyHeight(property, label, true) - EditorGUI.GetPropertyHeight(property, label, false) - EditorExtendUtility.StandardVerticalSpacing;
             }
             else
             {
