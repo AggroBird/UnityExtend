@@ -15,12 +15,12 @@ namespace AggroBird.UnityExtend.Editor
         {
             if (Evaluate(property))
             {
-                EditorGUI.PropertyField(position, property, label);
+                EditorGUI.PropertyField(position, property, label, true);
             }
         }
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            return Evaluate(property) ? EditorGUI.GetPropertyHeight(property) : 0;
+            return Evaluate(property) ? EditorGUI.GetPropertyHeight(property, true) : 0;
         }
 
         private bool Evaluate(SerializedProperty property)
