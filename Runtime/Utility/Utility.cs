@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityObject = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend
@@ -162,15 +161,14 @@ namespace AggroBird.UnityExtend
             return result;
         }
 
-        // Check if scene is active
-        public static bool IsSceneActive(string scene)
+        // Destroy gameobject this component is attached to
+        public static void DestroyGameObject(this Component component)
         {
-            if (!string.IsNullOrEmpty(scene))
-            {
-                Scene activeScene = SceneManager.GetActiveScene();
-                return activeScene.IsValid() && (activeScene.path == scene || activeScene.name == scene);
-            }
-            return false;
+            UnityObject.Destroy(component.gameObject);
+        }
+        public static void DestroyGameObjectImmediate(this Component component)
+        {
+            UnityObject.DestroyImmediate(component.gameObject);
         }
 
         // Get property compiler-generated backing field name
