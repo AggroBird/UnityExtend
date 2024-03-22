@@ -171,6 +171,16 @@ namespace AggroBird.UnityExtend
             UnityObject.DestroyImmediate(component.gameObject);
         }
 
+        // Destroy game object
+        public static void Destroy(this GameObject gameObject)
+        {
+            UnityObject.Destroy(gameObject);
+        }
+        public static void DestroyImmediate(this GameObject gameObject)
+        {
+            UnityObject.DestroyImmediate(gameObject);
+        }
+
         // Get property compiler-generated backing field name
         public static string GetPropertyBackingFieldName(string propertyName)
         {
