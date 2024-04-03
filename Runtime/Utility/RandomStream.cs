@@ -69,17 +69,40 @@ namespace AggroBird.UnityExtend
             return (Next() & 1) == 0;
         }
 
-        public T Select<T>(IReadOnlyList<T> arr)
+        public T Select<T>(IReadOnlyList<T> list)
         {
-            if (arr == null)
+            if (list == null)
             {
-                throw new System.ArgumentNullException(nameof(arr));
+                throw new System.ArgumentNullException(nameof(list));
             }
-            if (arr.Count == 0)
+            if (list.Count == 0)
             {
                 throw new System.IndexOutOfRangeException();
             }
-            return arr[Range(0, arr.Count)];
+            return list[Range(0, list.Count)];
+        }
+
+        public void Shuffle<T>(IList<T> list)
+        {
+            if (list == null)
+            {
+                throw new System.ArgumentNullException(nameof(list));
+            }
+            int n = list.Count;
+            if (n > 1)
+            {
+                for (int i = 0; i < n - 1; i++)
+                {
+                    int j = Next(i, n);
+
+                    if (j != i)
+                    {
+                        T temp = list[i];
+                        list[i] = list[j];
+                        list[j] = temp;
+                    }
+                }
+            }
         }
 
         public Vector2 InsideUnitCircle()
