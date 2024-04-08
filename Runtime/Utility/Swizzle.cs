@@ -105,6 +105,10 @@ namespace AggroBird.UnityExtend
         {
             return new Vector3(vec.x, 0, vec.y);
         }
+        public static Vector3 Vertical3D(this Vector2 vec)
+        {
+            return new Vector3(vec.x, vec.y, 0);
+        }
 
         public static void SetRGB(this ref Color c, float rgb)
         {
