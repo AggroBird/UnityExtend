@@ -1,7 +1,7 @@
 {
 	"name": "com.aggrobird.unityextend",
 	"displayName": "Unity Engine Extension",
-	"version": "1.0.83",
+	"version": "1.0.84",
 	"unity": "2022.3",
 	"keywords": ["Utility", "Helper", "Functions"],
 	"category": "Utility",
