@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AggroBird.UnityExtend
@@ -73,20 +74,28 @@ namespace AggroBird.UnityExtend
         {
             if (list == null)
             {
-                throw new System.ArgumentNullException(nameof(list));
+                throw new ArgumentNullException(nameof(list));
             }
             if (list.Count == 0)
             {
-                throw new System.IndexOutOfRangeException();
+                throw new IndexOutOfRangeException();
             }
             return list[Range(0, list.Count)];
+        }
+        public T Select<T>(ReadOnlySpan<T> list)
+        {
+            if (list.Length == 0)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            return list[Range(0, list.Length)];
         }
 
         public void Shuffle<T>(IList<T> list)
         {
             if (list == null)
             {
-                throw new System.ArgumentNullException(nameof(list));
+                throw new ArgumentNullException(nameof(list));
             }
             int n = list.Count;
             if (n > 1)
@@ -97,9 +106,27 @@ namespace AggroBird.UnityExtend
 
                     if (j != i)
                     {
-                        T temp = list[i];
-                        list[i] = list[j];
-                        list[j] = temp;
+                        (list[j], list[i]) = (list[i], list[j]);
+                    }
+                }
+            }
+        }
+        public void Shuffle<T>(Span<T> list)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+            int n = list.Length;
+            if (n > 1)
+            {
+                for (int i = 0; i < n - 1; i++)
+                {
+                    int j = Next(i, n);
+
+                    if (j != i)
+                    {
+                        (list[j], list[i]) = (list[i], list[j]);
                     }
                 }
             }
