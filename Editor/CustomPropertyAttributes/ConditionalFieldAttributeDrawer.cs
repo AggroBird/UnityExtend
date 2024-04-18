@@ -145,41 +145,55 @@ namespace AggroBird.UnityExtend.Editor
                     if (EditorExtendUtility.TryGetFieldInfo(property, out _, out _, values))
                     {
                         object obj = values[^1];
-                        Type objType = obj.GetType();
-                        object lhsValue;
-                        FieldInfo compareField = objType.GetField(conditionalFieldAttribute.fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                        if (compareField != null)
+
+                        static bool TryFindField(string fieldName, object obj, out object value)
                         {
-                            lhsValue = compareField.GetValue(obj);
+                            Type objType = obj.GetType();
+                            while (objType != typeof(object))
+                            {
+                                FieldInfo field = objType.GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                                if (field != null)
+                                {
+                                    value = field.GetValue(obj);
+                                    return true;
+                                }
+
+                                PropertyInfo property = objType.GetProperty(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                                if (property != null && property.CanRead)
+                                {
+                                    value = property.GetValue(obj);
+                                    return true;
+                                }
+
+                                objType = objType.BaseType;
+                            }
+
+                            value = null;
+                            return false;
+                        }
+
+                        if (TryFindField(conditionalFieldAttribute.fieldName, obj, out object lhsValue))
+                        {
+                            object rhsValue = conditionalFieldAttribute.operand;
+                            switch (conditionalFieldAttribute.op)
+                            {
+                                case ConditionalFieldOperator.Equal:
+                                    return Equals(lhsValue, rhsValue);
+                                case ConditionalFieldOperator.NotEqual:
+                                    return !Equals(lhsValue, rhsValue);
+                                case ConditionalFieldOperator.LessThan:
+                                    return Compare(lhsValue, rhsValue) < 0;
+                                case ConditionalFieldOperator.LessEqual:
+                                    return Compare(lhsValue, rhsValue) <= 0;
+                                case ConditionalFieldOperator.GreaterThan:
+                                    return Compare(lhsValue, rhsValue) > 0;
+                                case ConditionalFieldOperator.GreaterEqual:
+                                    return Compare(lhsValue, rhsValue) >= 0;
+                            }
                         }
                         else
                         {
-                            PropertyInfo compareProperty = objType.GetProperty(conditionalFieldAttribute.fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                            if (compareProperty.CanRead)
-                            {
-                                lhsValue = compareProperty.GetValue(obj);
-                            }
-                            else
-                            {
-                                throw new Exception($"Failed to find conditional field {conditionalFieldAttribute.fieldName}");
-                            }
-                        }
-
-                        object rhsValue = conditionalFieldAttribute.operand;
-                        switch (conditionalFieldAttribute.op)
-                        {
-                            case ConditionalFieldOperator.Equal:
-                                return Equals(lhsValue, rhsValue);
-                            case ConditionalFieldOperator.NotEqual:
-                                return !Equals(lhsValue, rhsValue);
-                            case ConditionalFieldOperator.LessThan:
-                                return Compare(lhsValue, rhsValue) < 0;
-                            case ConditionalFieldOperator.LessEqual:
-                                return Compare(lhsValue, rhsValue) <= 0;
-                            case ConditionalFieldOperator.GreaterThan:
-                                return Compare(lhsValue, rhsValue) > 0;
-                            case ConditionalFieldOperator.GreaterEqual:
-                                return Compare(lhsValue, rhsValue) >= 0;
+                            throw new Exception($"Failed to find conditional field {conditionalFieldAttribute.fieldName}");
                         }
                     }
                 }
