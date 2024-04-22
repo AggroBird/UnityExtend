@@ -251,5 +251,117 @@ namespace AggroBird.UnityExtend.Editor
         {
             return TryGetPropertyNameFromLambdaExpression(exp, out string name) ? serializedProperty.FindPropertyRelative(name) : null;
         }
+
+
+
+        internal class SearchableStringListWindow : EditorWindow
+        {
+            public static int SelectedValue { get; private set; }
+
+            private Vector2 scrollPosition = Vector2.zero;
+            private string filter = string.Empty;
+            private string[] filterSplit = Array.Empty<string>();
+            private readonly List<string> values = new();
+
+            public void SetList(IReadOnlyList<string> list, int selectedValue)
+            {
+                SelectedValue = selectedValue;
+
+                foreach (var item in list)
+                {
+                    if (item != null)
+                    {
+                        string trimmed = item.Trim();
+                        if (!string.IsNullOrEmpty(trimmed))
+                        {
+                            values.Add(trimmed);
+                        }
+                    }
+                }
+            }
+
+            private void OnEnable()
+            {
+                minSize = new Vector2(200, 300);
+            }
+
+
+            private void OnGUI()
+            {
+                string filterValue = EditorGUILayout.TextField(filter, EditorStyles.toolbarSearchField);
+                if (filterValue != filter)
+                {
+                    if (string.IsNullOrEmpty(filterValue))
+                    {
+                        filterSplit = Array.Empty<string>();
+                    }
+                    else
+                    {
+                        filterSplit = filterValue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    }
+                    filter = filterValue;
+                }
+
+                scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.Width(position.width));
+                {
+                    for (int i = 0; i < values.Count; i++)
+                    {
+                        string str = values[i];
+                        if (filterSplit.Length > 0)
+                        {
+                            bool containsFilter = true;
+                            foreach (var filter in filterSplit)
+                            {
+                                if (!str.Contains(filter, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    containsFilter = false;
+                                    break;
+                                }
+                            }
+                            if (!containsFilter)
+                            {
+                                continue;
+                            }
+                        }
+                        if (GUILayout.Button(str))
+                        {
+                            SelectedValue = i;
+                            Close();
+                            break;
+                        }
+                    }
+                }
+                EditorGUILayout.EndScrollView();
+            }
+        }
+
+        public static int SearchableStringList(GUIContent label, IReadOnlyList<string> list, int currentSelection = -1)
+        {
+            return SearchableStringList(EditorGUILayout.GetControlRect(), label, list, currentSelection);
+        }
+        public static int SearchableStringList(string label, IReadOnlyList<string> list, int currentSelection = -1)
+        {
+            return SearchableStringList(new GUIContent(label), list, currentSelection);
+        }
+        public static int SearchableStringList(Rect position, GUIContent label, IReadOnlyList<string> list, int currentSelection = -1)
+        {
+            position = EditorGUI.PrefixLabel(position, label);
+            string currentValue = list == null || (uint)currentSelection >= (uint)list.Count ? string.Empty : list[currentSelection];
+            bool pressed = GUI.Button(position, currentValue) && list != null;
+
+            if (pressed)
+            {
+                SearchableStringListWindow window = ScriptableObject.CreateInstance<SearchableStringListWindow>();
+                window.SetList(list, currentSelection);
+                window.ShowModal();
+                currentSelection = SearchableStringListWindow.SelectedValue;
+            }
+
+            return currentSelection;
+        }
+        public static int SearchableStringList(Rect position, string label, IReadOnlyList<string> list, int currentSelection = -1)
+        {
+            return SearchableStringList(position, new GUIContent(label), list, currentSelection);
+        }
     }
 }
