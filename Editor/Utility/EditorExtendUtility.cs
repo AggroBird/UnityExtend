@@ -253,6 +253,18 @@ namespace AggroBird.UnityExtend.Editor
         }
 
 
+        private static GUIStyle leftAlignedButtonStyle;
+        public static GUIStyle LeftAlignedButtonStyle
+        {
+            get
+            {
+                leftAlignedButtonStyle ??= new(GUI.skin.button)
+                {
+                    alignment = TextAnchor.MiddleLeft
+                };
+                return leftAlignedButtonStyle;
+            }
+        }
 
         internal class SearchableStringListWindow : EditorWindow
         {
@@ -265,7 +277,6 @@ namespace AggroBird.UnityExtend.Editor
             private string[] filterSplit = Array.Empty<string>();
             private readonly List<string> values = new();
             private bool firstFrame = true;
-            private GUIStyle buttonStyle;
 
 
             public void SetList(IReadOnlyList<string> list, int selectedValue)
@@ -293,11 +304,6 @@ namespace AggroBird.UnityExtend.Editor
 
             private void OnGUI()
             {
-                buttonStyle ??= new(GUI.skin.button)
-                {
-                    alignment = TextAnchor.MiddleLeft
-                };
-
                 if (firstFrame) GUI.SetNextControlName(ControlName);
                 string filterValue = EditorGUILayout.TextField(filter, EditorStyles.toolbarSearchField);
                 if (filterValue != filter)
@@ -334,7 +340,7 @@ namespace AggroBird.UnityExtend.Editor
                                 continue;
                             }
                         }
-                        if (GUILayout.Button(str, buttonStyle))
+                        if (GUILayout.Button(str, LeftAlignedButtonStyle))
                         {
                             SelectedValue = i;
                             Close();
@@ -364,7 +370,7 @@ namespace AggroBird.UnityExtend.Editor
         {
             position = EditorGUI.PrefixLabel(position, label);
             string currentValue = list == null || (uint)currentSelection >= (uint)list.Count ? string.Empty : list[currentSelection];
-            bool pressed = GUI.Button(position, currentValue) && list != null;
+            bool pressed = GUI.Button(position, currentValue, LeftAlignedButtonStyle) && list != null;
 
             if (pressed)
             {
