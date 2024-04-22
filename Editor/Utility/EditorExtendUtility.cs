@@ -335,15 +335,15 @@ namespace AggroBird.UnityExtend.Editor
             }
         }
 
-        public static int SearchableStringList(GUIContent label, IReadOnlyList<string> list, int currentSelection = -1)
+        public static int SearchableStringList(GUIContent label, int currentSelection, IReadOnlyList<string> list)
         {
-            return SearchableStringList(EditorGUILayout.GetControlRect(), label, list, currentSelection);
+            return SearchableStringList(EditorGUILayout.GetControlRect(), label, currentSelection, list);
         }
-        public static int SearchableStringList(string label, IReadOnlyList<string> list, int currentSelection = -1)
+        public static int SearchableStringList(string label, int currentSelection, IReadOnlyList<string> list)
         {
-            return SearchableStringList(new GUIContent(label), list, currentSelection);
+            return SearchableStringList(EditorGUILayout.GetControlRect(), new GUIContent(label), currentSelection, list);
         }
-        public static int SearchableStringList(Rect position, GUIContent label, IReadOnlyList<string> list, int currentSelection = -1)
+        public static int SearchableStringList(Rect position, GUIContent label, int currentSelection, IReadOnlyList<string> list)
         {
             position = EditorGUI.PrefixLabel(position, label);
             string currentValue = list == null || (uint)currentSelection >= (uint)list.Count ? string.Empty : list[currentSelection];
@@ -359,9 +359,9 @@ namespace AggroBird.UnityExtend.Editor
 
             return currentSelection;
         }
-        public static int SearchableStringList(Rect position, string label, IReadOnlyList<string> list, int currentSelection = -1)
+        public static int SearchableStringList(Rect position, string label, int currentSelection, IReadOnlyList<string> list)
         {
-            return SearchableStringList(position, new GUIContent(label), list, currentSelection);
+            return SearchableStringList(position, new GUIContent(label), currentSelection, list);
         }
     }
 }
