@@ -258,10 +258,15 @@ namespace AggroBird.UnityExtend.Editor
         {
             public static int SelectedValue { get; private set; }
 
+            private const string ControlName = "SearchableStringListWindow.SearchName";
+
             private Vector2 scrollPosition = Vector2.zero;
             private string filter = string.Empty;
             private string[] filterSplit = Array.Empty<string>();
             private readonly List<string> values = new();
+            private bool firstFrame = true;
+            private GUIStyle buttonStyle;
+
 
             public void SetList(IReadOnlyList<string> list, int selectedValue)
             {
@@ -288,6 +293,12 @@ namespace AggroBird.UnityExtend.Editor
 
             private void OnGUI()
             {
+                buttonStyle ??= new(GUI.skin.button)
+                {
+                    alignment = TextAnchor.MiddleLeft
+                };
+
+                if (firstFrame) GUI.SetNextControlName(ControlName);
                 string filterValue = EditorGUILayout.TextField(filter, EditorStyles.toolbarSearchField);
                 if (filterValue != filter)
                 {
@@ -323,7 +334,7 @@ namespace AggroBird.UnityExtend.Editor
                                 continue;
                             }
                         }
-                        if (GUILayout.Button(str))
+                        if (GUILayout.Button(str, buttonStyle))
                         {
                             SelectedValue = i;
                             Close();
@@ -332,6 +343,12 @@ namespace AggroBird.UnityExtend.Editor
                     }
                 }
                 EditorGUILayout.EndScrollView();
+
+                if (firstFrame)
+                {
+                    GUI.FocusControl(ControlName);
+                    firstFrame = false;
+                }
             }
         }
 
