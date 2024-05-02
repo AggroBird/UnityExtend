@@ -15,11 +15,7 @@ namespace AggroBird.UnityExtend
 
         public static PositionRotation Lerp(PositionRotation from, PositionRotation to, float t)
         {
-            return new PositionRotation()
-            {
-                position = Vector3.Lerp(from.position, to.position, t),
-                rotation = Quaternion.Slerp(from.rotation, to.rotation, t),
-            };
+            return new PositionRotation(Vector3.Lerp(from.position, to.position, t), Quaternion.Slerp(from.rotation, to.rotation, t));
         }
     }
 
