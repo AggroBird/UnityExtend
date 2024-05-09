@@ -13,6 +13,12 @@ namespace AggroBird.UnityExtend
         GreaterEqual,
     }
 
+    public enum ConditionalFieldStyle
+    {
+        Hide,
+        Disable,
+    }
+
     // Enable/disable properties based on a certain condition.
     // For Equal and NotEqual, object.Equals is used.
     // For the relative comparisons, if the types of property and operand are equal, it will first check IComparable.
@@ -20,15 +26,17 @@ namespace AggroBird.UnityExtend
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class ConditionalFieldAttribute : PropertyAttribute
     {
-        public ConditionalFieldAttribute(string fieldName, ConditionalFieldOperator op, object operand)
+        public ConditionalFieldAttribute(string fieldName, ConditionalFieldOperator op, object operand, ConditionalFieldStyle style = ConditionalFieldStyle.Hide)
         {
             this.fieldName = fieldName;
             this.op = op;
             this.operand = operand;
+            this.style = style;
         }
 
         public readonly string fieldName;
         public readonly ConditionalFieldOperator op;
         public readonly object operand;
+        public readonly ConditionalFieldStyle style;
     }
 }

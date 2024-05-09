@@ -17,10 +17,18 @@ namespace AggroBird.UnityExtend.Editor
             {
                 EditorGUI.PropertyField(position, property, label, true);
             }
+            else if (attribute is ConditionalFieldAttribute conditionalFieldAttribute && conditionalFieldAttribute.style == ConditionalFieldStyle.Disable)
+            {
+                using (new EditorGUI.DisabledGroupScope(true))
+                {
+                    EditorGUI.PropertyField(position, property, label, true);
+                }
+            }
         }
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            return Evaluate(property) ? EditorGUI.GetPropertyHeight(property, true) : 0;
+            bool disable = attribute is ConditionalFieldAttribute conditionalFieldAttribute && conditionalFieldAttribute.style == ConditionalFieldStyle.Disable;
+            return disable || Evaluate(property) ? EditorGUI.GetPropertyHeight(property, true) : 0;
         }
 
         private bool Evaluate(SerializedProperty property)
