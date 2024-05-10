@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using static AggroBird.UnityExtend.Editor.EditorExtendUtility;
 using UnityObject = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend.Editor
@@ -261,7 +260,11 @@ namespace AggroBird.UnityExtend.Editor
         {
             return TryGetPropertyNameFromLambdaExpression(exp, out string name) ? serializedProperty.FindPropertyRelative(name) : null;
         }
+    }
 
+    public static class EditorGUIExtend
+    {
+        private static readonly int searchableStringListPropertyHash = "SearchableStringList_Property".GetHashCode();
 
         private static GUIStyle leftAlignedButtonStyle;
         public static GUIStyle LeftAlignedButtonStyle
@@ -275,14 +278,6 @@ namespace AggroBird.UnityExtend.Editor
                 return leftAlignedButtonStyle;
             }
         }
-
-
-
-    }
-
-    public static class EditorGUIExtend
-    {
-        private static readonly int searchableStringListPropertyHash = "SearchableStringList_Property".GetHashCode();
 
         internal class SearchableStringListWindow : EditorWindow
         {
@@ -399,7 +394,7 @@ namespace AggroBird.UnityExtend.Editor
             int controlID = GUIUtility.GetControlID(searchableStringListPropertyHash, FocusType.Keyboard, position);
 
             string currentValue = list == null || (uint)currentSelection >= (uint)list.Count ? string.Empty : list[currentSelection];
-            bool pressed = GUI.Button(position, currentValue, LeftAlignedButtonStyle) && list != null;
+            bool pressed = GUI.Button(position, currentValue, EditorStyles.miniPullDown) && list != null;
 
             if (pressed)
             {
@@ -422,7 +417,7 @@ namespace AggroBird.UnityExtend.Editor
         }
         public static int SearchableStringList(Rect position, string label, int currentSelection, IReadOnlyList<string> list)
         {
-            position = EditorGUI.PrefixLabel(position, TempContent(label));
+            position = EditorGUI.PrefixLabel(position, EditorExtendUtility.TempContent(label));
             return SearchableStringList(position, currentSelection, list);
         }
     }
