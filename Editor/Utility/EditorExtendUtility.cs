@@ -266,9 +266,25 @@ namespace AggroBird.UnityExtend.Editor
             }
         }
 
+
+        private static readonly int searchableStringListPropertyHash = "SearchableStringList_Property".GetHashCode();
+
         internal class SearchableStringListWindow : EditorWindow
         {
-            public static int SelectedValue { get; private set; }
+            public static int? lastSelectedValue = 0;
+            private static int lastControlId = -1;
+
+            public static bool GetSelectedValue(int controlId, out int selected)
+            {
+                if (lastSelectedValue.HasValue && lastControlId == controlId)
+                {
+                    selected = lastSelectedValue.Value;
+                    lastSelectedValue = null;
+                    return true;
+                }
+                selected = 0;
+                return false;
+            }
 
             private const string ControlName = "SearchableStringListWindow.SearchName";
 
@@ -279,9 +295,10 @@ namespace AggroBird.UnityExtend.Editor
             private bool firstFrame = true;
 
 
-            public void SetList(IReadOnlyList<string> list, int selectedValue)
+            public void SetList(IReadOnlyList<string> list, int selectedValue, int controlId)
             {
-                SelectedValue = selectedValue;
+                lastSelectedValue = selectedValue;
+                lastControlId = controlId;
 
                 foreach (var item in list)
                 {
@@ -299,6 +316,10 @@ namespace AggroBird.UnityExtend.Editor
             private void OnEnable()
             {
                 minSize = new Vector2(200, 300);
+            }
+            private void OnLostFocus()
+            {
+                Close();
             }
 
 
@@ -342,7 +363,7 @@ namespace AggroBird.UnityExtend.Editor
                         }
                         if (GUILayout.Button(str, LeftAlignedButtonStyle))
                         {
-                            SelectedValue = i;
+                            lastSelectedValue = i;
                             Close();
                             break;
                         }
@@ -368,6 +389,8 @@ namespace AggroBird.UnityExtend.Editor
         }
         public static int SearchableStringList(Rect position, GUIContent label, int currentSelection, IReadOnlyList<string> list)
         {
+            int controlID = GUIUtility.GetControlID(searchableStringListPropertyHash, FocusType.Keyboard, position);
+
             position = EditorGUI.PrefixLabel(position, label);
             string currentValue = list == null || (uint)currentSelection >= (uint)list.Count ? string.Empty : list[currentSelection];
             bool pressed = GUI.Button(position, currentValue, LeftAlignedButtonStyle) && list != null;
@@ -375,9 +398,13 @@ namespace AggroBird.UnityExtend.Editor
             if (pressed)
             {
                 SearchableStringListWindow window = ScriptableObject.CreateInstance<SearchableStringListWindow>();
-                window.SetList(list, currentSelection);
-                window.ShowModal();
-                currentSelection = SearchableStringListWindow.SelectedValue;
+                window.SetList(list, currentSelection, controlID);
+                window.Show();
+            }
+
+            if (SearchableStringListWindow.GetSelectedValue(controlID, out int selected))
+            {
+                return selected;
             }
 
             return currentSelection;
