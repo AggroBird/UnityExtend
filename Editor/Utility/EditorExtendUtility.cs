@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using static AggroBird.UnityExtend.Editor.EditorExtendUtility;
 using UnityObject = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend.Editor
@@ -23,6 +24,15 @@ namespace AggroBird.UnityExtend.Editor
         // Mixed value content character
         public const string MixedValueContent = "\u2014";
 
+        private static readonly GUIContent tmpText = new();
+        // Temporary gui content
+        public static GUIContent TempContent(string t)
+        {
+            tmpText.image = null;
+            tmpText.text = t;
+            tmpText.tooltip = null;
+            return tmpText;
+        }
 
         // Missing object to show in object fields
         // If SerializedProperty.objectReferenceInstanceIDValue is not 0, but objectReferenceValue is null,
@@ -267,6 +277,11 @@ namespace AggroBird.UnityExtend.Editor
         }
 
 
+
+    }
+
+    public static class EditorGUIExtend
+    {
         private static readonly int searchableStringListPropertyHash = "SearchableStringList_Property".GetHashCode();
 
         internal class SearchableStringListWindow : EditorWindow
@@ -379,19 +394,10 @@ namespace AggroBird.UnityExtend.Editor
             }
         }
 
-        public static int SearchableStringList(GUIContent label, int currentSelection, IReadOnlyList<string> list)
-        {
-            return SearchableStringList(EditorGUILayout.GetControlRect(), label, currentSelection, list);
-        }
-        public static int SearchableStringList(string label, int currentSelection, IReadOnlyList<string> list)
-        {
-            return SearchableStringList(EditorGUILayout.GetControlRect(), new GUIContent(label), currentSelection, list);
-        }
-        public static int SearchableStringList(Rect position, GUIContent label, int currentSelection, IReadOnlyList<string> list)
+        public static int SearchableStringList(Rect position, int currentSelection, IReadOnlyList<string> list)
         {
             int controlID = GUIUtility.GetControlID(searchableStringListPropertyHash, FocusType.Keyboard, position);
 
-            position = EditorGUI.PrefixLabel(position, label);
             string currentValue = list == null || (uint)currentSelection >= (uint)list.Count ? string.Empty : list[currentSelection];
             bool pressed = GUI.Button(position, currentValue, LeftAlignedButtonStyle) && list != null;
 
@@ -409,9 +415,31 @@ namespace AggroBird.UnityExtend.Editor
 
             return currentSelection;
         }
+        public static int SearchableStringList(Rect position, GUIContent label, int currentSelection, IReadOnlyList<string> list)
+        {
+            position = EditorGUI.PrefixLabel(position, label);
+            return SearchableStringList(position, currentSelection, list);
+        }
         public static int SearchableStringList(Rect position, string label, int currentSelection, IReadOnlyList<string> list)
         {
-            return SearchableStringList(position, new GUIContent(label), currentSelection, list);
+            position = EditorGUI.PrefixLabel(position, TempContent(label));
+            return SearchableStringList(position, currentSelection, list);
+        }
+    }
+
+    public static class EditorGUILayoutExtend
+    {
+        public static int SearchableStringList(int currentSelection, IReadOnlyList<string> list)
+        {
+            return EditorGUIExtend.SearchableStringList(EditorGUILayout.GetControlRect(), currentSelection, list);
+        }
+        public static int SearchableStringList(GUIContent label, int currentSelection, IReadOnlyList<string> list)
+        {
+            return EditorGUIExtend.SearchableStringList(EditorGUILayout.GetControlRect(), label, currentSelection, list);
+        }
+        public static int SearchableStringList(string label, int currentSelection, IReadOnlyList<string> list)
+        {
+            return EditorGUIExtend.SearchableStringList(EditorGUILayout.GetControlRect(), label, currentSelection, list);
         }
     }
 }
