@@ -328,7 +328,13 @@ namespace AggroBird.UnityExtend.Editor
             if (!supportedFieldTypeCache.TryGetValue(fieldType, out var supportedTypes))
             {
                 supportedTypeListBuilder.Clear();
-                supportedTypeListBuilder.AddRange(TypeCache.GetTypesDerivedFrom(fieldType).Where(IsAssignableType));
+                foreach(var type in TypeCache.GetTypesDerivedFrom(fieldType).Where(IsAssignableType))
+                {
+                    if(type.GetCustomAttribute<ObsoleteAttribute>() == null)
+                    {
+                        supportedTypeListBuilder.Add(type);
+                    }
+                }
                 if (IsAssignableType(fieldType))
                 {
                     supportedTypeListBuilder.Add(fieldType);
