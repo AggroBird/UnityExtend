@@ -55,7 +55,7 @@ namespace AggroBird.UnityExtend.Editor
                 {
                     menu.AddItem(new GUIContent("Copy Managed Reference Data"), false, (_) =>
                     {
-                        EditorGUIUtility.systemCopyBuffer = ManagedRefenceDataKey + $"<{copyProperty.managedReferenceFullTypename}>" + JsonUtility.ToJson(copyProperty.managedReferenceValue);
+                        EditorGUIUtility.systemCopyBuffer = $"{ManagedRefenceDataKey}<{copyProperty.managedReferenceFullTypename}>{JsonUtility.ToJson(copyProperty.managedReferenceValue)}";
                     }, null);
                 }
 
@@ -72,11 +72,11 @@ namespace AggroBird.UnityExtend.Editor
                         {
                             menu.AddItem(new GUIContent("Paste Managed Reference Data"), false, (_) =>
                             {
+                                copyProperty.serializedObject.Update();
                                 object obj = FormatterServices.GetUninitializedObject(clipboardType);
                                 JsonUtility.FromJsonOverwrite(currentClipboard.Substring(split + 1), obj);
                                 copyProperty.managedReferenceValue = obj;
                                 copyProperty.serializedObject.ApplyModifiedProperties();
-                                copyProperty.serializedObject.Update();
                             }, null);
                         }
                         else
@@ -328,9 +328,9 @@ namespace AggroBird.UnityExtend.Editor
             if (!supportedFieldTypeCache.TryGetValue(fieldType, out var supportedTypes))
             {
                 supportedTypeListBuilder.Clear();
-                foreach(var type in TypeCache.GetTypesDerivedFrom(fieldType).Where(IsAssignableType))
+                foreach (var type in TypeCache.GetTypesDerivedFrom(fieldType).Where(IsAssignableType))
                 {
-                    if(type.GetCustomAttribute<ObsoleteAttribute>() == null)
+                    if (type.GetCustomAttribute<ObsoleteAttribute>() == null)
                     {
                         supportedTypeListBuilder.Add(type);
                     }
