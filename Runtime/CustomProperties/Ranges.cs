@@ -90,7 +90,7 @@ namespace AggroBird.UnityExtend
 
         public readonly float Clamp(float value) => (value <= Min) ? Min : (value >= Max) ? Max : value;
         public readonly float Lerp(float t) => (t <= 0) ? Min : (t >= 1) ? Max : (Min + Range * t);
-        public readonly float InverseLerp(float v) => (Min != Max) ? (Clamp(v) / Range) : 0;
+        public readonly float InverseLerp(float v) => (Min != Max) ? ((Clamp(v) - Min) / Range) : 0;
 
 
         public override readonly int GetHashCode()
@@ -149,8 +149,8 @@ namespace AggroBird.UnityExtend
         public readonly double Clamp(double value) => (value <= Min) ? Min : (value >= Max) ? Max : value;
         public readonly double Lerp(float t) => (t <= 0) ? Min : (t >= 1) ? Max : (Min + Range * (double)t);
         public readonly double Lerp(double t) => (t <= 0) ? Min : (t >= 1) ? Max : (Min + Range * t);
-        public readonly double InverseLerp(float v) => (Min != Max) ? (Clamp(v) / Range) : 0;
-        public readonly double InverseLerp(double v) => (Min != Max) ? (Clamp(v) / Range) : 0;
+        public readonly double InverseLerp(float v) => (Min != Max) ? ((Clamp(v) - Min) / Range) : 0;
+        public readonly double InverseLerp(double v) => (Min != Max) ? ((Clamp(v) - Min) / Range) : 0;
 
 
         public override readonly int GetHashCode()
