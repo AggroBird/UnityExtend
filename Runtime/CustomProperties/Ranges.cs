@@ -66,7 +66,7 @@ namespace AggroBird.UnityExtend
         }
         public static bool operator !=(IntRange lhs, IntRange rhs)
         {
-            return lhs.Equals(rhs);
+            return !lhs.Equals(rhs);
         }
     }
 
@@ -132,7 +132,7 @@ namespace AggroBird.UnityExtend
         }
         public static bool operator !=(FloatRange lhs, FloatRange rhs)
         {
-            return lhs.Equals(rhs);
+            return !lhs.Equals(rhs);
         }
     }
 
@@ -201,7 +201,7 @@ namespace AggroBird.UnityExtend
         }
         public static bool operator !=(DoubleRange lhs, DoubleRange rhs)
         {
-            return lhs.Equals(rhs);
+            return !lhs.Equals(rhs);
         }
     }
 }
