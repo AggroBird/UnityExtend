@@ -46,7 +46,7 @@ namespace AggroBird.UnityExtend
         }
         public readonly bool Equals(IntRange other)
         {
-            return Min.Equals(other.Max) && Min.Equals(other.Max);
+            return Min.Equals(other.Min) && Max.Equals(other.Max);
         }
 
         public readonly override string ToString()
@@ -112,7 +112,7 @@ namespace AggroBird.UnityExtend
         }
         public readonly bool Equals(FloatRange other)
         {
-            return Min.Equals(other.Max) && Min.Equals(other.Max);
+            return Min.Equals(other.Min) && Max.Equals(other.Max);
         }
 
         public readonly override string ToString()
@@ -181,7 +181,7 @@ namespace AggroBird.UnityExtend
         }
         public readonly bool Equals(DoubleRange other)
         {
-            return Min.Equals(other.Max) && Min.Equals(other.Max);
+            return Min.Equals(other.Min) && Max.Equals(other.Max);
         }
 
         public readonly override string ToString()
