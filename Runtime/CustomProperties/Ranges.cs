@@ -59,6 +59,15 @@ namespace AggroBird.UnityExtend
             formatProvider ??= CultureInfo.InvariantCulture.NumberFormat;
             return $"({Min.ToString(format, formatProvider)} - {Max.ToString(format, formatProvider)})";
         }
+
+        public static bool operator ==(IntRange lhs, IntRange rhs)
+        {
+            return lhs.Equals(rhs);
+        }
+        public static bool operator !=(IntRange lhs, IntRange rhs)
+        {
+            return lhs.Equals(rhs);
+        }
     }
 
     [Serializable]
@@ -115,6 +124,15 @@ namespace AggroBird.UnityExtend
             if (string.IsNullOrEmpty(format)) format = "F2";
             formatProvider ??= CultureInfo.InvariantCulture.NumberFormat;
             return $"({Min.ToString(format, formatProvider)} - {Max.ToString(format, formatProvider)})";
+        }
+
+        public static bool operator ==(FloatRange lhs, FloatRange rhs)
+        {
+            return lhs.Equals(rhs);
+        }
+        public static bool operator !=(FloatRange lhs, FloatRange rhs)
+        {
+            return lhs.Equals(rhs);
         }
     }
 
@@ -175,6 +193,15 @@ namespace AggroBird.UnityExtend
             if (string.IsNullOrEmpty(format)) format = "F2";
             formatProvider ??= CultureInfo.InvariantCulture.NumberFormat;
             return $"({Min.ToString(format, formatProvider)} - {Max.ToString(format, formatProvider)})";
+        }
+
+        public static bool operator ==(DoubleRange lhs, DoubleRange rhs)
+        {
+            return lhs.Equals(rhs);
+        }
+        public static bool operator !=(DoubleRange lhs, DoubleRange rhs)
+        {
+            return lhs.Equals(rhs);
         }
     }
 }
