@@ -260,6 +260,26 @@ namespace AggroBird.UnityExtend.Editor
         {
             return TryGetPropertyNameFromLambdaExpression(exp, out string name) ? serializedProperty.FindPropertyRelative(name) : null;
         }
+
+
+        // Load the first asset of type (useful for global settings files)
+        public static bool LoadFirstAssetOfType<T>(out T asset) where T : UnityObject
+        {
+            foreach (var guid in AssetDatabase.FindAssets($"{typeof(T).Name}"))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    asset = AssetDatabase.LoadAssetAtPath<T>(path);
+                    if (asset)
+                    {
+                        return true;
+                    }
+                }
+            }
+            asset = default;
+            return false;
+        }
     }
 
     public static class EditorGUIExtend
