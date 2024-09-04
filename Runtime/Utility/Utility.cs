@@ -201,7 +201,7 @@ namespace AggroBird.UnityExtend
             return $"<{propertyName}>k__BackingField";
         }
 
-        // Load the first asset of type (editor only)
+        // Load assets of type (editor only)
         public static bool LoadFirstAssetOfType<T>(out T asset) where T : UnityObject
         {
 #if UNITY_EDITOR
@@ -220,6 +220,27 @@ namespace AggroBird.UnityExtend
 #endif
             asset = default;
             return false;
+        }
+        public static T[] LoadAllAssetsOfType<T>() where T : UnityObject
+        {
+#if UNITY_EDITOR
+            List<T> result = new();
+            foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"{typeof(T).Name}"))
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    T asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
+                    if (asset)
+                    {
+                        result.Add(asset);
+                    }
+                }
+            }
+            return result.ToArray();
+#else
+            return System.Array.Empty<T>();
+#endif
         }
     }
 }
