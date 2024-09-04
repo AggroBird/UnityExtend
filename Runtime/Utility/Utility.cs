@@ -205,7 +205,7 @@ namespace AggroBird.UnityExtend
         public static bool LoadFirstAssetOfType<T>(out T asset) where T : UnityObject
         {
 #if UNITY_EDITOR
-            foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"{typeof(T).Name}"))
+            foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                 if (!string.IsNullOrEmpty(path))
@@ -225,7 +225,7 @@ namespace AggroBird.UnityExtend
         {
 #if UNITY_EDITOR
             List<T> result = new();
-            foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"{typeof(T).Name}"))
+            foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                 if (!string.IsNullOrEmpty(path))
