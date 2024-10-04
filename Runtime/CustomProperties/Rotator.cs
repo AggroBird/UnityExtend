@@ -49,6 +49,17 @@ namespace AggroBird.UnityExtend
             return new(lhs.pitch / f, lhs.yaw / f);
         }
 
+        public static bool operator ==(Rotator2 lhs, Rotator2 rhs)
+        {
+            float pitch = lhs.pitch - rhs.pitch;
+            float yaw = lhs.yaw - rhs.yaw;
+            return pitch * pitch + yaw * yaw < 9.9999994E-11f;
+        }
+        public static bool operator !=(Rotator2 lhs, Rotator2 rhs)
+        {
+            return !(lhs == rhs);
+        }
+
         public static readonly Rotator2 zero = new(0, 0);
 
 
@@ -122,6 +133,18 @@ namespace AggroBird.UnityExtend
         public static Rotator3 operator /(Rotator3 lhs, float f)
         {
             return new(lhs.pitch / f, lhs.yaw / f, lhs.roll / f);
+        }
+
+        public static bool operator ==(Rotator3 lhs, Rotator3 rhs)
+        {
+            float pitch = lhs.pitch - rhs.pitch;
+            float yaw = lhs.yaw - rhs.yaw;
+            float roll = lhs.roll - rhs.roll;
+            return pitch * pitch + yaw * yaw + roll * roll < 9.9999994E-11f;
+        }
+        public static bool operator !=(Rotator3 lhs, Rotator3 rhs)
+        {
+            return !(lhs == rhs);
         }
 
         public static readonly Rotator3 zero = new(0, 0, 0);
