@@ -14,6 +14,12 @@ namespace AggroBird.UnityExtend
             transform.localScale = Vector3.one;
         }
 
+        // Get component or add it if it doesnt exist
+        public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
+        {
+            return gameObject.TryGetComponent(out T component) ? component : gameObject.AddComponent<T>();
+        }
+
         // Null or empty check for arrays
         public static bool IsNullOrEmpty<T>(T[] array)
         {
