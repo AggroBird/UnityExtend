@@ -40,6 +40,8 @@ namespace AggroBird.UnityExtend.Editor
     {
         private static readonly List<object> values = new();
 
+        // Returns true if the property should draw as normal.
+        // When false, check the style for the correct response.
         public static bool Evaluate(SerializedProperty property, out ConditionalFieldStyle style)
         {
             if (EditorExtendUtility.TryGetFieldInfo(property, out FieldInfo fieldInfo, out _, values))
