@@ -33,7 +33,8 @@ namespace AggroBird.UnityExtend
     }
 
     // Same as above but allows to be added alongside other custom properties.
-    // Unity gets a bit finnicky when multiple properties are active at the same time
+    // Prevents collision with custom property drawers.
+    // Use with ConditionalFieldUtility to implement custom responses for custom property drawers.
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class ConditionalExpressionAttribute : PropertyAttribute
     {
