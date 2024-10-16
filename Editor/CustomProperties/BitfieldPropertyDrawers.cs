@@ -561,7 +561,7 @@ namespace AggroBird.UnityExtend.Editor
         {
             if (property.serializedObject.isEditingMultipleObjects)
             {
-                return EditorExtendUtility.SinglePropertyHeight;
+                return EditorExtendUtility.TotalPropertyHeight;
             }
 
             SerializedProperty editorValuesProperty = property.FindPropertyRelative("editorValues");

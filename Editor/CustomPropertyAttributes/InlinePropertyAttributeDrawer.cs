@@ -11,7 +11,8 @@ namespace AggroBird.UnityExtend.Editor
             if (property.hasChildren)
             {
                 property.isExpanded = true;
-                return EditorGUI.GetPropertyHeight(property, label, true) - EditorGUI.GetPropertyHeight(property, label, false) - EditorExtendUtility.StandardVerticalSpacing;
+
+                return EditorGUI.GetPropertyHeight(property, label, true);
             }
             else
             {
@@ -23,18 +24,28 @@ namespace AggroBird.UnityExtend.Editor
         {
             if (property.hasChildren)
             {
-                foreach (var iter in new SerializedPropertyEnumerator(property))
+                property.isExpanded = true;
+
+                EditorGUI.BeginProperty(position, label, property);
+
+                position.height = EditorExtendUtility.SingleLineHeight;
+                EditorGUI.LabelField(position, label);
+                position.y += position.height + EditorExtendUtility.StandardVerticalSpacing;
+                using (new EditorGUI.IndentLevelScope())
                 {
-                    float height = EditorGUI.GetPropertyHeight(iter, iter.hasVisibleChildren);
-                    position.height = height;
-                    EditorGUI.PropertyField(position, iter, iter.hasVisibleChildren);
-                    position.y += height;
-                    position.y += EditorExtendUtility.StandardVerticalSpacing;
+                    foreach (var iter in new SerializedPropertyEnumerator(property))
+                    {
+                        position.height = EditorGUI.GetPropertyHeight(iter, iter.hasVisibleChildren);
+                        EditorGUI.PropertyField(position, iter, iter.hasVisibleChildren);
+                        position.y += position.height + EditorExtendUtility.StandardVerticalSpacing;
+                    }
                 }
+
+                EditorGUI.EndProperty();
             }
             else
             {
-                base.OnGUI(position, property, label);
+                EditorGUI.PropertyField(position, property, label);
             }
         }
     }

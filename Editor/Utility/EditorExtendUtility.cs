@@ -19,7 +19,7 @@ namespace AggroBird.UnityExtend.Editor
         // Distance margin between two consecutive properties
         public static float StandardVerticalSpacing = EditorGUIUtility.standardVerticalSpacing;
         // Property height + bottom spacing
-        public static float SinglePropertyHeight => EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+        public static float TotalPropertyHeight => EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
         // Mixed value content character
         public const string MixedValueContent = "\u2014";
 
