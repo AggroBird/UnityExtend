@@ -60,6 +60,11 @@ namespace AggroBird.UnityExtend
             return !(lhs == rhs);
         }
 
+        public static Rotator2 operator -(Rotator2 rhs)
+        {
+            return new Rotator2(-rhs.pitch, -rhs.yaw);
+        }
+
         public static readonly Rotator2 zero = new(0, 0);
 
 
@@ -145,6 +150,11 @@ namespace AggroBird.UnityExtend
         public static bool operator !=(Rotator3 lhs, Rotator3 rhs)
         {
             return !(lhs == rhs);
+        }
+
+        public static Rotator3 operator -(Rotator3 rhs)
+        {
+            return new Rotator3(-rhs.pitch, -rhs.yaw, -rhs.roll);
         }
 
         public static readonly Rotator3 zero = new(0, 0, 0);
