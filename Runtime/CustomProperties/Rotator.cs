@@ -124,7 +124,7 @@ namespace AggroBird.UnityExtend
 
         public static Rotator3 operator +(Rotator3 lhs, Rotator3 rhs)
         {
-            return new(lhs.pitch + rhs.pitch, lhs.yaw + rhs.yaw, lhs.roll - rhs.roll);
+            return new(lhs.pitch + rhs.pitch, lhs.yaw + rhs.yaw, lhs.roll + rhs.roll);
         }
         public static Rotator3 operator -(Rotator3 lhs, Rotator3 rhs)
         {
