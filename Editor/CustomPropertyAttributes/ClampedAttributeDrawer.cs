@@ -80,7 +80,7 @@ namespace AggroBird.UnityExtend.Editor
             private const string Z = "z";
             private const string W = "w";
 
-            public void OnGUI(Rect position, SerializedProperty property, Type fieldType, GUIContent label)
+            public void OnGUI(Rect position, SerializedProperty property, FieldInfo fieldInfo, GUIContent label)
             {
                 switch (property.propertyType)
                 {
@@ -139,12 +139,48 @@ namespace AggroBird.UnityExtend.Editor
 
                     default:
                         // Special cases
+                        var fieldType = fieldInfo.FieldType;
                         position = EditorGUI.PrefixLabel(position, label);
                         if (fieldType.Equals(typeof(IntRange)) || fieldType.Equals(typeof(FloatRange)) || fieldType.Equals(typeof(DoubleRange)))
                         {
-                            RangePropertyDrawer.DrawProperties(position, property);
-                            Clamp(property.FindPropertyRelative((IntRange def) => def.Min));
-                            Clamp(property.FindPropertyRelative((IntRange def) => def.Max));
+                            var min = property.FindPropertyRelative((IntRange def) => def.Min);
+                            var max = property.FindPropertyRelative((IntRange def) => def.Max);
+                            if (fieldInfo.GetCustomAttribute<RangeSliderAttribute>() != null)
+                            {
+                                if (fieldType.Equals(typeof(IntRange)))
+                                {
+                                    float minValue = min.intValue;
+                                    float maxValue = max.intValue;
+                                    EditorGUI.BeginChangeCheck();
+                                    EditorGUI.MinMaxSlider(position, GUIContent.none, ref minValue, ref maxValue, minInt, maxInt);
+                                    min.intValue = Mathf.RoundToInt(minValue);
+                                    max.intValue = Mathf.RoundToInt(maxValue);
+                                }
+                                else if (fieldType.Equals(typeof(FloatRange)))
+                                {
+                                    float minValue = min.floatValue;
+                                    float maxValue = max.floatValue;
+                                    EditorGUI.BeginChangeCheck();
+                                    EditorGUI.MinMaxSlider(position, GUIContent.none, ref minValue, ref maxValue, (float)minDouble, (float)maxDouble);
+                                    min.floatValue = minValue;
+                                    max.floatValue = maxValue;
+                                }
+                                else
+                                {
+                                    float minValue = (float)min.doubleValue;
+                                    float maxValue = (float)max.doubleValue;
+                                    EditorGUI.BeginChangeCheck();
+                                    EditorGUI.MinMaxSlider(position, GUIContent.none, ref minValue, ref maxValue, (float)minDouble, (float)maxDouble);
+                                    min.doubleValue = minValue;
+                                    max.doubleValue = maxValue;
+                                }
+                            }
+                            else
+                            {
+                                RangePropertyDrawer.DrawProperties(position, property);
+                                Clamp(min);
+                                Clamp(max);
+                            }
                             break;
                         }
                         else if (fieldType.Equals(typeof(Rotator2)))
@@ -177,7 +213,7 @@ namespace AggroBird.UnityExtend.Editor
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            new Context((ClampedAttribute)attribute).OnGUI(position, property, fieldInfo.FieldType, label);
+            new Context((ClampedAttribute)attribute).OnGUI(position, property, fieldInfo, label);
 
             EditorGUI.EndProperty();
         }

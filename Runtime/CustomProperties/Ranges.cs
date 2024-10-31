@@ -4,6 +4,13 @@ using UnityEngine;
 
 namespace AggroBird.UnityExtend
 {
+    // Add this attribute to a range property in combination with Clamped to draw it as a slider
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    public sealed class RangeSliderAttribute : Attribute
+    {
+
+    }
+
     [Serializable]
     public struct IntRange
     {
