@@ -151,7 +151,6 @@ namespace AggroBird.UnityExtend.Editor
                                 {
                                     float minValue = min.intValue;
                                     float maxValue = max.intValue;
-                                    EditorGUI.BeginChangeCheck();
                                     EditorGUI.MinMaxSlider(position, GUIContent.none, ref minValue, ref maxValue, minInt, maxInt);
                                     min.intValue = Mathf.RoundToInt(minValue);
                                     max.intValue = Mathf.RoundToInt(maxValue);
@@ -160,7 +159,6 @@ namespace AggroBird.UnityExtend.Editor
                                 {
                                     float minValue = min.floatValue;
                                     float maxValue = max.floatValue;
-                                    EditorGUI.BeginChangeCheck();
                                     EditorGUI.MinMaxSlider(position, GUIContent.none, ref minValue, ref maxValue, (float)minDouble, (float)maxDouble);
                                     min.floatValue = minValue;
                                     max.floatValue = maxValue;
@@ -169,7 +167,6 @@ namespace AggroBird.UnityExtend.Editor
                                 {
                                     float minValue = (float)min.doubleValue;
                                     float maxValue = (float)max.doubleValue;
-                                    EditorGUI.BeginChangeCheck();
                                     EditorGUI.MinMaxSlider(position, GUIContent.none, ref minValue, ref maxValue, (float)minDouble, (float)maxDouble);
                                     min.doubleValue = minValue;
                                     max.doubleValue = maxValue;
