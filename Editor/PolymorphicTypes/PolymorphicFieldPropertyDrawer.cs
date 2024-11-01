@@ -354,7 +354,7 @@ namespace AggroBird.UnityExtend.Editor
         private static readonly Dictionary<Type, Type[]> supportedFieldTypeCache = new();
         private static IEnumerable<Type> GetSupportedFieldTypes(Type fieldType, IPolymorphicTypeFilter filter = null)
         {
-            if (!supportedFieldTypeCache.TryGetValue(fieldType, out var supportedTypes))
+            if (!supportedFieldTypeCache.TryGetValue(fieldType, out var supportedTypes) || filter != null)
             {
                 bool CheckFilter(Type type) => filter == null || filter.IncludeType(type);
                 supportedTypeListBuilder.Clear();
@@ -373,7 +373,11 @@ namespace AggroBird.UnityExtend.Editor
                 {
                     return PolymorphicFieldUtility.GetTypeDisplayName(lhs).CompareTo(PolymorphicFieldUtility.GetTypeDisplayName(rhs));
                 });
-                supportedFieldTypeCache[fieldType] = supportedTypes = supportedTypeListBuilder.ToArray();
+                supportedTypes = supportedTypeListBuilder.ToArray();
+                if (filter == null)
+                {
+                    supportedFieldTypeCache[fieldType] = supportedTypes;
+                }
             }
             return supportedTypes;
         }
