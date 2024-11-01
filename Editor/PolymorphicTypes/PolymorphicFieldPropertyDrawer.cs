@@ -40,6 +40,11 @@ namespace AggroBird.UnityExtend.Editor
             {
                 if (type != null)
                 {
+                    if (!typeof(IPolymorphicTypeFilter).IsAssignableFrom(type))
+                    {
+                        Debug.LogError($"Failed to instantiate polymorphic field type filter: Type {type.Name} does not implement {nameof(IPolymorphicTypeFilter)} interface.");
+                        return null;
+                    }
                     return (IPolymorphicTypeFilter)Activator.CreateInstance(type);
                 }
             }
