@@ -354,6 +354,7 @@ namespace AggroBird.UnityExtend.Editor
         private static readonly Dictionary<Type, Type[]> supportedFieldTypeCache = new();
         private static IEnumerable<Type> GetSupportedFieldTypes(Type fieldType, IPolymorphicTypeFilter filter = null)
         {
+            // A filter can modify supported types at runtime, so it invalidates the cache
             if (filter != null || !supportedFieldTypeCache.TryGetValue(fieldType, out var supportedTypes))
             {
                 bool CheckFilter(Type type) => filter == null || filter.IncludeType(type);
