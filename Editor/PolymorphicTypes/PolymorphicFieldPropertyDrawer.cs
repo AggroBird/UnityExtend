@@ -33,6 +33,22 @@ namespace AggroBird.UnityExtend.Editor
             attribute = type.GetCustomAttribute<PolymorphicClassTypeAttribute>();
             return attribute != null;
         }
+
+        public static IPolymorphicTypeFilter InstantiateFilterObject(Type type)
+        {
+            try
+            {
+                if (type != null)
+                {
+                    return (IPolymorphicTypeFilter)Activator.CreateInstance(type);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to instantiate polymorphic field type filter: {e.Message}");
+            }
+            return null;
+        }
     }
 
     [CustomPropertyDrawer(typeof(PolymorphicFieldAttribute))]
@@ -48,42 +64,50 @@ namespace AggroBird.UnityExtend.Editor
 
         private static void ShowSerializeReferenceCopyPasteContextMenu(GenericMenu menu, SerializedProperty property)
         {
-            if (property.propertyType == SerializedPropertyType.ManagedReference)
+            if (property.propertyType != SerializedPropertyType.ManagedReference || !property.TryGetFieldInfo(out var fieldInfo, out _))
             {
-                var copyProperty = property.Copy();
-                if (copyProperty.managedReferenceValue != null)
-                {
-                    menu.AddItem(new GUIContent("Copy Managed Reference Data"), false, (_) =>
-                    {
-                        EditorGUIUtility.systemCopyBuffer = $"{ManagedRefenceDataKey}<{copyProperty.managedReferenceFullTypename}>{JsonUtility.ToJson(copyProperty.managedReferenceValue)}";
-                    }, null);
-                }
+                return;
+            }
 
-                string currentClipboard = EditorGUIUtility.systemCopyBuffer;
-                if (currentClipboard.StartsWith(ManagedRefenceDataKey))
+            var fieldAttribute = fieldInfo.GetCustomAttribute<PolymorphicFieldAttribute>();
+            if (fieldAttribute == null)
+            {
+                return;
+            }
+
+            var copyProperty = property.Copy();
+            if (copyProperty.managedReferenceValue != null)
+            {
+                menu.AddItem(new GUIContent("Copy Managed Reference Data"), false, (_) =>
                 {
-                    // Extract type from clipboard
-                    int split = currentClipboard.IndexOf('>', ManagedRefenceDataKey.Length);
-                    string typename = currentClipboard.Substring(ManagedRefenceDataKey.Length + 1, split - ManagedRefenceDataKey.Length - 1);
-                    if (TryGetTypeFromManagedReferenceTypename(typename, out Type clipboardType))
+                    EditorGUIUtility.systemCopyBuffer = $"{ManagedRefenceDataKey}<{copyProperty.managedReferenceFullTypename}>{JsonUtility.ToJson(copyProperty.managedReferenceValue)}";
+                }, null);
+            }
+
+            string currentClipboard = EditorGUIUtility.systemCopyBuffer;
+            if (currentClipboard.StartsWith(ManagedRefenceDataKey))
+            {
+                // Extract type from clipboard
+                int split = currentClipboard.IndexOf('>', ManagedRefenceDataKey.Length);
+                string typename = currentClipboard.Substring(ManagedRefenceDataKey.Length + 1, split - ManagedRefenceDataKey.Length - 1);
+                if (TryGetTypeFromManagedReferenceTypename(typename, out Type clipboardType))
+                {
+                    // Ensure that the clipboard type is supported by the destination field
+                    if (TryGetTypeFromManagedReferenceTypename(copyProperty.managedReferenceFieldTypename, out Type fieldType) && GetSupportedFieldTypes(fieldType, PolymorphicFieldUtility.InstantiateFilterObject(fieldAttribute.FilterType)).Contains(clipboardType))
                     {
-                        // Ensure that the clipboard type is supported by the destination field
-                        if (TryGetTypeFromManagedReferenceTypename(copyProperty.managedReferenceFieldTypename, out Type fieldType) && GetSupportedFieldTypes(fieldType).Contains(clipboardType))
+                        menu.AddItem(new GUIContent("Paste Managed Reference Data"), false, (_) =>
                         {
-                            menu.AddItem(new GUIContent("Paste Managed Reference Data"), false, (_) =>
-                            {
-                                copyProperty.serializedObject.Update();
-                                object obj = FormatterServices.GetUninitializedObject(clipboardType);
-                                JsonUtility.FromJsonOverwrite(currentClipboard.Substring(split + 1), obj);
-                                copyProperty.managedReferenceValue = obj;
-                                copyProperty.serializedObject.ApplyModifiedProperties();
-                            }, null);
-                        }
-                        else
-                        {
-                            // Show disabled for incompatible type
-                            menu.AddDisabledItem(new GUIContent("Paste Managed Reference Data"));
-                        }
+                            copyProperty.serializedObject.Update();
+                            object obj = FormatterServices.GetUninitializedObject(clipboardType);
+                            JsonUtility.FromJsonOverwrite(currentClipboard.Substring(split + 1), obj);
+                            copyProperty.managedReferenceValue = obj;
+                            copyProperty.serializedObject.ApplyModifiedProperties();
+                        }, null);
+                    }
+                    else
+                    {
+                        // Show disabled for incompatible type
+                        menu.AddDisabledItem(new GUIContent("Paste Managed Reference Data"));
                     }
                 }
             }
@@ -269,7 +293,7 @@ namespace AggroBird.UnityExtend.Editor
                     {
                         // Get all supported types
                         List<Type> supportedTypes = new();
-                        supportedTypes.AddRange(GetSupportedFieldTypes(fieldType));
+                        supportedTypes.AddRange(GetSupportedFieldTypes(fieldType, PolymorphicFieldUtility.InstantiateFilterObject(fieldAttribute.FilterType)));
                         if (fieldAttribute.AllowNull) supportedTypes.Insert(0, null);
                         var dropdown = new PolymorphicTypeDropdown(new AdvancedDropdownState(), supportedTypes.Select(PolymorphicFieldUtility.GetTypeDisplayName), (int selection) =>
                         {
@@ -323,19 +347,20 @@ namespace AggroBird.UnityExtend.Editor
 
         private static readonly List<Type> supportedTypeListBuilder = new();
         private static readonly Dictionary<Type, Type[]> supportedFieldTypeCache = new();
-        private static IEnumerable<Type> GetSupportedFieldTypes(Type fieldType)
+        private static IEnumerable<Type> GetSupportedFieldTypes(Type fieldType, IPolymorphicTypeFilter filter = null)
         {
             if (!supportedFieldTypeCache.TryGetValue(fieldType, out var supportedTypes))
             {
+                bool CheckFilter(Type type) => filter == null || filter.IncludeType(type);
                 supportedTypeListBuilder.Clear();
                 foreach (var type in TypeCache.GetTypesDerivedFrom(fieldType).Where(IsAssignableType))
                 {
-                    if (type.GetCustomAttribute<ObsoleteAttribute>() == null)
+                    if (type.GetCustomAttribute<ObsoleteAttribute>() == null && CheckFilter(type))
                     {
                         supportedTypeListBuilder.Add(type);
                     }
                 }
-                if (IsAssignableType(fieldType))
+                if (IsAssignableType(fieldType) && CheckFilter(fieldType))
                 {
                     supportedTypeListBuilder.Add(fieldType);
                 }
