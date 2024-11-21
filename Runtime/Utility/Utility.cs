@@ -214,14 +214,8 @@ namespace AggroBird.UnityExtend
             foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                if (!string.IsNullOrEmpty(path))
-                {
-                    asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
-                    if (asset)
-                    {
-                        return true;
-                    }
-                }
+				asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
+				return asset;
             }
 #endif
             asset = default;
@@ -234,14 +228,8 @@ namespace AggroBird.UnityExtend
             foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                if (!string.IsNullOrEmpty(path))
-                {
-                    T asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
-                    if (asset)
-                    {
-                        result.Add(asset);
-                    }
-                }
+				T asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
+				result.Add(asset);
             }
             return result.ToArray();
 #else

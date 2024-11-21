@@ -25,20 +25,17 @@ namespace AggroBird.UnityExtend.Editor
                         if (!cache.TryGetValue(globalProviderAttribute.ProviderType, out T cachedProvider) || cachedProvider is not UnityObject unityObj || !unityObj)
                         {
                             string[] guids = AssetDatabase.FindAssets($"t:{globalProviderAttribute.ProviderType.Name}");
-                            if (guids != null && guids.Length > 0)
-                            {
-                                for (int i = 0; i < guids.Length; i++)
-                                {
-                                    UnityObject obj = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[i]), globalProviderAttribute.ProviderType);
-                                    if (obj && obj is T validProvider)
-                                    {
-                                        cache[globalProviderAttribute.ProviderType] = validProvider;
-                                        provider = validProvider;
-                                        index = globalProviderAttribute.Index;
-                                        return true;
-                                    }
-                                }
-                            }
+							for (int i = 0; i < guids.Length; i++)
+							{
+								UnityObject obj = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[i]), globalProviderAttribute.ProviderType);
+								if (obj is T validProvider)
+								{
+									cache[globalProviderAttribute.ProviderType] = validProvider;
+									provider = validProvider;
+									index = globalProviderAttribute.Index;
+									return true;
+								}
+							}
                         }
                         else
                         {
