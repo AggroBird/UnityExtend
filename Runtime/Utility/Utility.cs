@@ -214,8 +214,11 @@ namespace AggroBird.UnityExtend
             foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-				asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
-				return asset;
+                if (UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path) is T casted)
+                {
+                    asset = casted;
+                    return true;
+                }
             }
 #endif
             asset = default;
@@ -228,8 +231,10 @@ namespace AggroBird.UnityExtend
             foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-				T asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
-				result.Add(asset);
+                if (UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path) is T casted)
+                {
+                    result.Add(casted);
+                }
             }
             return result.ToArray();
 #else
