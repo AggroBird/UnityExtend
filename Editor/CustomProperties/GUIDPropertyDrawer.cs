@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,15 +9,30 @@ namespace AggroBird.UnityExtend.Editor
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            using (new EditorGUI.DisabledGroupScope(true))
+            EditorGUI.BeginProperty(position, label, property);
+
+            using (new EditorExtendUtility.MixedValueScope(property.hasMultipleDifferentValues))
             {
-                using (new EditorExtendUtility.MixedValueScope(property.hasMultipleDifferentValues))
+                var upperProperty = property.FindPropertyRelative((GUID def) => def.Upper);
+                var lowerProperty = property.FindPropertyRelative((GUID def) => def.Lower);
+                string currentValue = $"{upperProperty.ulongValue:x16}{lowerProperty.ulongValue:x16}";
+                string newValue = EditorGUI.DelayedTextField(position, label, currentValue);
+                if (newValue != currentValue)
                 {
-                    ulong upper = property.FindPropertyRelative((GUID def) => def.Upper).ulongValue;
-                    ulong lower = property.FindPropertyRelative((GUID def) => def.Lower).ulongValue;
-                    EditorGUI.TextField(position, label, $"{upper:x16}{lower:x16}");
+                    try
+                    {
+                        GUID newGUID = new(newValue);
+                        upperProperty.ulongValue = newGUID.Upper;
+                        lowerProperty.ulongValue = newGUID.Lower;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
                 }
             }
+
+            EditorGUI.EndProperty();
         }
     }
 }
