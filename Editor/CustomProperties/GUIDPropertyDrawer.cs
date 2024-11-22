@@ -9,6 +9,8 @@ namespace AggroBird.UnityExtend.Editor
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            EditorGUI.BeginProperty(position, label, property);
+
             using (new EditorExtendUtility.MixedValueScope(property.hasMultipleDifferentValues))
             {
                 var upperProperty = property.FindPropertyRelative((GUID def) => def.Upper);
@@ -29,6 +31,8 @@ namespace AggroBird.UnityExtend.Editor
                     }
                 }
             }
+
+            EditorGUI.EndProperty();
         }
     }
 }
