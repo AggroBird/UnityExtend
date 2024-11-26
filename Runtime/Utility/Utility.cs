@@ -208,7 +208,7 @@ namespace AggroBird.UnityExtend
         }
 
         // Load assets of type (editor only)
-        public static bool LoadFirstAssetOfType<T>(out T asset) where T : UnityObject
+        public static bool TryLoadFirstAssetOfType<T>(out T asset) where T : UnityObject
         {
 #if UNITY_EDITOR
             foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
@@ -227,19 +227,66 @@ namespace AggroBird.UnityExtend
         public static T[] LoadAllAssetsOfType<T>() where T : UnityObject
         {
 #if UNITY_EDITOR
-            List<T> result = new();
-            foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
+            var guids = UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}");
+            if (guids.Length > 0)
+            {
+                List<T> result = new();
+                foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                    if (UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path) is T casted)
+                    {
+                        result.Add(casted);
+                    }
+                }
+                return result.ToArray();
+            }
+#endif
+            return Array.Empty<T>();
+        }
+        public static bool TryLoadFirstAssetOfType(Type type, out UnityObject asset)
+        {
+#if UNITY_EDITOR
+            foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{type.Name}"))
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                if (UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path) is T casted)
+                var loadedAsset = UnityEditor.AssetDatabase.LoadAssetAtPath(path, type);
+                if (loadedAsset)
                 {
-                    result.Add(casted);
+                    if (type.IsAssignableFrom(loadedAsset.GetType()))
+                    {
+                        asset = loadedAsset;
+                        return true;
+                    }
                 }
             }
-            return result.ToArray();
-#else
-            return System.Array.Empty<T>();
 #endif
+            asset = default;
+            return false;
+        }
+        public static UnityObject[] LoadAllAssetsOfType(Type type)
+        {
+#if UNITY_EDITOR
+            var guids = UnityEditor.AssetDatabase.FindAssets($"t:{type.Name}");
+            if (guids.Length > 0)
+            {
+                List<UnityObject> result = new();
+                foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{type.Name}"))
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                    var loadedAsset = UnityEditor.AssetDatabase.LoadAssetAtPath(path, type);
+                    if (loadedAsset)
+                    {
+                        if (type.IsAssignableFrom(loadedAsset.GetType()))
+                        {
+                            result.Add(loadedAsset);
+                        }
+                    }
+                }
+                return result.ToArray();
+            }
+#endif
+            return Array.Empty<UnityObject>();
         }
     }
 }
