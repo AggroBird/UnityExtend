@@ -260,6 +260,82 @@ namespace AggroBird.UnityExtend.Editor
         {
             return TryGetPropertyNameFromLambdaExpression(exp, out string name) ? serializedProperty.FindPropertyRelative(name) : null;
         }
+
+
+        // Calculate total bounds for a gameobject from attached child renderers (local space of the parent)
+        public static Bounds CalculateTotalBounds(GameObject gameObject)
+        {
+            GameObject copy = new();
+            try
+            {
+                static void CopyComponents(GameObject src, GameObject dst)
+                {
+                    if (src.TryGetComponent(out MeshFilter meshFilter) && meshFilter.sharedMesh && src.TryGetComponent(out Renderer renderer))
+                    {
+                        dst.AddComponent<MeshFilter>().sharedMesh = meshFilter.sharedMesh;
+                        dst.AddComponent(renderer.GetType());
+                    }
+                }
+
+                static void CopyChildren(GameObject copyParent, GameObject child)
+                {
+                    GameObject copy = new();
+                    copy.transform.SetParent(copyParent.transform);
+                    copy.transform.SetLocalPositionAndRotation(child.transform.localPosition, child.transform.localRotation);
+                    copy.transform.localScale = child.transform.localScale;
+                    CopyComponents(child, copy);
+                    var transform = child.transform;
+                    var childCount = transform.childCount;
+                    for (int i = 0; i < childCount; i++)
+                    {
+                        CopyChildren(copy, transform.GetChild(i).gameObject);
+                    }
+                }
+
+                Bounds? bounds = null;
+                void GatherBounds(GameObject go)
+                {
+                    if (go.TryGetComponent(out Renderer renderer))
+                    {
+                        if (bounds == null)
+                        {
+                            bounds = renderer.bounds;
+                        }
+                        else
+                        {
+                            Bounds b = bounds.Value;
+                            b.Encapsulate(renderer.bounds);
+                            bounds = b;
+                        }
+                    }
+                    var transform = go.transform;
+                    int childCount = transform.childCount;
+                    for (int i = 0; i < childCount; i++)
+                    {
+                        GatherBounds(transform.GetChild(i).gameObject);
+                    }
+                }
+
+                CopyComponents(gameObject, copy);
+                var transform = gameObject.transform;
+                int childCount = transform.childCount;
+                for (int i = 0; i < childCount; i++)
+                {
+                    CopyChildren(copy, transform.GetChild(i).gameObject);
+                }
+
+                GatherBounds(copy);
+                if (bounds.HasValue)
+                {
+                    return bounds.Value;
+                }
+                return new Bounds();
+            }
+            finally
+            {
+                UnityObject.DestroyImmediate(copy);
+            }
+        }
     }
 
     public static class EditorGUIExtend
