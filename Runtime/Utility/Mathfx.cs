@@ -84,6 +84,20 @@ namespace AggroBird.UnityExtend
         public static float ModAbs(float f, float m) => ((f % m) + m) % m;
         public static int ModAbs(int f, int m) => ((f % m) + m) % m;
 
+        // Movetowards that outputs the delta used
+        public static float MoveTowards(float current, float target, float maxDelta, out float delta)
+        {
+            float dif = target - current;
+            float abs = Mathf.Abs(dif);
+            if (abs <= maxDelta)
+            {
+                delta = abs;
+                return target;
+            }
+            delta = maxDelta;
+            return current + Mathf.Sign(dif) * maxDelta;
+        }
+
         // 1 - (1 - f) ^ p
         public static float InvPow(float f, float p)
         {
