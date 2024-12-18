@@ -183,7 +183,7 @@ namespace AggroBird.UnityExtend.Editor
         private Vector2 scrollPosition = Vector2.zero;
         private string filter = string.Empty;
 
-        private SerializedProperty property;
+        private string propertyPath;
         private IBitfieldLabelList labelList;
         private bool editable = false;
 
@@ -193,7 +193,6 @@ namespace AggroBird.UnityExtend.Editor
 
         public void SetProperty(SerializedProperty property, IBitfieldLabelList labelList, bool editable)
         {
-            this.property = property;
             titleContent = new GUIContent(property.displayName);
             this.labelList = labelList;
             this.editable = editable;
@@ -205,6 +204,7 @@ namespace AggroBird.UnityExtend.Editor
                 serializedObjects[i] = new SerializedObject(multipleObjects[i]);
             }
             serializedProperties = new SerializedProperty[multipleObjects.Length];
+            propertyPath = property.propertyPath;
         }
 
         private void OnEnable()
@@ -251,39 +251,35 @@ namespace AggroBird.UnityExtend.Editor
 
                         // Show tags
                         BitfieldUtility.GetIdxFlag(bitfieldLabel.Index, out int idx, out int flag);
-                        SerializedProperty maskValueProperty = property.FindPropertyRelative($"mask{idx}");
-                        if (maskValueProperty != null)
+                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.PrefixLabel(bitfieldLabel.Name);
+                        GUILayout.FlexibleSpace();
+                        for (int i = 0; i < serializedObjects.Length; i++)
                         {
-                            EditorGUILayout.BeginHorizontal();
-                            EditorGUILayout.PrefixLabel(bitfieldLabel.Name);
-                            GUILayout.FlexibleSpace();
-                            for (int i = 0; i < serializedObjects.Length; i++)
+                            serializedProperties[i] = serializedObjects[i].FindProperty($"{propertyPath}.mask{idx}");
+                        }
+                        bool showMixedValue = false;
+                        bool isSet = (serializedProperties[0].intValue & flag) != 0;
+                        for (int i = 1; i < serializedObjects.Length; i++)
+                        {
+                            int nestedValue = serializedProperties[i].intValue;
+                            showMixedValue |= ((nestedValue & flag) != 0) != isSet;
+                            if (showMixedValue) break;
+                        }
+                        using (new EditorExtendUtility.MixedValueScope(showMixedValue))
+                        {
+                            EditorGUI.BeginChangeCheck();
+                            bool setValue = EditorGUILayout.Toggle(isSet, GUILayout.Width(20));
+                            if (EditorGUI.EndChangeCheck())
                             {
-                                serializedProperties[i] = serializedObjects[i].FindProperty(maskValueProperty.propertyPath);
-                            }
-                            bool showMixedValue = false;
-                            bool isSet = (serializedProperties[0].intValue & flag) != 0;
-                            for (int i = 1; i < serializedObjects.Length; i++)
-                            {
-                                int nestedValue = serializedProperties[i].intValue;
-                                showMixedValue |= ((nestedValue & flag) != 0) != isSet;
-                                if (showMixedValue) break;
-                            }
-                            using (new EditorExtendUtility.MixedValueScope(showMixedValue))
-                            {
-                                EditorGUI.BeginChangeCheck();
-                                bool setValue = EditorGUILayout.Toggle(isSet, GUILayout.Width(20));
-                                if (EditorGUI.EndChangeCheck())
+                                setValue |= showMixedValue;
+                                for (int i = 0; i < serializedObjects.Length; i++)
                                 {
-                                    setValue |= showMixedValue;
-                                    for (int i = 0; i < serializedObjects.Length; i++)
-                                    {
-                                        serializedProperties[i].intValue = setValue ? (serializedProperties[i].intValue | flag) : (serializedProperties[i].intValue & ~flag);
-                                    }
+                                    serializedProperties[i].intValue = setValue ? (serializedProperties[i].intValue | flag) : (serializedProperties[i].intValue & ~flag);
                                 }
                             }
-                            EditorGUILayout.EndHorizontal();
                         }
+                        EditorGUILayout.EndHorizontal();
 
                     Skip:
                         continue;
