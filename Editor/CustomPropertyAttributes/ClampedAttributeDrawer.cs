@@ -147,29 +147,36 @@ namespace AggroBird.UnityExtend.Editor
                             var max = property.FindPropertyRelative((IntRange def) => def.Max);
                             if (fieldInfo.GetCustomAttribute<RangeSliderAttribute>() != null)
                             {
-                                if (fieldType.Equals(typeof(IntRange)))
+                                if (!property.hasMultipleDifferentValues)
                                 {
-                                    float minValue = min.intValue;
-                                    float maxValue = max.intValue;
-                                    EditorGUI.MinMaxSlider(position, GUIContent.none, ref minValue, ref maxValue, minInt, maxInt);
-                                    min.intValue = Mathf.RoundToInt(minValue);
-                                    max.intValue = Mathf.RoundToInt(maxValue);
-                                }
-                                else if (fieldType.Equals(typeof(FloatRange)))
-                                {
-                                    float minValue = min.floatValue;
-                                    float maxValue = max.floatValue;
-                                    EditorGUI.MinMaxSlider(position, GUIContent.none, ref minValue, ref maxValue, (float)minDouble, (float)maxDouble);
-                                    min.floatValue = minValue;
-                                    max.floatValue = maxValue;
+                                    if (fieldType.Equals(typeof(IntRange)))
+                                    {
+                                        float minValue = min.intValue;
+                                        float maxValue = max.intValue;
+                                        EditorGUI.MinMaxSlider(position, GUIContent.none, ref minValue, ref maxValue, minInt, maxInt);
+                                        min.intValue = Mathf.RoundToInt(minValue);
+                                        max.intValue = Mathf.RoundToInt(maxValue);
+                                    }
+                                    else if (fieldType.Equals(typeof(FloatRange)))
+                                    {
+                                        float minValue = min.floatValue;
+                                        float maxValue = max.floatValue;
+                                        EditorGUI.MinMaxSlider(position, GUIContent.none, ref minValue, ref maxValue, (float)minDouble, (float)maxDouble);
+                                        min.floatValue = minValue;
+                                        max.floatValue = maxValue;
+                                    }
+                                    else
+                                    {
+                                        float minValue = (float)min.doubleValue;
+                                        float maxValue = (float)max.doubleValue;
+                                        EditorGUI.MinMaxSlider(position, GUIContent.none, ref minValue, ref maxValue, (float)minDouble, (float)maxDouble);
+                                        min.doubleValue = minValue;
+                                        max.doubleValue = maxValue;
+                                    }
                                 }
                                 else
                                 {
-                                    float minValue = (float)min.doubleValue;
-                                    float maxValue = (float)max.doubleValue;
-                                    EditorGUI.MinMaxSlider(position, GUIContent.none, ref minValue, ref maxValue, (float)minDouble, (float)maxDouble);
-                                    min.doubleValue = minValue;
-                                    max.doubleValue = maxValue;
+                                    EditorGUI.LabelField(position, "Range property has multiple different values");
                                 }
                             }
                             else
