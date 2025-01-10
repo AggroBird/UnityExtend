@@ -29,10 +29,6 @@ namespace AggroBird.UnityExtend.Editor
             return clampedAttribute != null;
         }
 
-        public static void DrawMinMaxSlider(Rect position, SerializedProperty property, float minLimit, float maxLimit)
-        {
-
-        }
         public static void DrawProperties(Rect position, SerializedProperty property)
         {
             SerializedProperty min = property.FindPropertyRelative((IntRange def) => def.Min);
