@@ -31,75 +31,85 @@ namespace AggroBird.UnityExtend.Editor
 
         public static void DrawProperties(Rect position, SerializedProperty property)
         {
-            SerializedProperty min = property.FindPropertyRelative((IntRange def) => def.Min);
-            SerializedProperty max = property.FindPropertyRelative((IntRange def) => def.Max);
-
-            // Show property fields
             float currentLabelWidth = EditorGUIUtility.labelWidth;
-            EditorGUIUtility.labelWidth = 26;
-            position.width -= 3;
-            position.width /= 2;
-            EditorGUI.BeginChangeCheck();
-            EditorGUI.PropertyField(position, min);
-            if (EditorGUI.EndChangeCheck())
+            int currentIndent = EditorGUI.indentLevel;
+            try
             {
-                switch (min.numericType)
-                {
-                    case SerializedPropertyNumericType.Int32:
-                        if (min.intValue > max.intValue)
-                        {
-                            max.intValue = min.intValue;
-                        }
-                        break;
-                    case SerializedPropertyNumericType.Float:
-                        if (min.floatValue > max.floatValue)
-                        {
-                            max.floatValue = min.floatValue;
-                        }
-                        break;
-                    case SerializedPropertyNumericType.Double:
-                        if (min.doubleValue > max.doubleValue)
-                        {
-                            max.doubleValue = min.doubleValue;
-                        }
-                        break;
-                    default:
-                        Debug.LogWarning($"Unsupported numeric type for range property drawer: {min.numericType}");
-                        break;
-                }
-            }
+                SerializedProperty min = property.FindPropertyRelative((IntRange def) => def.Min);
+                SerializedProperty max = property.FindPropertyRelative((IntRange def) => def.Max);
 
-            position.x += position.width + 3;
-            EditorGUI.BeginChangeCheck();
-            EditorGUI.PropertyField(position, max);
-            if (EditorGUI.EndChangeCheck())
-            {
-                switch (min.numericType)
+                // Show property fields
+                EditorGUIUtility.labelWidth = 26;
+                EditorGUI.indentLevel = 0;
+
+                position.width -= 3;
+                position.width /= 2;
+                EditorGUI.BeginChangeCheck();
+                EditorGUI.PropertyField(position, min);
+                if (EditorGUI.EndChangeCheck())
                 {
-                    case SerializedPropertyNumericType.Int32:
-                        if (min.intValue > max.intValue)
-                        {
-                            min.intValue = max.intValue;
-                        }
-                        break;
-                    case SerializedPropertyNumericType.Float:
-                        if (min.floatValue > max.floatValue)
-                        {
-                            min.floatValue = max.floatValue;
-                        }
-                        break;
-                    case SerializedPropertyNumericType.Double:
-                        if (min.doubleValue > max.doubleValue)
-                        {
-                            min.doubleValue = max.doubleValue;
-                        }
-                        break;
-                    default:
-                        Debug.LogWarning($"Unsupported numeric type for range property drawer: {min.numericType}");
-                        break;
+                    switch (min.numericType)
+                    {
+                        case SerializedPropertyNumericType.Int32:
+                            if (min.intValue > max.intValue)
+                            {
+                                max.intValue = min.intValue;
+                            }
+                            break;
+                        case SerializedPropertyNumericType.Float:
+                            if (min.floatValue > max.floatValue)
+                            {
+                                max.floatValue = min.floatValue;
+                            }
+                            break;
+                        case SerializedPropertyNumericType.Double:
+                            if (min.doubleValue > max.doubleValue)
+                            {
+                                max.doubleValue = min.doubleValue;
+                            }
+                            break;
+                        default:
+                            Debug.LogWarning($"Unsupported numeric type for range property drawer: {min.numericType}");
+                            break;
+                    }
+                }
+
+                position.x += position.width + 3;
+                EditorGUI.BeginChangeCheck();
+                EditorGUI.PropertyField(position, max);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    switch (min.numericType)
+                    {
+                        case SerializedPropertyNumericType.Int32:
+                            if (min.intValue > max.intValue)
+                            {
+                                min.intValue = max.intValue;
+                            }
+                            break;
+                        case SerializedPropertyNumericType.Float:
+                            if (min.floatValue > max.floatValue)
+                            {
+                                min.floatValue = max.floatValue;
+                            }
+                            break;
+                        case SerializedPropertyNumericType.Double:
+                            if (min.doubleValue > max.doubleValue)
+                            {
+                                min.doubleValue = max.doubleValue;
+                            }
+                            break;
+                        default:
+                            Debug.LogWarning($"Unsupported numeric type for range property drawer: {min.numericType}");
+                            break;
+                    }
                 }
             }
-            EditorGUIUtility.labelWidth = currentLabelWidth;
+            finally
+            {
+                EditorGUIUtility.labelWidth = currentLabelWidth;
+                EditorGUI.indentLevel = currentIndent;
+            }
         }
     }
 
