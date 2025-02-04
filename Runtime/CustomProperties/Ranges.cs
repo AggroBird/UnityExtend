@@ -75,6 +75,11 @@ namespace AggroBird.UnityExtend
         {
             return !lhs.Equals(rhs);
         }
+
+        public static implicit operator Vector2Int(IntRange value)
+        {
+            return new(value.Min, value.Max);
+        }
     }
 
     [Serializable]
@@ -140,6 +145,11 @@ namespace AggroBird.UnityExtend
         public static bool operator !=(FloatRange lhs, FloatRange rhs)
         {
             return !lhs.Equals(rhs);
+        }
+
+        public static implicit operator Vector2(FloatRange value)
+        {
+            return new(value.Min, value.Max);
         }
     }
 
