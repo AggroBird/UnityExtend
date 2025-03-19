@@ -12,17 +12,23 @@ namespace AggroBird.UnityExtend.Editor
         private string guid;
 
 
-        public T Load()
+        public readonly T Load()
+        {
+            return TryLoad(out T asset) ? asset : default;
+        }
+        public readonly bool TryLoad(out T asset)
         {
             if (!string.IsNullOrEmpty(guid))
             {
                 string assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 if (!string.IsNullOrEmpty(assetPath))
                 {
-                    return AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                    asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                    return asset;
                 }
             }
-            return null;
+            asset = default;
+            return false;
         }
     }
 
