@@ -7,19 +7,19 @@ using UnityEngine;
 namespace AggroBird.UnityExtend.Editor
 {
     [CustomPropertyDrawer(typeof(ConditionalFieldAttribute))]
-    internal sealed class ConditionalFieldAttributeDrawer : PropertyDrawer
+    internal sealed class ConditionalFieldAttributeDrawer : OverridePropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (ConditionalFieldUtility.Evaluate(property, attribute, out ConditionalFieldStyle style))
             {
-                EditorGUI.PropertyField(position, property, label, true);
+                base.OnGUI(position, property, label);
             }
             else if (style == ConditionalFieldStyle.Disable)
             {
                 using (new EditorGUI.DisabledGroupScope(true))
                 {
-                    EditorGUI.PropertyField(position, property, label, true);
+                    base.OnGUI(position, property, label);
                 }
             }
         }
@@ -27,7 +27,7 @@ namespace AggroBird.UnityExtend.Editor
         {
             if (ConditionalFieldUtility.Evaluate(property, out ConditionalFieldStyle style) || style == ConditionalFieldStyle.Disable)
             {
-                return EditorGUI.GetPropertyHeight(property, true);
+                return base.GetPropertyHeight(property, label);
             }
             else
             {
@@ -46,7 +46,7 @@ namespace AggroBird.UnityExtend.Editor
         {
             if (EditorExtendUtility.TryGetFieldInfo(property, out FieldInfo fieldInfo, out _, values))
             {
-                ConditionalExpressionAttribute attribute = fieldInfo.GetCustomAttribute<ConditionalExpressionAttribute>();
+                var attribute = fieldInfo.GetCustomAttribute<ConditionalFieldAttribute>();
                 if (attribute != null)
                 {
                     style = attribute.style;
@@ -58,7 +58,7 @@ namespace AggroBird.UnityExtend.Editor
         }
         internal static bool Evaluate(SerializedProperty property, Attribute attribute, out ConditionalFieldStyle style)
         {
-            if (attribute is ConditionalExpressionAttribute casted)
+            if (attribute is ConditionalFieldAttribute casted)
             {
                 if (EditorExtendUtility.TryGetFieldInfo(property, out _, out _, values))
                 {
@@ -69,7 +69,7 @@ namespace AggroBird.UnityExtend.Editor
             style = default;
             return true;
         }
-        private static bool Evaluate(ConditionalExpressionAttribute attribute, object container)
+        private static bool Evaluate(ConditionalFieldAttribute attribute, object container)
         {
             try
             {
