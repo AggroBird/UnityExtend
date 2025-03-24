@@ -38,9 +38,9 @@ namespace AggroBird.UnityExtend
             return value >= Min && value <= Max;
         }
 
-        public readonly double Clamp(float value) => (value <= Min) ? Min : (value >= Max) ? Max : value;
+        public readonly float Clamp(float value) => (value <= Min) ? Min : (value >= Max) ? Max : value;
         public readonly double Clamp(double value) => (value <= Min) ? Min : (value >= Max) ? Max : value;
-        public readonly double Clamp(int value) => (value <= Min) ? Min : (value >= Max) ? Max : value;
+        public readonly int Clamp(int value) => (value <= Min) ? Min : (value >= Max) ? Max : value;
 
 
         public override readonly int GetHashCode()
@@ -77,6 +77,14 @@ namespace AggroBird.UnityExtend
         }
 
         public static implicit operator Vector2Int(IntRange value)
+        {
+            return new(value.Min, value.Max);
+        }
+        public static implicit operator FloatRange(IntRange value)
+        {
+            return new(value.Min, value.Max);
+        }
+        public static implicit operator DoubleRange(IntRange value)
         {
             return new(value.Min, value.Max);
         }
@@ -148,6 +156,10 @@ namespace AggroBird.UnityExtend
         }
 
         public static implicit operator Vector2(FloatRange value)
+        {
+            return new(value.Min, value.Max);
+        }
+        public static implicit operator DoubleRange(FloatRange value)
         {
             return new(value.Min, value.Max);
         }
