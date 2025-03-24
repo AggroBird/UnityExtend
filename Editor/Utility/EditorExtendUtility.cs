@@ -200,7 +200,28 @@ namespace AggroBird.UnityExtend.Editor
             fieldInfo = null;
             return false;
         }
+        // Get property that contains provided object through reflection (may not respond to modifications)
+        public static bool TryGetPropertyContainer(this SerializedProperty property, out object container)
+        {
+            if (stacktrace == null)
+            {
+                stacktrace = new();
+            }
+            else
+            {
+                stacktrace.Clear();
+            }
 
+            if (TryGetFieldInfo(property, out _, out _, stacktrace) && stacktrace.Count > 0)
+            {
+                container = stacktrace[^1];
+                return true;
+            }
+
+            container = null;
+            return false;
+        }
+        private static List<object> stacktrace = null;
 
         // Extension methods that help getting serialized field names through lambda analyzation.
         // example: serializedObject.FindProperty((Foo foo) => foo.bar)
