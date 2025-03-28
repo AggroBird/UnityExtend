@@ -8,14 +8,15 @@ namespace AggroBird.UnityExtend.Editor
     [Serializable]
     public struct EditorAssetRef<T> where T : UnityObject
     {
+        internal EditorAssetRef(string guid)
+        {
+            this.guid = guid;
+        }
+
         [SerializeField]
         private string guid;
 
 
-        public readonly T Load()
-        {
-            return TryLoad(out T asset) ? asset : default;
-        }
         public readonly bool TryLoad(out T asset)
         {
             if (!string.IsNullOrEmpty(guid))
@@ -29,6 +30,42 @@ namespace AggroBird.UnityExtend.Editor
             }
             asset = default;
             return false;
+        }
+
+        public static implicit operator T(EditorAssetRef<T> assetRef)
+        {
+            return assetRef.TryLoad(out T asset) ? asset : default;
+        }
+        public static implicit operator EditorAssetRef<T>(T asset)
+        {
+            return AssetDatabase.TryGetGUIDAndLocalFileIdentifier(asset, out string guid, out long _) ? new(guid) : default;
+        }
+
+        public static EditorAssetRef<T>[] MakeArray(T[] assets)
+        {
+            if (assets == null || assets.Length == 0)
+            {
+                return Array.Empty<EditorAssetRef<T>>();
+            }
+            EditorAssetRef<T>[] result = new EditorAssetRef<T>[assets.Length];
+            for (int i = 0; i < assets.Length; i++)
+            {
+                result[i] = assets[i];
+            }
+            return result;
+        }
+        public static T[] LoadArray(EditorAssetRef<T>[] assetRefs)
+        {
+            if (assetRefs == null || assetRefs.Length == 0)
+            {
+                return Array.Empty<T>();
+            }
+            T[] result = new T[assetRefs.Length];
+            for (int i = 0; i < assetRefs.Length; i++)
+            {
+                result[i] = assetRefs[i];
+            }
+            return result;
         }
     }
 
