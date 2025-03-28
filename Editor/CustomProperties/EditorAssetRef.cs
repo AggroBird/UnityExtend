@@ -63,13 +63,25 @@ namespace AggroBird.UnityExtend.Editor
             return false;
         }
 
+        public override readonly int GetHashCode() => string.IsNullOrEmpty(guid) ? 0 : guid.GetHashCode();
+        public override readonly bool Equals(object obj) => (obj is EditorAssetRef<T> other) && Equals(other);
+        public readonly bool Equals(EditorAssetRef<T> other)
+        {
+            bool a = string.IsNullOrEmpty(guid);
+            bool b = string.IsNullOrEmpty(other.guid);
+            return (a || b) ? (a == b) : (guid == other.guid);
+        }
+
+        public static bool operator ==(EditorAssetRef<T> lhs, EditorAssetRef<T> rhs) => lhs.Equals(rhs);
+        public static bool operator !=(EditorAssetRef<T> lhs, EditorAssetRef<T> rhs) => !lhs.Equals(rhs);
+
         public static implicit operator T(EditorAssetRef<T> assetRef)
         {
             return assetRef.TryLoad(out T asset) ? asset : default;
         }
         public static implicit operator EditorAssetRef<T>(T asset)
         {
-            return AssetDatabase.TryGetGUIDAndLocalFileIdentifier(asset, out string guid, out long _) ? new(guid) : default;
+            return asset && AssetDatabase.TryGetGUIDAndLocalFileIdentifier(asset, out string guid, out long _) ? new(guid) : default;
         }
     }
 
