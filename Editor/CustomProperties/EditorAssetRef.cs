@@ -1,10 +1,41 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend.Editor
 {
+    public static class EditorAssetRefUtility
+    {
+        public static EditorAssetRef<T>[] MakeArray<T>(IList<T> assets) where T : UnityObject
+        {
+            if (assets == null || assets.Count == 0)
+            {
+                return Array.Empty<EditorAssetRef<T>>();
+            }
+            EditorAssetRef<T>[] result = new EditorAssetRef<T>[assets.Count];
+            for (int i = 0; i < assets.Count; i++)
+            {
+                result[i] = assets[i];
+            }
+            return result;
+        }
+        public static T[] Load<T>(IList<EditorAssetRef<T>> assetRefs) where T : UnityObject
+        {
+            if (assetRefs == null || assetRefs.Count == 0)
+            {
+                return Array.Empty<T>();
+            }
+            T[] result = new T[assetRefs.Count];
+            for (int i = 0; i < assetRefs.Count; i++)
+            {
+                result[i] = assetRefs[i];
+            }
+            return result;
+        }
+    }
+
     [Serializable]
     public struct EditorAssetRef<T> where T : UnityObject
     {
@@ -39,33 +70,6 @@ namespace AggroBird.UnityExtend.Editor
         public static implicit operator EditorAssetRef<T>(T asset)
         {
             return AssetDatabase.TryGetGUIDAndLocalFileIdentifier(asset, out string guid, out long _) ? new(guid) : default;
-        }
-
-        public static EditorAssetRef<T>[] MakeArray(T[] assets)
-        {
-            if (assets == null || assets.Length == 0)
-            {
-                return Array.Empty<EditorAssetRef<T>>();
-            }
-            EditorAssetRef<T>[] result = new EditorAssetRef<T>[assets.Length];
-            for (int i = 0; i < assets.Length; i++)
-            {
-                result[i] = assets[i];
-            }
-            return result;
-        }
-        public static T[] LoadArray(EditorAssetRef<T>[] assetRefs)
-        {
-            if (assetRefs == null || assetRefs.Length == 0)
-            {
-                return Array.Empty<T>();
-            }
-            T[] result = new T[assetRefs.Length];
-            for (int i = 0; i < assetRefs.Length; i++)
-            {
-                result[i] = assetRefs[i];
-            }
-            return result;
         }
     }
 
