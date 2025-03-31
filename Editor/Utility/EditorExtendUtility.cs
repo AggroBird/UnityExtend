@@ -363,19 +363,6 @@ namespace AggroBird.UnityExtend.Editor
     {
         private static readonly int searchableStringListPropertyHash = "SearchableStringList_Property".GetHashCode();
 
-        private static GUIStyle leftAlignedButtonStyle;
-        public static GUIStyle LeftAlignedButtonStyle
-        {
-            get
-            {
-                leftAlignedButtonStyle ??= new(GUI.skin.button)
-                {
-                    alignment = TextAnchor.MiddleLeft
-                };
-                return leftAlignedButtonStyle;
-            }
-        }
-
         internal class SearchableStringListWindow : EditorWindow
         {
             public static int? lastSelectedValue = 0;
@@ -468,12 +455,14 @@ namespace AggroBird.UnityExtend.Editor
                                 continue;
                             }
                         }
-                        if (GUILayout.Button(str, LeftAlignedButtonStyle))
+                        var rect = EditorGUILayout.GetControlRect();
+                        if (GUI.Button(rect, str, EditorStyles.label))
                         {
                             lastSelectedValue = i;
                             Close();
                             break;
                         }
+                        EditorGUIUtility.AddCursorRect(rect, MouseCursor.Link);
                     }
                 }
                 EditorGUILayout.EndScrollView();
