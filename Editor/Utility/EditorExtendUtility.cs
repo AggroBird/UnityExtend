@@ -502,6 +502,7 @@ namespace AggroBird.UnityExtend.Editor
 
             if (SearchableStringListWindow.GetSelectedValue(controlID, out int selected))
             {
+                GUI.changed |= selected != currentSelection;
                 return selected;
             }
 
