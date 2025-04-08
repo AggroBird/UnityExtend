@@ -34,10 +34,11 @@ namespace AggroBird.UnityExtend.Editor
         // Referenced from unity assembly
         public static bool TryGetPropertyDrawer(FieldInfo fieldInfo, out PropertyDrawer propertyDrawer)
         {
-            static bool TryGetCachedDrawerTypeForType(Type propertyType, out Type drawerType)
+            static bool TryGetCachedDrawerTypeForType(FieldInfo fieldInfo, out Type drawerType)
             {
                 if (reflectionSucceeded)
                 {
+                    Type propertyType = fieldInfo.FieldType;
                     if (propertyDrawerTypeCache == null)
                     {
                         propertyDrawerTypeCache = new();
@@ -47,9 +48,7 @@ namespace AggroBird.UnityExtend.Editor
                             foreach (var customPropertyDrawer in customAttributes)
                             {
                                 Type type = (Type)customPropertyDrawerTypeFieldInfo.GetValue(customPropertyDrawer);
-                                bool useForChildren = (bool)customPropertyDrawerUseForChildrenFieldInfo.GetValue(customPropertyDrawer);
-                                propertyDrawerTypeCache[type] = (drawer, type);
-                                if (useForChildren)
+                                void AssignChildTypes()
                                 {
                                     foreach (Type derivedType in TypeCache.GetTypesDerivedFrom(type))
                                     {
@@ -57,6 +56,30 @@ namespace AggroBird.UnityExtend.Editor
                                         {
                                             propertyDrawerTypeCache[derivedType] = (drawer, type);
                                         }
+                                    }
+                                }
+                                bool useForChildren = (bool)customPropertyDrawerUseForChildrenFieldInfo.GetValue(customPropertyDrawer);
+                                if (type.IsSubclassOf(typeof(PropertyAttribute)))
+                                {
+                                    foreach (var fieldAttribute in fieldInfo.CustomAttributes)
+                                    {
+                                        var attributeType = fieldAttribute.AttributeType;
+                                        if (attributeType.IsSubclassOf(type) || attributeType.Equals(type))
+                                        {
+                                            propertyDrawerTypeCache[type] = (drawer, type);
+                                            if (useForChildren)
+                                            {
+                                                AssignChildTypes();
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    propertyDrawerTypeCache[type] = (drawer, type);
+                                    if (useForChildren)
+                                    {
+                                        AssignChildTypes();
                                     }
                                 }
                             }
@@ -76,7 +99,7 @@ namespace AggroBird.UnityExtend.Editor
                 drawerType = null;
                 return false;
             }
-            if (TryGetCachedDrawerTypeForType(fieldInfo.FieldType, out var drawerType))
+            if (TryGetCachedDrawerTypeForType(fieldInfo, out var drawerType))
             {
                 try
                 {
@@ -88,6 +111,10 @@ namespace AggroBird.UnityExtend.Editor
                 {
                     Debug.LogException(ex);
                 }
+            }
+            else if (true)
+            {
+
             }
             propertyDrawer = null;
             return false;
