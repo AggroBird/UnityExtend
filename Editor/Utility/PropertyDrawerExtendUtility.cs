@@ -6,6 +6,12 @@ using UnityEngine;
 
 namespace AggroBird.UnityExtend.Editor
 {
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class ExcludeFromPropertyDrawerTypeCacheAttribute : Attribute
+    {
+
+    }
+
     public static class PropertyDrawerExtendUtility
     {
         static PropertyDrawerExtendUtility()
@@ -44,6 +50,11 @@ namespace AggroBird.UnityExtend.Editor
                         propertyDrawerTypeCache = new();
                         foreach (Type drawer in TypeCache.GetTypesDerivedFrom<GUIDrawer>())
                         {
+                            if (drawer.GetCustomAttribute<ExcludeFromPropertyDrawerTypeCacheAttribute>() != null)
+                            {
+                                continue;
+                            }
+
                             var customAttributes = drawer.GetCustomAttributes<CustomPropertyDrawer>(inherit: true);
                             foreach (var customPropertyDrawer in customAttributes)
                             {
