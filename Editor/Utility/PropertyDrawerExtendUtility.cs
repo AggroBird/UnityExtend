@@ -6,12 +6,6 @@ using UnityEngine;
 
 namespace AggroBird.UnityExtend.Editor
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public sealed class ExcludeFromPropertyDrawerTypeCacheAttribute : Attribute
-    {
-
-    }
-
     public static class PropertyDrawerExtendUtility
     {
         static PropertyDrawerExtendUtility()

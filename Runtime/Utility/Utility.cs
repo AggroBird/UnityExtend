@@ -5,6 +5,12 @@ using UnityObject = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend
 {
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class ExcludeFromPropertyDrawerTypeCacheAttribute : Attribute
+    {
+
+    }
+
     public static class Utility
     {
         // Reset transform to identity
