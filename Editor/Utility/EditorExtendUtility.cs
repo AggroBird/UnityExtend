@@ -357,6 +357,25 @@ namespace AggroBird.UnityExtend.Editor
                 UnityObject.DestroyImmediate(copy);
             }
         }
+
+
+        public static bool TryGetTypeFromManagedReferenceTypename(string typename, out Type type)
+        {
+            if (!string.IsNullOrEmpty(typename))
+            {
+                var splitFieldTypename = typename.Split(' ');
+                if (splitFieldTypename.Length >= 2)
+                {
+                    var assemblyName = splitFieldTypename[0];
+                    var subStringTypeName = splitFieldTypename[1];
+                    var assembly = Assembly.Load(assemblyName);
+                    type = assembly.GetType(subStringTypeName);
+                    return type != null;
+                }
+            }
+            type = null;
+            return false;
+        }
     }
 
     public static class EditorGUIExtend

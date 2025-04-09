@@ -95,10 +95,10 @@ namespace AggroBird.UnityExtend.Editor
                 // Extract type from clipboard
                 int split = currentClipboard.IndexOf('>', ManagedRefenceDataKey.Length);
                 string typename = currentClipboard.Substring(ManagedRefenceDataKey.Length + 1, split - ManagedRefenceDataKey.Length - 1);
-                if (TryGetTypeFromManagedReferenceTypename(typename, out Type clipboardType))
+                if (EditorExtendUtility.TryGetTypeFromManagedReferenceTypename(typename, out Type clipboardType))
                 {
                     // Ensure that the clipboard type is supported by the destination field
-                    if (TryGetTypeFromManagedReferenceTypename(copyProperty.managedReferenceFieldTypename, out Type fieldType) && GetSupportedFieldTypes(fieldType, PolymorphicFieldUtility.InstantiateFilterObject(fieldAttribute.FilterType)).Contains(clipboardType))
+                    if (EditorExtendUtility.TryGetTypeFromManagedReferenceTypename(copyProperty.managedReferenceFieldTypename, out Type fieldType) && GetSupportedFieldTypes(fieldType, PolymorphicFieldUtility.InstantiateFilterObject(fieldAttribute.FilterType)).Contains(clipboardType))
                     {
                         menu.AddItem(new GUIContent("Paste Managed Reference Data"), false, (_) =>
                         {
@@ -272,8 +272,8 @@ namespace AggroBird.UnityExtend.Editor
             }
             else
             {
-                TryGetTypeFromManagedReferenceTypename(property.managedReferenceFieldTypename, out Type fieldType);
-                TryGetTypeFromManagedReferenceTypename(property.managedReferenceFullTypename, out Type currentType);
+                EditorExtendUtility.TryGetTypeFromManagedReferenceTypename(property.managedReferenceFieldTypename, out Type fieldType);
+                EditorExtendUtility.TryGetTypeFromManagedReferenceTypename(property.managedReferenceFullTypename, out Type currentType);
 
                 var fieldAttribute = fieldInfo.GetCustomAttribute<PolymorphicFieldAttribute>();
 
@@ -333,21 +333,6 @@ namespace AggroBird.UnityExtend.Editor
             }
 
             EditorGUI.EndProperty();
-        }
-
-        private static bool TryGetTypeFromManagedReferenceTypename(string typename, out Type type)
-        {
-            if (!string.IsNullOrEmpty(typename))
-            {
-                var splitFieldTypename = typename.Split(' ');
-                var assemblyName = splitFieldTypename[0];
-                var subStringTypeName = splitFieldTypename[1];
-                var assembly = Assembly.Load(assemblyName);
-                type = assembly.GetType(subStringTypeName);
-                return type != null;
-            }
-            type = null;
-            return false;
         }
 
         private static readonly List<Type> supportedTypeListBuilder = new();
@@ -422,7 +407,7 @@ namespace AggroBird.UnityExtend.Editor
 
             var fieldAttribute = fieldInfo.GetCustomAttribute<PolymorphicFieldAttribute>();
             bool showFoldout = fieldAttribute.ShowFoldout;
-            if (TryGetTypeFromManagedReferenceTypename(property.managedReferenceFullTypename, out Type currentType))
+            if (EditorExtendUtility.TryGetTypeFromManagedReferenceTypename(property.managedReferenceFullTypename, out Type currentType))
             {
                 if (PolymorphicFieldUtility.TryGetPolymorphicClassTypeAttribute(currentType, out var attribute))
                 {
