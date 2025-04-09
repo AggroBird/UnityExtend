@@ -484,6 +484,7 @@ namespace AggroBird.UnityExtend.Editor
 
             if (pressed)
             {
+                GUI.changed = false;
                 SearchableStringListWindow window = ScriptableObject.CreateInstance<SearchableStringListWindow>();
                 window.SetList(list, currentSelection, controlID);
                 window.Show();
