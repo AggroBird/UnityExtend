@@ -27,42 +27,25 @@ namespace AggroBird.UnityExtend
         }
 
         // Null or empty check for arrays
-        public static bool IsNullOrEmpty<T>(T[] array)
-        {
-            return array == null || array.Length == 0;
-        }
-        public static bool IsNullOrEmpty<T>(List<T> list)
+        public static bool IsNullOrEmpty<T>(IReadOnlyList<T> list)
         {
             return list == null || list.Count == 0;
         }
 
         // Returns 0 if array is null
-        public static int GetLengthSafe<T>(T[] array)
-        {
-            return array == null ? 0 : array.Length;
-        }
-        public static int GetLengthSafe<T>(List<T> list)
+        public static int GetLengthSafe<T>(IReadOnlyList<T> list)
         {
             return list == null ? 0 : list.Count;
         }
 
         // Returns Array.Empty if array is null
-        public static IReadOnlyList<T> GetReadOnlyListSafe<T>(T[] array)
-        {
-            return array == null ? Array.Empty<T>() : array;
-        }
-        public static IReadOnlyList<T> GetReadOnlyListSafe<T>(List<T> list)
+        public static IReadOnlyList<T> GetReadOnlyListSafe<T>(IReadOnlyList<T> list)
         {
             return list == null ? Array.Empty<T>() : list;
         }
 
         // Check if index is within range
-        public static bool IsValidIndex<T>(this T[] array, int idx)
-        {
-            if (array == null) return false;
-            return (uint)idx < (uint)array.Length;
-        }
-        public static bool IsValidIndex<T>(this List<T> list, int idx)
+        public static bool IsValidIndex<T>(this IReadOnlyList<T> list, int idx)
         {
             if (list == null) return false;
             return (uint)idx < (uint)list.Count;
@@ -79,8 +62,8 @@ namespace AggroBird.UnityExtend
             list.RemoveAt(last);
         }
 
-        // Destroy objects and clear the list
-        public static void DestroyObjectsAndClear<T>(List<T> list) where T : Component
+        // Destroy objects
+        public static void DestroyObjects<T>(IReadOnlyList<T> list) where T : UnityObject
         {
             foreach (var item in list)
             {
@@ -89,9 +72,8 @@ namespace AggroBird.UnityExtend
                     UnityObject.Destroy(item);
                 }
             }
-            list.Clear();
         }
-        public static void DestroyGameObjectsAndClear<T>(List<T> list) where T : Component
+        public static void DestroyGameObjects<T>(IReadOnlyList<T> list) where T : Component
         {
             foreach (var item in list)
             {
@@ -100,7 +82,51 @@ namespace AggroBird.UnityExtend
                     UnityObject.Destroy(item.gameObject);
                 }
             }
+        }
+        // Destroy objects and clear the list
+        public static void DestroyObjectsAndClear<T>(List<T> list) where T : UnityObject
+        {
+            DestroyObjects(list);
             list.Clear();
+        }
+        public static void DestroyGameObjectsAndClear<T>(List<T> list) where T : Component
+        {
+            DestroyGameObjects(list);
+            list.Clear();
+        }
+
+        // Compare object lists by content
+        public static bool CompareObjectLists<T>(IReadOnlyList<T> lhs, IReadOnlyList<T> rhs) where T : UnityObject
+        {
+            if (lhs == rhs)
+            {
+                return true;
+            }
+
+            if (lhs == null || rhs == null)
+            {
+                return lhs == rhs;
+            }
+
+            int count = lhs.Count;
+            if (count != rhs.Count)
+            {
+                return false;
+            }
+
+            List<UnityObject> sortedLhs = new(lhs);
+            List<UnityObject> sortedRhs = new(lhs);
+            sortedLhs.Sort((a, b) => a.GetInstanceID().CompareTo(b.GetInstanceID()));
+            sortedRhs.Sort((a, b) => a.GetInstanceID().CompareTo(b.GetInstanceID()));
+
+            for (int i = 0; i < count; ++i)
+            {
+                if (sortedLhs[i] != sortedRhs[i])
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         // Copy from transform
