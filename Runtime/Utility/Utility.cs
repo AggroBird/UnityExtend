@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
 
@@ -13,13 +14,6 @@ namespace AggroBird.UnityExtend
 
     public static class Utility
     {
-        // Reset transform to identity
-        public static void SetIdentity(this Transform transform)
-        {
-            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            transform.localScale = Vector3.one;
-        }
-
         // Get component or add it if it doesnt exist
         public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
         {
@@ -129,6 +123,13 @@ namespace AggroBird.UnityExtend
             return true;
         }
 
+        // Reset transform to identity
+        public static void SetIdentity(this Transform transform)
+        {
+            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            transform.localScale = Vector3.one;
+        }
+
         // Copy from transform
         public static void CopyTransform(this Transform transform, Transform copyFrom, bool copyScale = false)
         {
@@ -136,6 +137,30 @@ namespace AggroBird.UnityExtend
             if (copyScale)
             {
                 transform.localScale = copyFrom.localScale;
+            }
+        }
+
+        // Reset all animator triggers
+        public static void ResetAllTriggers(this Animator animator)
+        {
+            AnimatorController controller;
+            if (animator.runtimeAnimatorController is AnimatorOverrideController overrideController)
+            {
+                controller = overrideController.runtimeAnimatorController as AnimatorController;
+            }
+            else
+            {
+                controller = animator.runtimeAnimatorController as AnimatorController;
+            }
+            if (controller)
+            {
+                foreach (var parameter in controller.parameters)
+                {
+                    if (parameter.type == AnimatorControllerParameterType.Trigger)
+                    {
+                        animator.ResetTrigger(parameter.nameHash);
+                    }
+                }
             }
         }
 
