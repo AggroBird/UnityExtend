@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEditor.Animations;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
 
@@ -143,23 +142,11 @@ namespace AggroBird.UnityExtend
         // Reset all animator triggers
         public static void ResetAllTriggers(this Animator animator)
         {
-            AnimatorController controller;
-            if (animator.runtimeAnimatorController is AnimatorOverrideController overrideController)
+            foreach (var parameter in animator.parameters)
             {
-                controller = overrideController.runtimeAnimatorController as AnimatorController;
-            }
-            else
-            {
-                controller = animator.runtimeAnimatorController as AnimatorController;
-            }
-            if (controller)
-            {
-                foreach (var parameter in controller.parameters)
+                if (parameter.type == AnimatorControllerParameterType.Trigger)
                 {
-                    if (parameter.type == AnimatorControllerParameterType.Trigger)
-                    {
-                        animator.ResetTrigger(parameter.nameHash);
-                    }
+                    animator.ResetTrigger(parameter.nameHash);
                 }
             }
         }
