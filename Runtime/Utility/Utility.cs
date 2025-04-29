@@ -91,24 +91,26 @@ namespace AggroBird.UnityExtend
         // Compare object lists by content
         public static bool CompareObjectLists<T>(IReadOnlyList<T> lhs, IReadOnlyList<T> rhs) where T : UnityObject
         {
-            if (lhs == rhs)
-            {
-                return true;
-            }
+            // Check equal reference
+            if (ReferenceEquals(lhs, rhs)) return true;
 
-            if (lhs == null || rhs == null)
-            {
-                return lhs == rhs;
-            }
+            // Check null
+            if (lhs == null || rhs == null) return lhs == rhs;
 
+            // Check invalid objects (assume false if so)
+            foreach (var go in lhs) if (!go) return false;
+            foreach (var go in rhs) if (!go) return false;
+
+            // Compare count
             int count = lhs.Count;
             if (count != rhs.Count)
             {
                 return false;
             }
 
+            // Sort and compare
             List<UnityObject> sortedLhs = new(lhs);
-            List<UnityObject> sortedRhs = new(lhs);
+            List<UnityObject> sortedRhs = new(rhs);
             sortedLhs.Sort((a, b) => a.GetInstanceID().CompareTo(b.GetInstanceID()));
             sortedRhs.Sort((a, b) => a.GetInstanceID().CompareTo(b.GetInstanceID()));
 
