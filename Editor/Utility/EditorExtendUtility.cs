@@ -56,6 +56,14 @@ namespace AggroBird.UnityExtend.Editor
         }
 
 
+        // Clear the console
+        private static readonly MethodInfo clearConsole = Assembly.GetAssembly(typeof(SceneView)).GetType("UnityEditor.LogEntries").GetMethod("Clear");
+        public static void ClearConsole()
+        {
+            clearConsole?.Invoke(null, null);
+        }
+
+
         // Mixed value disposable
         public sealed class MixedValueScope : IDisposable
         {
