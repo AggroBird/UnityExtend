@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using UnityEngine;
 
 namespace AggroBird.UnityExtend
 {
@@ -16,13 +15,13 @@ namespace AggroBird.UnityExtend
                 throw new ArgumentException("Invalid GUID string");
             }
 
-            Upper = upper;
-            Lower = lower;
+            this.upper = upper;
+            this.lower = lower;
         }
         public GUID(ulong upper, ulong lower)
         {
-            Upper = upper;
-            Lower = lower;
+            this.upper = upper;
+            this.lower = lower;
         }
 
         private static bool TryParse(string str, out ulong upper, out ulong lower)
@@ -51,12 +50,14 @@ namespace AggroBird.UnityExtend
             return false;
         }
 
-        [field: SerializeField, UnityEngine.Serialization.FormerlySerializedAs("value0")] public ulong Upper { get; private set; }
-        [field: SerializeField, UnityEngine.Serialization.FormerlySerializedAs("value1")] public ulong Lower { get; private set; }
+        [UnityEngine.Serialization.FormerlySerializedAs("<Upper>k__BackingField")]
+        public ulong upper;
+        [UnityEngine.Serialization.FormerlySerializedAs("<Lower>k__BackingField")]
+        public ulong lower;
 
         public override readonly int GetHashCode()
         {
-            return (Upper ^ (Lower << 2)).GetHashCode();
+            return (upper ^ (lower << 2)).GetHashCode();
         }
         public override readonly bool Equals(object obj)
         {
@@ -65,7 +66,7 @@ namespace AggroBird.UnityExtend
 
         public readonly bool Equals(GUID other)
         {
-            return Upper == other.Upper && Lower == other.Lower;
+            return upper == other.upper && lower == other.lower;
         }
 
         public static bool operator ==(GUID lhs, GUID rhs) => lhs.Equals(rhs);
@@ -73,7 +74,7 @@ namespace AggroBird.UnityExtend
 
         public override readonly string ToString()
         {
-            return $"{Upper:x16}{Lower:x16}";
+            return $"{upper:x16}{lower:x16}";
         }
     }
 }
