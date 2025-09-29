@@ -17,7 +17,7 @@ namespace AggroBird.UnityExtend.Editor
             }
             else if (style == ConditionalFieldStyle.Disable)
             {
-                using (new EditorGUI.DisabledGroupScope(true))
+                using (new EditorGUI.DisabledScope(true))
                 {
                     base.OnGUI(position, property, label);
                 }

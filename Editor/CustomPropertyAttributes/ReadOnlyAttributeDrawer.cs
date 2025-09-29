@@ -8,7 +8,7 @@ namespace AggroBird.UnityExtend.Editor
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            using (new EditorGUI.DisabledGroupScope(true))
+            using (new EditorGUI.DisabledScope(true))
             {
                 base.OnGUI(position, property, label);
             }

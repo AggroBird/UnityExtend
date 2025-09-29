@@ -236,7 +236,7 @@ namespace AggroBird.UnityExtend.Editor
                 filter = EditorGUILayout.TextField(filter, EditorStyles.toolbarSearchField);
                 string[] filterSplit = filter.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                using (new EditorGUI.DisabledGroupScope(!editable))
+                using (new EditorGUI.DisabledScope(!editable))
                 {
                     foreach (var bitfieldLabel in labelList.Labels)
                     {
