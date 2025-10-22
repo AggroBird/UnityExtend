@@ -384,6 +384,37 @@ namespace AggroBird.UnityExtend.Editor
             type = null;
             return false;
         }
+
+
+        // Convert scene view window point to ray (regardless of projection mode)
+        public static Ray GUIPointToRay(this SceneView sceneView, Vector2 guiPoint, float startZ = float.NegativeInfinity)
+        {
+            if (sceneView == null) throw new NullReferenceException(nameof(sceneView));
+            Camera camera = sceneView.camera;
+            if (!camera) throw new UnityException($"Scene view has no camera");
+            if (float.IsNegativeInfinity(startZ))
+            {
+                startZ = camera.nearClipPlane;
+            }
+            Rect pixelRect = camera.pixelRect;
+            Matrix4x4 cameraToWorldMatrix = camera.cameraToWorldMatrix;
+            Vector2 pixelCoordinate = HandleUtility.GUIPointToScreenPixelCoordinate(guiPoint);
+            Vector3 converted = camera.projectionMatrix.inverse.MultiplyPoint(new((pixelCoordinate.x - pixelRect.x) * 2f / pixelRect.width - 1f, (pixelCoordinate.y - pixelRect.y) * 2f / pixelRect.height - 1f, 0.95f));
+            if (camera.orthographic)
+            {
+                Vector3 origin = cameraToWorldMatrix.MultiplyPoint(new Vector3(converted.x, converted.y, startZ));
+                Vector3 direction = cameraToWorldMatrix.MultiplyVector(new Vector3(0f, 0f, -1f)).normalized;
+                return new Ray(origin, direction);
+            }
+            else
+            {
+                Vector3 normal = converted.normalized;
+                Vector3 direction = cameraToWorldMatrix.MultiplyVector(normal);
+                Vector3 root = cameraToWorldMatrix.MultiplyPoint(Vector3.zero);
+                Vector3 projected = direction * Mathf.Abs(startZ / normal.z);
+                return new Ray(root + projected, direction);
+            }
+        }
     }
 
     public static class EditorGUIExtend
