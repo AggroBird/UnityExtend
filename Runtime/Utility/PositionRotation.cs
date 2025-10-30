@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 
 namespace AggroBird.UnityExtend
 {
+    [Serializable]
     public struct PositionRotation
     {
         public PositionRotation(Vector3 position, Quaternion rotation)
