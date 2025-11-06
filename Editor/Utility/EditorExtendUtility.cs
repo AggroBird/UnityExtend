@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 using UnityObject = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend.Editor
@@ -413,6 +414,93 @@ namespace AggroBird.UnityExtend.Editor
                 Vector3 root = cameraToWorldMatrix.MultiplyPoint(Vector3.zero);
                 Vector3 projected = direction * Mathf.Abs(startZ / normal.z);
                 return new Ray(root + projected, direction);
+            }
+        }
+
+
+        private static bool IsChildOf(Transform parent, Transform child)
+        {
+            Transform current = child;
+            while (current)
+            {
+                if (current == parent) return true;
+                current = current.parent;
+            }
+            return false;
+        }
+        [MenuItem("Tools/Snap to Ground %g", priority = 500)]
+        public static void SnapSelectionToGround()
+        {
+            foreach (var transform in Selection.transforms)
+            {
+                RaycastHit[] hits = Physics.RaycastAll(transform.position + Vector3.up, Vector3.down, 50);
+                float shortestDistance = float.MaxValue;
+                Vector3 position = Vector3.zero;
+                foreach (var hit in hits)
+                {
+                    if (!IsChildOf(transform, hit.collider.transform) && !hit.collider.isTrigger)
+                    {
+                        if (hit.distance < shortestDistance)
+                        {
+                            shortestDistance = hit.distance;
+                            position = hit.point;
+                        }
+                    }
+                }
+                if (shortestDistance != float.MaxValue)
+                {
+                    Undo.RecordObject(transform, "Snap to Ground");
+                    transform.position = position;
+                    EditorUtility.SetDirty(transform);
+                }
+            }
+        }
+        [MenuItem("Tools/Snap to Ground At Cursor %#&g", priority = 501)]
+        public static void SnapSelectionToGroundAtCursor()
+        {
+            //Physics.Raycast
+            SceneView sceneView = SceneView.lastActiveSceneView;
+            if (sceneView != null)
+            {
+                Vector2 mousePos = Event.current.mousePosition;
+                mousePos -= sceneView.rootVisualElement.Q("overlay-window-root").worldBound.position;
+                Ray ray = sceneView.GUIPointToRay(mousePos);
+                RaycastHit[] hits = Physics.RaycastAll(ray);
+                float shortestDistance = float.PositiveInfinity;
+                Vector3 position = Vector3.zero;
+                foreach (var hit in hits)
+                {
+                    if (hit.collider.isTrigger)
+                    {
+                        goto Skip;
+                    }
+
+                    foreach (var transform in Selection.transforms)
+                    {
+                        if (IsChildOf(transform, hit.collider.transform))
+                        {
+                            goto Skip;
+                        }
+                    }
+
+                    if (hit.distance < shortestDistance)
+                    {
+                        shortestDistance = hit.distance;
+                        position = hit.point;
+                    }
+
+                Skip:
+                    continue;
+                }
+                if (shortestDistance != float.PositiveInfinity)
+                {
+                    foreach (var transform in Selection.transforms)
+                    {
+                        Undo.RecordObject(transform, "Snap to Ground At Cursor");
+                        transform.position = position;
+                        EditorUtility.SetDirty(transform);
+                    }
+                }
             }
         }
     }
