@@ -42,9 +42,9 @@ namespace AggroBird.UnityExtend
 
             return min + (NextDouble() * (max - min));
         }
-        public int Range(int min, int max)
+        public int Range(int min, int max, bool inclusive = false)
         {
-            return Next(min, max);
+            return Next(min, max + (inclusive ? 1 : 0));
         }
 
         public float Range(FloatRange range)
@@ -55,9 +55,9 @@ namespace AggroBird.UnityExtend
         {
             return range.Min + (NextDouble() * range.Range);
         }
-        public int Range(IntRange range)
+        public int Range(IntRange range, bool inclusive = false)
         {
-            return Next(range.Min, range.Max);
+            return Next(range.Min, range.Max + (inclusive ? 1 : 0));
         }
 
         public float NextFloat()
