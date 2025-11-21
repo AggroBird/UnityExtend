@@ -141,6 +141,22 @@ namespace AggroBird.UnityExtend
             }
         }
 
+        // Get average normal from a collision with multiple contact points
+        public static Vector3 GetAverageNormal(this Collision collision)
+        {
+            Vector3 result = Vector3.zero;
+            int contactCount = collision.contactCount;
+            if (contactCount > 0)
+            {
+                for (int i = 0; i < contactCount; i++)
+                {
+                    result += collision.GetContact(i).normal;
+                }
+                return result.normalized;
+            }
+            return result;
+        }
+
         // Reset all animator triggers
         public static void ResetAllTriggers(this Animator animator)
         {
