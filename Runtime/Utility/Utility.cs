@@ -55,39 +55,6 @@ namespace AggroBird.UnityExtend
             list.RemoveAt(last);
         }
 
-        // Destroy objects
-        public static void DestroyObjects<T>(IReadOnlyList<T> list) where T : UnityObject
-        {
-            foreach (var item in list)
-            {
-                if (item)
-                {
-                    UnityObject.Destroy(item);
-                }
-            }
-        }
-        public static void DestroyGameObjects<T>(IReadOnlyList<T> list) where T : Component
-        {
-            foreach (var item in list)
-            {
-                if (item)
-                {
-                    UnityObject.Destroy(item.gameObject);
-                }
-            }
-        }
-        // Destroy objects and clear the list
-        public static void DestroyObjectsAndClear<T>(List<T> list) where T : UnityObject
-        {
-            DestroyObjects(list);
-            list.Clear();
-        }
-        public static void DestroyGameObjectsAndClear<T>(List<T> list) where T : Component
-        {
-            DestroyGameObjects(list);
-            list.Clear();
-        }
-
         // Compare object lists by content
         public static bool CompareObjectLists<T>(IReadOnlyList<T> lhs, IReadOnlyList<T> rhs) where T : UnityObject
         {
@@ -229,7 +196,29 @@ namespace AggroBird.UnityExtend
             return result;
         }
 
-        // Destroy gameobject this component is attached to
+        // Destroy objects in list
+        public static void DestroyObjects<T>(IReadOnlyList<T> list) where T : UnityObject
+        {
+            foreach (var item in list)
+            {
+                if (item)
+                {
+                    UnityObject.Destroy(item);
+                }
+            }
+        }
+        public static void DestroyGameObjects<T>(IReadOnlyList<T> list) where T : Component
+        {
+            foreach (var item in list)
+            {
+                if (item)
+                {
+                    UnityObject.Destroy(item.gameObject);
+                }
+            }
+        }
+
+        // Destroy gameobject component is attached to
         public static void DestroyGameObject(this Component component)
         {
             UnityObject.Destroy(component.gameObject);
@@ -237,6 +226,20 @@ namespace AggroBird.UnityExtend
         public static void DestroyGameObjectImmediate(this Component component)
         {
             UnityObject.DestroyImmediate(component.gameObject);
+        }
+        public static void DestroyGameObjectIfValid(this Component component)
+        {
+            if (component)
+            {
+                UnityObject.Destroy(component.gameObject);
+            }
+        }
+        public static void DestroyGameObjectImmediateIfValid(this Component component)
+        {
+            if (component)
+            {
+                UnityObject.DestroyImmediate(component.gameObject);
+            }
         }
 
         // Destroy object
@@ -247,6 +250,20 @@ namespace AggroBird.UnityExtend
         public static void DestroyImmediate(this UnityObject obj)
         {
             UnityObject.DestroyImmediate(obj);
+        }
+        public static void DestroyIfValid(this UnityObject obj)
+        {
+            if (obj)
+            {
+                UnityObject.Destroy(obj);
+            }
+        }
+        public static void DestroyImmediateIfValid(this UnityObject obj)
+        {
+            if (obj)
+            {
+                UnityObject.DestroyImmediate(obj);
+            }
         }
 
         // Destroy all children
@@ -259,6 +276,18 @@ namespace AggroBird.UnityExtend
                 if (child)
                 {
                     child.DestroyGameObject();
+                }
+            }
+        }
+        public static void DestroyChildrenImmediate(this Transform transform)
+        {
+            int i = 0;
+            while (i < transform.childCount)
+            {
+                var child = transform.GetChild(i++);
+                if (child)
+                {
+                    child.DestroyGameObjectImmediate();
                 }
             }
         }
