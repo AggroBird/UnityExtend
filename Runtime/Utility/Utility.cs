@@ -242,6 +242,29 @@ namespace AggroBird.UnityExtend
             }
         }
 
+        public static void DestroyGameObject(this GameObject gameObject)
+        {
+            UnityObject.Destroy(gameObject);
+        }
+        public static void DestroyGameObjectImmediate(this GameObject gameObject)
+        {
+            UnityObject.DestroyImmediate(gameObject);
+        }
+        public static void DestroyGameObjectIfValid(this GameObject gameObject)
+        {
+            if (gameObject)
+            {
+                UnityObject.Destroy(gameObject);
+            }
+        }
+        public static void DestroyGameObjectImmediateIfValid(this GameObject gameObject)
+        {
+            if (gameObject)
+            {
+                UnityObject.DestroyImmediate(gameObject);
+            }
+        }
+
         // Destroy object
         public static void Destroy(this UnityObject obj)
         {
