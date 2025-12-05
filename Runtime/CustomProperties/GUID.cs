@@ -50,9 +50,7 @@ namespace AggroBird.UnityExtend
             return false;
         }
 
-        [UnityEngine.Serialization.FormerlySerializedAs("<Upper>k__BackingField")]
         public ulong upper;
-        [UnityEngine.Serialization.FormerlySerializedAs("<Lower>k__BackingField")]
         public ulong lower;
 
         public override readonly int GetHashCode()
