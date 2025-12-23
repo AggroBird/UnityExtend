@@ -90,6 +90,27 @@ namespace AggroBird.UnityExtend
             }
             return true;
         }
+        private static List<T> LoadLazyReferences<T>(IReadOnlyList<LazyLoadReference<T>> references) where T : UnityObject
+        {
+            List<T> list = new();
+            foreach (var reference in references)
+            {
+                list.Add(reference.isBroken ? null : reference.asset);
+            }
+            return list;
+        }
+        public static bool CompareObjectLists<T>(IReadOnlyList<LazyLoadReference<T>> lhs, IReadOnlyList<T> rhs) where T : UnityObject
+        {
+            return CompareObjectLists(LoadLazyReferences(lhs), rhs);
+        }
+        public static bool CompareObjectLists<T>(IReadOnlyList<T> lhs, IReadOnlyList<LazyLoadReference<T>> rhs) where T : UnityObject
+        {
+            return CompareObjectLists(lhs, LoadLazyReferences(rhs));
+        }
+        public static bool CompareObjectLists<T>(IReadOnlyList<LazyLoadReference<T>> lhs, IReadOnlyList<LazyLoadReference<T>> rhs) where T : UnityObject
+        {
+            return CompareObjectLists(LoadLazyReferences(lhs), LoadLazyReferences(rhs));
+        }
 
         // Reset transform to identity
         public static void SetIdentity(this Transform transform)
