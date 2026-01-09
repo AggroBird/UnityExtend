@@ -4,6 +4,39 @@ using UnityEngine;
 
 namespace AggroBird.UnityExtend.Editor
 {
+    public static class GUIDPropertyUtility
+    {
+        public static GUID GetGUIDValue(this SerializedProperty property)
+        {
+            if (property == null)
+            {
+                throw new NullReferenceException(nameof(property));
+            }
+            if (property.type != typeof(GUID).FullName)
+            {
+                Debug.LogError($"Property is not a {typeof(GUID).Name}");
+                return default;
+            }
+            ulong upper = property.FindPropertyRelative(nameof(GUID.upper)).ulongValue;
+            ulong lower = property.FindPropertyRelative(nameof(GUID.lower)).ulongValue;
+            return new(upper, lower);
+        }
+        public static void SetGUIDValues(this SerializedProperty property, GUID guid)
+        {
+            if (property == null)
+            {
+                throw new NullReferenceException(nameof(property));
+            }
+            if (property.type != typeof(GUID).FullName)
+            {
+                Debug.LogError($"Property is not a {typeof(GUID).Name}");
+                return;
+            }
+            property.FindPropertyRelative(nameof(GUID.upper)).ulongValue = guid.upper;
+            property.FindPropertyRelative(nameof(GUID.lower)).ulongValue = guid.lower;
+        }
+    }
+
     [CustomPropertyDrawer(typeof(GUID))]
     internal class GUIDPropertyDrawer : PropertyDrawer
     {
