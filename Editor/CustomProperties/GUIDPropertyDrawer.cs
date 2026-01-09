@@ -21,7 +21,7 @@ namespace AggroBird.UnityExtend.Editor
             ulong lower = property.FindPropertyRelative(nameof(GUID.lower)).ulongValue;
             return new(upper, lower);
         }
-        public static void SetGUIDValues(this SerializedProperty property, GUID guid)
+        public static void SetGUIDValue(this SerializedProperty property, GUID guid)
         {
             if (property == null)
             {
