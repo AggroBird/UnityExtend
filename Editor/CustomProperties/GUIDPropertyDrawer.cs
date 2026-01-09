@@ -12,7 +12,7 @@ namespace AggroBird.UnityExtend.Editor
             {
                 throw new NullReferenceException(nameof(property));
             }
-            if (property.type != typeof(GUID).FullName)
+            if (property.type != typeof(GUID).Name)
             {
                 Debug.LogError($"Property is not a {typeof(GUID).Name}");
                 return default;
@@ -27,7 +27,7 @@ namespace AggroBird.UnityExtend.Editor
             {
                 throw new NullReferenceException(nameof(property));
             }
-            if (property.type != typeof(GUID).FullName)
+            if (property.type != typeof(GUID).Name)
             {
                 Debug.LogError($"Property is not a {typeof(GUID).Name}");
                 return;
