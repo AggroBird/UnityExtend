@@ -423,5 +423,49 @@ namespace AggroBird.UnityExtend
 #endif
             return Array.Empty<UnityObject>();
         }
+
+        // Render texture utility
+        public static void CopyRenderTextureToTexture(RenderTexture source, Texture2D destination)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (destination == null) throw new ArgumentNullException(nameof(destination));
+
+            if (source.width != destination.width || source.height != destination.height)
+            {
+                throw new ArgumentException("Destination texture must be the same size as the render texture");
+            }
+
+            RenderTexture active = RenderTexture.active;
+            try
+            {
+                RenderTexture.active = source;
+                destination.ReadPixels(new Rect(0, 0, destination.width, destination.height), 0, 0);
+                destination.Apply();
+            }
+            finally
+            {
+                RenderTexture.active = active;
+            }
+        }
+        public static Texture2D CopyRenderTextureToTexture(RenderTexture source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            Texture2D destination = new(source.width, source.height);
+
+            RenderTexture active = RenderTexture.active;
+            try
+            {
+                RenderTexture.active = source;
+                destination.ReadPixels(new Rect(0, 0, destination.width, destination.height), 0, 0);
+                destination.Apply();
+            }
+            finally
+            {
+                RenderTexture.active = active;
+            }
+
+            return destination;
+        }
     }
 }
