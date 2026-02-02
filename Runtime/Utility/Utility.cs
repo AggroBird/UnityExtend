@@ -467,5 +467,20 @@ namespace AggroBird.UnityExtend
 
             return destination;
         }
+        public static void ClearRenderTexture(RenderTexture source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+			
+            RenderTexture current = RenderTexture.active;
+            try
+            {
+                RenderTexture.active = source;
+                GL.Clear(true, true, Color.clear);
+            }
+            finally
+            {
+                RenderTexture.active = current;
+            }
+        }
     }
 }
