@@ -54,6 +54,24 @@ namespace AggroBird.UnityExtend
             }
             list.RemoveAt(last);
         }
+        
+        // Lookup utility for dictionaries
+        public static U GetOrCreate<T, U>(this Dictionary<T, U> dict, T key) where U : new()
+        {
+            if (!dict.TryGetValue(key, out U data))
+            {
+                dict[key] = data = new();
+            }
+            return data;
+        }
+        public static U GetOrCreate<T, U>(this SortedDictionary<T, U> dict, T key) where U : new()
+        {
+            if (!dict.TryGetValue(key, out U data))
+            {
+                dict[key] = data = new();
+            }
+            return data;
+        }
 
         // Compare object lists by content
         public static bool CompareObjectLists<T>(IReadOnlyList<T> lhs, IReadOnlyList<T> rhs) where T : UnityObject
@@ -470,7 +488,7 @@ namespace AggroBird.UnityExtend
         public static void ClearRenderTexture(RenderTexture source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-			
+            
             RenderTexture current = RenderTexture.active;
             try
             {
