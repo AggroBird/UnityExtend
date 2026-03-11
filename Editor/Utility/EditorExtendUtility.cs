@@ -559,7 +559,10 @@ namespace AggroBird.UnityExtend.Editor
             }
             private void OnLostFocus()
             {
-                Close();
+                if(this)
+                {
+                    Close();
+                }
             }
 
 
