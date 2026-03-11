@@ -4,7 +4,7 @@ using System.Globalization;
 namespace AggroBird.UnityExtend
 {
     [Serializable]
-    public struct GUID : IEquatable<GUID>
+    public struct GUID : IEquatable<GUID>, IComparable<GUID>
     {
         public static readonly GUID zero = new();
 
@@ -73,6 +73,15 @@ namespace AggroBird.UnityExtend
         public override readonly string ToString()
         {
             return $"{upper:x16}{lower:x16}";
+        }
+
+        public int CompareTo(GUID other)
+        {
+            if (upper == other.upper)
+            {
+                return lower.CompareTo(other.lower);
+            }
+            return upper.CompareTo(other.upper);
         }
     }
 }
