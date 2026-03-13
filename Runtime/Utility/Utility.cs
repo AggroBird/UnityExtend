@@ -54,7 +54,7 @@ namespace AggroBird.UnityExtend
             }
             list.RemoveAt(last);
         }
-        
+
         // Lookup utility for dictionaries
         public static U GetOrCreate<T, U>(this Dictionary<T, U> dict, T key) where U : new()
         {
@@ -494,7 +494,7 @@ namespace AggroBird.UnityExtend
         public static void ClearRenderTexture(RenderTexture source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            
+
             RenderTexture current = RenderTexture.active;
             try
             {
@@ -505,6 +505,34 @@ namespace AggroBird.UnityExtend
             {
                 RenderTexture.active = current;
             }
+        }
+    }
+}
+
+namespace AggroBird.UnityExtend.UI
+{
+    public static class RectTransformUtilityExtend
+    {
+        private static readonly Vector3[] worldCorners = new Vector3[4];
+
+        public static Vector2 WorldToLocalPointInRectTransform(RectTransform rectTransform, Vector3 world, Camera camera = null)
+        {
+            if (!camera)
+            {
+                camera = Camera.main;
+            }
+            if (camera)
+            {
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, RectTransformUtility.WorldToScreenPoint(camera, world), null, out Vector2 localPos);
+                return localPos;
+            }
+            return Vector2.zero;
+        }
+        public static Vector2 LocalPointInRectTransformToScreenPoint(RectTransform rectTransform, Vector2 localPoint)
+        {
+            Vector2 relative = localPoint / rectTransform.sizeDelta;
+            rectTransform.GetWorldCorners(worldCorners);
+            return worldCorners[0] + (worldCorners[1] - worldCorners[0]) * relative.y + (worldCorners[3] - worldCorners[0]) * relative.x;
         }
     }
 }
