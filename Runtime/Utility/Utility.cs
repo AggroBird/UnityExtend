@@ -354,6 +354,12 @@ namespace AggroBird.UnityExtend
             }
         }
 
+        // Check if valid (in the case of unity object, not destroyed, else not null)
+        public static bool IsValidObject<T>(T obj) where T : class
+        {
+            return obj != null && (obj is not UnityObject unityObject || unityObject);
+        }
+
         // Get property compiler-generated backing field name
         public static string GetPropertyBackingFieldName(string propertyName)
         {
