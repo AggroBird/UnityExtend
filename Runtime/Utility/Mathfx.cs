@@ -104,6 +104,10 @@ namespace AggroBird.UnityExtend
             return 1 - Mathf.Pow(1 - f, p);
         }
 
+        // Power of 2
+        public static float Pow2(float f) => f * f;
+        public static float Pow2(int i) => i * i;
+
         // Add a value and clamp the result between +range and -range
         // If value is already outside of range, it will discard the addition
         // if the result does not end up being closer to range.
