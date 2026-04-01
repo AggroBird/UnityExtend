@@ -2,7 +2,7 @@ using UnityEditor;
 
 namespace AggroBird.UnityExtend.Editor
 {
-    public struct SerializedPropertyEnumerator
+    public readonly struct SerializedPropertyEnumerator
     {
         public struct Enumerator
         {
@@ -41,7 +41,7 @@ namespace AggroBird.UnityExtend.Editor
             enumerator = new Enumerator(serializedObject.GetIterator(), null, recursive);
         }
 
-        public Enumerator GetEnumerator()
+        public readonly Enumerator GetEnumerator()
         {
             return enumerator;
         }
