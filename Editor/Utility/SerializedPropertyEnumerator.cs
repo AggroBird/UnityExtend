@@ -9,13 +9,15 @@ namespace AggroBird.UnityExtend.Editor
             private readonly SerializedProperty iter;
             private readonly SerializedProperty end;
             private readonly bool recursive;
+            private readonly bool onlyVisible;
             private bool enterChildren;
 
-            public Enumerator(SerializedProperty iter, SerializedProperty end, bool recursive)
+            public Enumerator(SerializedProperty iter, SerializedProperty end, bool recursive, bool onlyVisible)
             {
                 this.iter = iter;
                 this.end = end;
                 this.recursive = recursive;
+                this.onlyVisible = onlyVisible;
                 enterChildren = true;
             }
 
@@ -23,7 +25,7 @@ namespace AggroBird.UnityExtend.Editor
 
             public bool MoveNext()
             {
-                bool result = iter.NextVisible(enterChildren);
+                bool result = onlyVisible ? iter.NextVisible(enterChildren) : iter.Next(enterChildren);
                 enterChildren = recursive;
                 return result && (end == null || !SerializedProperty.EqualContents(iter, end));
             }
@@ -31,14 +33,14 @@ namespace AggroBird.UnityExtend.Editor
 
         private readonly Enumerator enumerator;
 
-        public SerializedPropertyEnumerator(SerializedProperty serializedProperty, bool recursive = false)
+        public SerializedPropertyEnumerator(SerializedProperty serializedProperty, bool recursive = false, bool onlyVisible = true)
         {
             serializedProperty = serializedProperty.Copy();
-            enumerator = new Enumerator(serializedProperty, serializedProperty.GetEndProperty(), recursive);
+            enumerator = new Enumerator(serializedProperty, serializedProperty.GetEndProperty(), recursive, onlyVisible);
         }
-        public SerializedPropertyEnumerator(SerializedObject serializedObject, bool recursive = false)
+        public SerializedPropertyEnumerator(SerializedObject serializedObject, bool recursive = false, bool onlyVisible = true)
         {
-            enumerator = new Enumerator(serializedObject.GetIterator(), null, recursive);
+            enumerator = new Enumerator(serializedObject.GetIterator(), null, recursive, onlyVisible);
         }
 
         public readonly Enumerator GetEnumerator()
