@@ -6,7 +6,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityObject = UnityEngine.Object;
+using Object = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend.Editor
 {
@@ -39,19 +39,19 @@ namespace AggroBird.UnityExtend.Editor
         // it means the object link is broken or the object has been destroyed.
         // Use this object instead of the original value to make the ObjectField show "Missing" in inspector.
         private static ScriptableObject missingObject;
-        public static UnityObject MissingObject
+        public static Object MissingObject
         {
             get
             {
                 if (missingObject is null)
                 {
                     missingObject = ScriptableObject.CreateInstance<ScriptableObject>();
-                    UnityObject.DestroyImmediate(missingObject);
+                    Object.DestroyImmediate(missingObject);
                 }
                 return missingObject;
             }
         }
-        public static UnityObject GetObjectReferenceValueOrMissing(this SerializedProperty property)
+        public static Object GetObjectReferenceValueOrMissing(this SerializedProperty property)
         {
             return property.objectReferenceValue ? property.objectReferenceValue : property.objectReferenceInstanceIDValue != 0 ? MissingObject : null;
         }
@@ -363,7 +363,7 @@ namespace AggroBird.UnityExtend.Editor
             }
             finally
             {
-                UnityObject.DestroyImmediate(copy);
+                Object.DestroyImmediate(copy);
             }
         }
 

@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
-using UnityObject = UnityEngine.Object;
+using Object = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend.Editor
 {
@@ -197,7 +197,7 @@ namespace AggroBird.UnityExtend.Editor
             this.labelList = labelList;
             this.editable = editable;
 
-            UnityObject[] multipleObjects = property.serializedObject.targetObjects;
+            Object[] multipleObjects = property.serializedObject.targetObjects;
             serializedObjects = new SerializedObject[multipleObjects.Length];
             for (int i = 0; i < multipleObjects.Length; i++)
             {

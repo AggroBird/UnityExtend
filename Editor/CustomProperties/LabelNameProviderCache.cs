@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
-using UnityObject = UnityEngine.Object;
+using Object = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend.Editor
 {
@@ -22,12 +22,12 @@ namespace AggroBird.UnityExtend.Editor
                     // Load from asset
                     if (globalProviderAttribute.ProviderType != null)
                     {
-                        if (!cache.TryGetValue(globalProviderAttribute.ProviderType, out T cachedProvider) || cachedProvider is not UnityObject unityObj || !unityObj)
+                        if (!cache.TryGetValue(globalProviderAttribute.ProviderType, out T cachedProvider) || cachedProvider is not Object unityObj || !unityObj)
                         {
                             string[] guids = AssetDatabase.FindAssets($"t:{globalProviderAttribute.ProviderType.Name}");
 							for (int i = 0; i < guids.Length; i++)
 							{
-								UnityObject obj = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[i]), globalProviderAttribute.ProviderType);
+								Object obj = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guids[i]), globalProviderAttribute.ProviderType);
 								if (obj is T validProvider)
 								{
 									cache[globalProviderAttribute.ProviderType] = validProvider;
@@ -66,7 +66,7 @@ namespace AggroBird.UnityExtend.Editor
                             case NestedNameProviderSource.SerializedObject:
                             {
                                 // Try to get from serialized object
-                                UnityObject obj = property.serializedObject.targetObject;
+                                Object obj = property.serializedObject.targetObject;
                                 if (obj && obj is T validProvider)
                                 {
                                     provider = validProvider;

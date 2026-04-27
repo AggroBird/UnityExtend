@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityObject = UnityEngine.Object;
+using Object = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend.Editor
 {
     public static class EditorAssetRefUtility
     {
-        public static EditorAssetRef<T>[] MakeArray<T>(IList<T> assets) where T : UnityObject
+        public static EditorAssetRef<T>[] MakeArray<T>(IList<T> assets) where T : Object
         {
             if (assets == null || assets.Count == 0)
             {
@@ -21,7 +21,7 @@ namespace AggroBird.UnityExtend.Editor
             }
             return result;
         }
-        public static T[] Load<T>(IList<EditorAssetRef<T>> assetRefs) where T : UnityObject
+        public static T[] Load<T>(IList<EditorAssetRef<T>> assetRefs) where T : Object
         {
             if (assetRefs == null || assetRefs.Count == 0)
             {
@@ -37,7 +37,7 @@ namespace AggroBird.UnityExtend.Editor
     }
 
     [Serializable]
-    public struct EditorAssetRef<T> where T : UnityObject
+    public struct EditorAssetRef<T> where T : Object
     {
         internal EditorAssetRef(string guid)
         {
@@ -96,7 +96,7 @@ namespace AggroBird.UnityExtend.Editor
 
             bool multipleDifferentValues = property.hasMultipleDifferentValues;
 
-            UnityObject currentValue = null;
+            Object currentValue = null;
             if (!multipleDifferentValues)
             {
                 string guid = guidProperty.stringValue;
@@ -105,7 +105,7 @@ namespace AggroBird.UnityExtend.Editor
                     string assetPath = AssetDatabase.GUIDToAssetPath(guid);
                     if (!string.IsNullOrEmpty(assetPath))
                     {
-                        currentValue = AssetDatabase.LoadAssetAtPath(assetPath, typeof(UnityObject));
+                        currentValue = AssetDatabase.LoadAssetAtPath(assetPath, typeof(Object));
                         if (!currentValue)
                         {
                             currentValue = EditorExtendUtility.MissingObject;

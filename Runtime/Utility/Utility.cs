@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityObject = UnityEngine.Object;
+using Object = UnityEngine.Object;
 
 namespace AggroBird.UnityExtend
 {
@@ -74,7 +74,7 @@ namespace AggroBird.UnityExtend
         }
 
         // Compare object lists by content
-        public static bool CompareObjectLists<T>(IReadOnlyList<T> lhs, IReadOnlyList<T> rhs) where T : UnityObject
+        public static bool CompareObjectLists<T>(IReadOnlyList<T> lhs, IReadOnlyList<T> rhs) where T : Object
         {
             // Check equal reference
             if (ReferenceEquals(lhs, rhs)) return true;
@@ -94,8 +94,8 @@ namespace AggroBird.UnityExtend
             }
 
             // Sort and compare
-            List<UnityObject> sortedLhs = new(lhs);
-            List<UnityObject> sortedRhs = new(rhs);
+            List<Object> sortedLhs = new(lhs);
+            List<Object> sortedRhs = new(rhs);
             sortedLhs.Sort((a, b) => a.GetInstanceID().CompareTo(b.GetInstanceID()));
             sortedRhs.Sort((a, b) => a.GetInstanceID().CompareTo(b.GetInstanceID()));
 
@@ -108,7 +108,7 @@ namespace AggroBird.UnityExtend
             }
             return true;
         }
-        private static List<T> LoadLazyReferences<T>(IReadOnlyList<LazyLoadReference<T>> references) where T : UnityObject
+        private static List<T> LoadLazyReferences<T>(IReadOnlyList<LazyLoadReference<T>> references) where T : Object
         {
             List<T> list = new();
             foreach (var reference in references)
@@ -117,15 +117,15 @@ namespace AggroBird.UnityExtend
             }
             return list;
         }
-        public static bool CompareObjectLists<T>(IReadOnlyList<LazyLoadReference<T>> lhs, IReadOnlyList<T> rhs) where T : UnityObject
+        public static bool CompareObjectLists<T>(IReadOnlyList<LazyLoadReference<T>> lhs, IReadOnlyList<T> rhs) where T : Object
         {
             return CompareObjectLists(LoadLazyReferences(lhs), rhs);
         }
-        public static bool CompareObjectLists<T>(IReadOnlyList<T> lhs, IReadOnlyList<LazyLoadReference<T>> rhs) where T : UnityObject
+        public static bool CompareObjectLists<T>(IReadOnlyList<T> lhs, IReadOnlyList<LazyLoadReference<T>> rhs) where T : Object
         {
             return CompareObjectLists(lhs, LoadLazyReferences(rhs));
         }
-        public static bool CompareObjectLists<T>(IReadOnlyList<LazyLoadReference<T>> lhs, IReadOnlyList<LazyLoadReference<T>> rhs) where T : UnityObject
+        public static bool CompareObjectLists<T>(IReadOnlyList<LazyLoadReference<T>> lhs, IReadOnlyList<LazyLoadReference<T>> rhs) where T : Object
         {
             return CompareObjectLists(LoadLazyReferences(lhs), LoadLazyReferences(rhs));
         }
@@ -236,13 +236,13 @@ namespace AggroBird.UnityExtend
         }
 
         // Destroy objects in list
-        public static void DestroyObjects<T>(IReadOnlyList<T> list) where T : UnityObject
+        public static void DestroyObjects<T>(IReadOnlyList<T> list) where T : Object
         {
             foreach (var item in list)
             {
                 if (item)
                 {
-                    UnityObject.Destroy(item);
+                    Object.Destroy(item);
                 }
             }
         }
@@ -252,7 +252,7 @@ namespace AggroBird.UnityExtend
             {
                 if (item)
                 {
-                    UnityObject.Destroy(item.gameObject);
+                    Object.Destroy(item.gameObject);
                 }
             }
         }
@@ -260,71 +260,71 @@ namespace AggroBird.UnityExtend
         // Destroy gameobject component is attached to
         public static void DestroyGameObject(this Component component)
         {
-            UnityObject.Destroy(component.gameObject);
+            Object.Destroy(component.gameObject);
         }
         public static void DestroyGameObjectImmediate(this Component component)
         {
-            UnityObject.DestroyImmediate(component.gameObject);
+            Object.DestroyImmediate(component.gameObject);
         }
         public static void DestroyGameObjectIfValid(this Component component)
         {
             if (component)
             {
-                UnityObject.Destroy(component.gameObject);
+                Object.Destroy(component.gameObject);
             }
         }
         public static void DestroyGameObjectImmediateIfValid(this Component component)
         {
             if (component)
             {
-                UnityObject.DestroyImmediate(component.gameObject);
+                Object.DestroyImmediate(component.gameObject);
             }
         }
 
         public static void DestroyGameObject(this GameObject gameObject)
         {
-            UnityObject.Destroy(gameObject);
+            Object.Destroy(gameObject);
         }
         public static void DestroyGameObjectImmediate(this GameObject gameObject)
         {
-            UnityObject.DestroyImmediate(gameObject);
+            Object.DestroyImmediate(gameObject);
         }
         public static void DestroyGameObjectIfValid(this GameObject gameObject)
         {
             if (gameObject)
             {
-                UnityObject.Destroy(gameObject);
+                Object.Destroy(gameObject);
             }
         }
         public static void DestroyGameObjectImmediateIfValid(this GameObject gameObject)
         {
             if (gameObject)
             {
-                UnityObject.DestroyImmediate(gameObject);
+                Object.DestroyImmediate(gameObject);
             }
         }
 
         // Destroy object
-        public static void Destroy(this UnityObject obj)
+        public static void Destroy(this Object obj)
         {
-            UnityObject.Destroy(obj);
+            Object.Destroy(obj);
         }
-        public static void DestroyImmediate(this UnityObject obj)
+        public static void DestroyImmediate(this Object obj)
         {
-            UnityObject.DestroyImmediate(obj);
+            Object.DestroyImmediate(obj);
         }
-        public static void DestroyIfValid(this UnityObject obj)
+        public static void DestroyIfValid(this Object obj)
         {
             if (obj)
             {
-                UnityObject.Destroy(obj);
+                Object.Destroy(obj);
             }
         }
-        public static void DestroyImmediateIfValid(this UnityObject obj)
+        public static void DestroyImmediateIfValid(this Object obj)
         {
             if (obj)
             {
-                UnityObject.DestroyImmediate(obj);
+                Object.DestroyImmediate(obj);
             }
         }
 
@@ -357,7 +357,7 @@ namespace AggroBird.UnityExtend
         // Check if valid (in the case of unity object, not destroyed, else not null)
         public static bool IsValidObject<T>(T obj) where T : class
         {
-            return obj != null && (obj is not UnityObject unityObject || unityObject);
+            return obj != null && (obj is not Object unityObject || unityObject);
         }
 
         // Get property compiler-generated backing field name
@@ -367,7 +367,7 @@ namespace AggroBird.UnityExtend
         }
 
         // Load assets of type (editor only)
-        public static bool TryLoadFirstAssetOfType<T>(out T asset) where T : UnityObject
+        public static bool TryLoadFirstAssetOfType<T>(out T asset) where T : Object
         {
 #if UNITY_EDITOR
             foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
@@ -383,7 +383,7 @@ namespace AggroBird.UnityExtend
             asset = default;
             return false;
         }
-        public static T[] LoadAllAssetsOfType<T>() where T : UnityObject
+        public static T[] LoadAllAssetsOfType<T>() where T : Object
         {
 #if UNITY_EDITOR
             var guids = UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).Name}");
@@ -403,7 +403,7 @@ namespace AggroBird.UnityExtend
 #endif
             return Array.Empty<T>();
         }
-        public static bool TryLoadFirstAssetOfType(Type type, out UnityObject asset)
+        public static bool TryLoadFirstAssetOfType(Type type, out Object asset)
         {
 #if UNITY_EDITOR
             foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{type.Name}"))
@@ -423,13 +423,13 @@ namespace AggroBird.UnityExtend
             asset = default;
             return false;
         }
-        public static UnityObject[] LoadAllAssetsOfType(Type type)
+        public static Object[] LoadAllAssetsOfType(Type type)
         {
 #if UNITY_EDITOR
             var guids = UnityEditor.AssetDatabase.FindAssets($"t:{type.Name}");
             if (guids.Length > 0)
             {
-                List<UnityObject> result = new();
+                List<Object> result = new();
                 foreach (var guid in UnityEditor.AssetDatabase.FindAssets($"t:{type.Name}"))
                 {
                     string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
@@ -445,7 +445,7 @@ namespace AggroBird.UnityExtend
                 return result.ToArray();
             }
 #endif
-            return Array.Empty<UnityObject>();
+            return Array.Empty<Object>();
         }
 
         // Render texture utility
