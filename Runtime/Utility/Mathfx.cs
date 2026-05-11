@@ -228,5 +228,11 @@ namespace AggroBird.UnityExtend
         {
             return (a.position - b.position).sqrMagnitude <= radius * radius;
         }
+		
+		// Seconds to milliseconds
+        public static int SecondsToMS(float seconds)
+        {
+            return Mathf.RoundToInt(seconds * 1000);
+        }
     }
 }
