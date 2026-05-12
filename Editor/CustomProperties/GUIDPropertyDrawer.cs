@@ -44,7 +44,7 @@ namespace AggroBird.UnityExtend.Editor
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            using (new EditorExtendUtility.MixedValueScope(property.hasMultipleDifferentValues))
+            using (new EditorGUIExtend.MixedValueScope(property.hasMultipleDifferentValues))
             {
                 var upperProperty = property.FindPropertyRelative(nameof(GUID.upper));
                 var lowerProperty = property.FindPropertyRelative(nameof(GUID.lower));

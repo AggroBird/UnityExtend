@@ -287,7 +287,7 @@ namespace AggroBird.UnityExtend.Editor
                     labelPos.height = EditorExtendUtility.SingleLineHeight;
                     EditorGUI.PrefixLabel(position, label);
                 }
-                using (new EditorExtendUtility.MixedValueScope(showMixedValue))
+                using (new EditorGUIExtend.MixedValueScope(showMixedValue))
                 {
                     Rect dropdownRect = position;
                     float indent = EditorGUIUtility.labelWidth + 2;

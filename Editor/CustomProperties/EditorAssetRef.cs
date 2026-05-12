@@ -118,7 +118,7 @@ namespace AggroBird.UnityExtend.Editor
                 }
             }
 
-            using (new EditorExtendUtility.MixedValueScope(multipleDifferentValues))
+            using (new EditorGUIExtend.MixedValueScope(multipleDifferentValues))
             {
                 Type referenceType = (fieldInfo.FieldType.IsArray ? fieldInfo.FieldType.GetElementType() : fieldInfo.FieldType).GetGenericArguments()[0];
 

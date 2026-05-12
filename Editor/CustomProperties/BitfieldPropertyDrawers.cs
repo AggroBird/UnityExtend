@@ -266,7 +266,7 @@ namespace AggroBird.UnityExtend.Editor
                             showMixedValue |= ((nestedValue & flag) != 0) != isSet;
                             if (showMixedValue) break;
                         }
-                        using (new EditorExtendUtility.MixedValueScope(showMixedValue))
+                        using (new EditorGUIExtend.MixedValueScope(showMixedValue))
                         {
                             EditorGUI.BeginChangeCheck();
                             bool setValue = EditorGUILayout.Toggle(isSet, GUILayout.Width(20));
@@ -325,7 +325,7 @@ namespace AggroBird.UnityExtend.Editor
                 }
 
                 // Open edit window
-                using (new EditorExtendUtility.MixedValueScope(showMixedValue))
+                using (new EditorGUIExtend.MixedValueScope(showMixedValue))
                 {
                     GUI.contentColor = showMixedValue ? new Color(1, 1, 1, 0.5f) : Color.white;
                     if (PopupButton(position, showMixedValue ? EditorExtendUtility.MixedValueContent : labelBuilder.Length == 0 ? "<none>" : labelBuilder.ToString()))

@@ -14,7 +14,7 @@ namespace AggroBird.UnityExtend.Editor
             {
                 SceneAsset scene;
                 EditorGUI.BeginChangeCheck();
-                using (new EditorExtendUtility.MixedValueScope(property.hasMultipleDifferentValues))
+                using (new EditorGUIExtend.MixedValueScope(property.hasMultipleDifferentValues))
                 {
                     if (string.IsNullOrWhiteSpace(property.stringValue))
                     {
