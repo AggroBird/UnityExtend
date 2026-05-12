@@ -65,24 +65,6 @@ namespace AggroBird.UnityExtend.Editor
         }
 
 
-        // Mixed value disposable
-        public sealed class MixedValueScope : IDisposable
-        {
-            public MixedValueScope(bool showMixedValue)
-            {
-                currentValue = EditorGUI.showMixedValue;
-                EditorGUI.showMixedValue = showMixedValue;
-            }
-
-            private readonly bool currentValue;
-
-            public void Dispose()
-            {
-                EditorGUI.showMixedValue = currentValue;
-            }
-        }
-
-
         // Utility for getting the field info of a given property (based on property path)
         // Additionally outputs the actual type (in case of serialized references) and a stack of all values if provided
         public static bool TryGetFieldInfo(this SerializedProperty property, out FieldInfo fieldInfo, out Type fieldType, List<object> stackTrace = null, bool useInheritedTypes = true)
@@ -559,7 +541,7 @@ namespace AggroBird.UnityExtend.Editor
             }
             private void OnLostFocus()
             {
-                if(this)
+                if (this)
                 {
                     Close();
                 }
@@ -656,6 +638,40 @@ namespace AggroBird.UnityExtend.Editor
         {
             position = EditorGUI.PrefixLabel(position, EditorExtendUtility.TempContent(label));
             return SearchableStringList(position, currentSelection, list);
+        }
+
+        // Mixed value disposable
+        public sealed class MixedValueScope : IDisposable
+        {
+            public MixedValueScope(bool showMixedValue)
+            {
+                currentValue = EditorGUI.showMixedValue;
+                EditorGUI.showMixedValue = showMixedValue;
+            }
+
+            private readonly bool currentValue;
+
+            public void Dispose()
+            {
+                EditorGUI.showMixedValue = currentValue;
+            }
+        }
+
+        // Override indent level disposable
+        public sealed class OverrideIndentLevelScope : IDisposable
+        {
+            public OverrideIndentLevelScope(int level = 0)
+            {
+                currentIndentLevel = EditorGUI.indentLevel;
+                EditorGUI.indentLevel = level;
+            }
+
+            private readonly int currentIndentLevel;
+
+            public void Dispose()
+            {
+                EditorGUI.indentLevel = currentIndentLevel;
+            }
         }
     }
 
