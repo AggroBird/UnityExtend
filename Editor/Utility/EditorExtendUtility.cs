@@ -692,7 +692,7 @@ namespace AggroBird.UnityExtend.Editor
         }
     }
 
-    internal static class AssetUtility
+    public static class AssetUtility
     {
         private const string CopyGUIDMenuItem = "Assets/Copy GUID";
         [MenuItem(CopyGUIDMenuItem, priority = 100)]
@@ -702,9 +702,8 @@ namespace AggroBird.UnityExtend.Editor
             if (!string.IsNullOrEmpty(path))
             {
                 string metaFilePath = path + ".meta";
-                if (File.Exists(metaFilePath))
+                if (TryGetGUIDFromMetaFile(metaFilePath, out string guid))
                 {
-                    string guid = GetGUIDFromMetaFile(metaFilePath);
                     EditorGUIUtility.systemCopyBuffer = guid;
                     Debug.Log($"GUID copied ({guid})");
                     return;
@@ -747,17 +746,22 @@ namespace AggroBird.UnityExtend.Editor
         [MenuItem(AssetMenuItem, priority = 102, validate = true)]
         public static bool OpenAssetValidate() => Selection.objects.Length == 1 && EditorUtility.IsPersistent(Selection.objects[0]);
 
-        private static string GetGUIDFromMetaFile(string metaFilePath)
+        public static bool TryGetGUIDFromMetaFile(string metaFilePath, out string guid)
         {
             const string Search = "guid: ";
-            foreach (var line in File.ReadAllLines(metaFilePath))
+            if (File.Exists(metaFilePath))
             {
-                if (line.StartsWith(Search, StringComparison.Ordinal))
+                foreach (var line in File.ReadAllLines(metaFilePath))
                 {
-                    return line.Substring(Search.Length).Trim();
+                    if (line.StartsWith(Search, StringComparison.Ordinal))
+                    {
+                        guid = line.Substring(Search.Length).Trim();
+                        return !string.IsNullOrEmpty(guid);
+                    }
                 }
             }
-            return string.Empty;
+            guid = string.Empty;
+            return false;
         }
     }
 }
