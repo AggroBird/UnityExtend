@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 using UnityEditor;
@@ -688,6 +689,75 @@ namespace AggroBird.UnityExtend.Editor
         public static int SearchableStringList(string label, int currentSelection, IReadOnlyList<string> list)
         {
             return EditorGUIExtend.SearchableStringList(EditorGUILayout.GetControlRect(), label, currentSelection, list);
+        }
+    }
+
+    internal static class AssetUtility
+    {
+        private const string CopyGUIDMenuItem = "Assets/Copy GUID";
+        [MenuItem(CopyGUIDMenuItem, priority = 100)]
+        public static void CopyAssetGUID()
+        {
+            string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+            if (!string.IsNullOrEmpty(path))
+            {
+                string metaFilePath = path + ".meta";
+                if (File.Exists(metaFilePath))
+                {
+                    string guid = GetGUIDFromMetaFile(metaFilePath);
+                    EditorGUIUtility.systemCopyBuffer = guid;
+                    Debug.Log($"GUID copied ({guid})");
+                    return;
+                }
+                Debug.LogWarning($"Failed to find GUID for \"{path}\"");
+            }
+        }
+        [MenuItem(CopyGUIDMenuItem, priority = 100, validate = true)]
+        public static bool CopyAssetGUIDValidate() => Selection.objects.Length == 1 && EditorUtility.IsPersistent(Selection.objects[0]);
+
+        private const string OpenMetaFileMenuItem = "Assets/Open Meta File";
+        [MenuItem(OpenMetaFileMenuItem, priority = 101)]
+        public static void OpenMetaFile()
+        {
+            string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+            if (!string.IsNullOrEmpty(path))
+            {
+                string metaPath = path + ".meta";
+                if (File.Exists(metaPath))
+                {
+                    System.Diagnostics.Process.Start(Path.Combine(Application.dataPath, "..", metaPath));
+                    return;
+                }
+                Debug.LogWarning($"Failed to find meta file for \"{path}\"");
+            }
+        }
+        [MenuItem(OpenMetaFileMenuItem, priority = 101, validate = true)]
+        public static bool OpenMetaFileValidate() => Selection.objects.Length == 1 && EditorUtility.IsPersistent(Selection.objects[0]);
+
+        private const string AssetMenuItem = "Assets/Open Asset";
+        [MenuItem(AssetMenuItem, priority = 102)]
+        public static void OpenAsset()
+        {
+            string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+            if (!string.IsNullOrEmpty(path))
+            {
+                System.Diagnostics.Process.Start(Path.Combine(Application.dataPath, "..", path));
+            }
+        }
+        [MenuItem(AssetMenuItem, priority = 102, validate = true)]
+        public static bool OpenAssetValidate() => Selection.objects.Length == 1 && EditorUtility.IsPersistent(Selection.objects[0]);
+
+        private static string GetGUIDFromMetaFile(string metaFilePath)
+        {
+            const string Search = "guid: ";
+            foreach (var line in File.ReadAllLines(metaFilePath))
+            {
+                if (line.StartsWith(Search, StringComparison.Ordinal))
+                {
+                    return line.Substring(Search.Length).Trim();
+                }
+            }
+            return string.Empty;
         }
     }
 }
