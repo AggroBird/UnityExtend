@@ -20,21 +20,15 @@ namespace AggroBird.UnityExtend
         }
 
         // Null or empty check for arrays
-        public static bool IsNullOrEmpty<T>(IReadOnlyList<T> list)
+        public static bool IsNullOrEmpty<T>(IReadOnlyCollection<T> list)
         {
             return list == null || list.Count == 0;
         }
 
         // Returns 0 if array is null
-        public static int GetLengthSafe<T>(IReadOnlyList<T> list)
+        public static int GetLengthSafe<T>(IReadOnlyCollection<T> list)
         {
             return list == null ? 0 : list.Count;
-        }
-
-        // Returns Array.Empty if array is null
-        public static IReadOnlyList<T> GetReadOnlyListSafe<T>(IReadOnlyList<T> list)
-        {
-            return list == null ? Array.Empty<T>() : list;
         }
 
         // Check if index is within range
@@ -108,7 +102,7 @@ namespace AggroBird.UnityExtend
             }
             return true;
         }
-        private static List<T> LoadLazyReferences<T>(IReadOnlyList<LazyLoadReference<T>> references) where T : Object
+        private static List<T> LoadLazyReferences<T>(IReadOnlyCollection<LazyLoadReference<T>> references) where T : Object
         {
             List<T> list = new();
             foreach (var reference in references)
@@ -236,7 +230,7 @@ namespace AggroBird.UnityExtend
         }
 
         // Destroy objects in list
-        public static void DestroyObjects<T>(IReadOnlyList<T> list) where T : Object
+        public static void DestroyObjects<T>(IReadOnlyCollection<T> list) where T : Object
         {
             foreach (var item in list)
             {
@@ -246,7 +240,7 @@ namespace AggroBird.UnityExtend
                 }
             }
         }
-        public static void DestroyGameObjects<T>(IReadOnlyList<T> list) where T : Component
+        public static void DestroyGameObjects<T>(IReadOnlyCollection<T> list) where T : Component
         {
             foreach (var item in list)
             {
