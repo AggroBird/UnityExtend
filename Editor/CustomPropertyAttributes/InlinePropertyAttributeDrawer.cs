@@ -4,7 +4,7 @@ using UnityEngine;
 namespace AggroBird.UnityExtend.Editor
 {
     [CustomPropertyDrawer(typeof(InlinePropertyAttribute))]
-    internal class InlinePropertyAttributeDrawer : PropertyDrawer
+    internal sealed class InlinePropertyAttributeDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {

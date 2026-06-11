@@ -4,7 +4,7 @@ using UnityEngine;
 namespace AggroBird.UnityExtend.Editor
 {
     [CustomPropertyDrawer(typeof(SceneAttribute))]
-    internal class SceneAttributePropertyDrawer : PropertyDrawer
+    internal sealed class SceneAttributePropertyDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {

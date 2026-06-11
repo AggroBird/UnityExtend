@@ -5,7 +5,7 @@ using UnityEngine;
 namespace AggroBird.UnityExtend.Editor
 {
     [CustomPropertyDrawer(typeof(NamedArrayElementAttribute))]
-    internal class NamedArrayElementPropertyDrawer : PropertyDrawer
+    internal sealed class NamedArrayElementPropertyDrawer : PropertyDrawer
     {
         private static readonly LabelNameProviderCache<INamedArrayElementNameProvider> providerCache = new();
         private static readonly List<string> labelBuffer = new();
