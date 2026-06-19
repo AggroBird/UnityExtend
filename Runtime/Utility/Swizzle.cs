@@ -140,6 +140,8 @@ namespace AggroBird.UnityExtend
             return new Color(c.r, c.g, c.b, a);
         }
 
+        public static Color Opaque(this Color c) => new Color(c.r, c.g, c.b, 1);
+
         public static Rect ToRect(this RectInt rect)
         {
             return new Rect(rect.x, rect.y, rect.width, rect.height);
