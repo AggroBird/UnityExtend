@@ -530,7 +530,7 @@ namespace AggroBird.UnityExtend
     [Serializable]
     public struct BitfieldLabel
     {
-        internal BitfieldLabel(string name, int index)
+        public BitfieldLabel(string name, int index)
         {
             this.index = index;
             this.name = name;
